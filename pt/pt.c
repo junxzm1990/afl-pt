@@ -20,8 +20,6 @@
 
 #include "pt.h"
 
-
-
 //Data structure for PT capability
 typedef struct pt_cap_struct{
 	bool has_pt;  // if pt is included  
@@ -115,11 +113,19 @@ static int __init pt_init(void){
 
 	//query pt_cap
 	query_pt_cap();
-	
+
+	//check if PT meets basic requirements
+	//1. Has PT
+	//2. support ToPA
+	//3. can do cr3-based filtering 
+		
 	if(!check_pt()){
 		printk(KERN_INFO "The CPU does not meet requirement\n");
 		return 1;  	
 	}
+
+	//next step: enable PT?  
+
 	return 0;
 }
 
