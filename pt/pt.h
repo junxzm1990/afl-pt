@@ -37,7 +37,7 @@
 #define MSR_IA32_ADDR1_START		0x00000582
 #define MSR_IA32_ADDR1_END		0x00000583
 
-#define DEF_TOPA_NUM			0x02
+#define DEF_TOPA_NUM			0x10
 
 #endif
 

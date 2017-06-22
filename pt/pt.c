@@ -29,7 +29,13 @@
 
 #define MAXTHREAD 0x08
 #define PTEN 0x02
+#define MEGNUM 0x08
 
+char *proxy_msg[]={
+	"START",
+	"TARGET",
+	"PTBUF"
+};
 
 struct topa_entry {
 	u64 end:1;
@@ -55,6 +61,7 @@ typedef struct target_thread_struct{
 	pid_t pid; 
 	struct task_struct *task; 
 	topa_t  topa; 
+
 }target_thread_t;
 
 
