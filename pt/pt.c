@@ -30,6 +30,12 @@
 
 #include "pt.h"
 
+//kernel module parameters
+static unsigned long kallsyms_lookup_name_ptr;
+module_param(kallsyms_lookup_name_ptr, ulong, 0400);
+MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_lookup_name_ptr (for kernels without CONFIG_KALLSYMS_ALL)");
+
+
 #define MAXTHREAD 0x08
 #define PTEN 0x02
 #define MEGNUM 0x08
@@ -182,57 +188,89 @@ static void reply_msg(char *msg, pid_t pid){
 }
 
 
+unsigned long (*ksyms_func)(const char *name) = NULL;
+
 static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
 	return;
 }
-
 static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *prev, struct task_struct *next){
 	return;
 }
-
-
 static void probe_trace_fork(void *ignore, struct task_struct *parent, struct task_struct * child){
 	return;
 }
-
 static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 	return;
 }
 
 static bool set_trace_point(void){
 
+	int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data);
+	if(!kallsyms_lookup_name_ptr){
+		printk(KERN_INFO "Please specify the address of kallsyms_lookup_name_ptr");
+	}
+	ksyms_func = kallsyms_lookup_name_ptr; 
+
 	//trace on exec
-	exec_tp = (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_exec");
-	
+	exec_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exec");	
 	if(!exec_tp)
 		return false; 
 	
 	//trace fork of process
-	fork_tp =  (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_fork");	 
-	
+	fork_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_fork");	 
 	if(!fork_tp)
 		return false; 
 
 	//trace process switch
-	switch_tp = (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_switch");
-	
+	switch_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_switch");
 	if(!switch_tp)
 		return false; 
 
 	//trace exit of process
-	exit_tp =  (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_exit");
-	
+	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
 	if(!exit_tp)
 		return false; 
 
-	tracepoint_probe_register(exec_tp, probe_trace_exec, NULL); 
-	tracepoint_probe_register(fork_tp, probe_trace_fork, NULL);
-	tracepoint_probe_register(switch_tp, probe_trace_switch, NULL);
-	tracepoint_probe_register(exit_tp, probe_trace_exit, NULL); 
-	
+       trace_probe_ptr = ksyms_func("tracepoint_probe_register");
+
+	if(!trace_probe_ptr)
+		return false;
+
+	trace_probe_ptr(exec_tp, probe_trace_exec, NULL); 
+	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
+	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
+	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
 	return true;
 }
 
+static void release_trace_point(void){
+	
+	int (*trace_release_ptr)(struct tracepoint *tp, void *probe, void *data); 
+
+	if(!ksyms_func){
+		printk(KERN_INFO "Cannot unregister trace points!!!");
+		return;	
+	}
+
+	trace_release_ptr = ksyms_func("tracepoint_probe_unregister"); 
+
+	if(!trace_release_ptr){
+		printk(KERN_INFO "Cannot unregister trace points!!!");
+		return;
+	}
+
+	if(exec_tp)
+		trace_release_ptr(exec_tp, (void*)probe_trace_exec, NULL);
+
+	if(fork_tp)
+		trace_release_ptr(fork_tp, (void*)probe_trace_fork, NULL);
+
+	if(switch_tp)
+		trace_release_ptr(switch_tp, (void*)probe_trace_switch, NULL);
+
+	if(exit_tp)
+		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);
+}
 
 //all these communications are sequential. No lock needed. 
 static void pt_recv_msg(struct sk_buff *skb) {
@@ -394,6 +432,7 @@ static int __init pt_init(void){
 static void __exit pt_exit(void){
 	printk(KERN_INFO "end test pt test\n");
 	netlink_kernel_release(nlt.nl_sk);
+	release_trace_point();
 }
 
 module_init(pt_init);
