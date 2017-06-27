@@ -37,7 +37,7 @@ nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
 nlh->nlmsg_pid = getpid();
 nlh->nlmsg_flags = 0;
 
-strcpy(NLMSG_DATA(nlh), "Hello");
+strcpy(NLMSG_DATA(nlh), "START");
 
 iov.iov_base = (void *)nlh;
 iov.iov_len = nlh->nlmsg_len;
@@ -59,7 +59,7 @@ nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
 nlh->nlmsg_pid = getpid();
 nlh->nlmsg_flags = 0;
 
-strcpy(NLMSG_DATA(nlh), "Hello");
+strcpy(NLMSG_DATA(nlh), "TARGET:/bin/ls");
 
 iov.iov_base = (void *)nlh;
 iov.iov_len = nlh->nlmsg_len;

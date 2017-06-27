@@ -24,6 +24,9 @@
 #include <net/sock.h>
 #include <linux/skbuff.h>
 #include <linux/sched.h>
+#include <linux/version.h>
+#include <asm/processor.h>	
+#include <linux/tracepoint.h>
 
 #include "pt.h"
 
@@ -33,6 +36,7 @@
 #define MAX_MSG 1024
 
 #define NETLINK_USER 31 //Only allow one proxy to be attached
+#define DEM ":"
 
 enum proxy_status {
 	PSLEEP = 0,
@@ -133,6 +137,10 @@ pt_manager_t ptm = {
 	.target_num = 0,
 };
 
+static struct tracepoint *exec_tp; 
+static struct tracepoint *switch_tp; 
+static struct tracepoint *fork_tp;
+static struct tracepoint *exit_tp; 
 
 static enum msg_etype msg_type(char * msg){
 	
@@ -173,22 +181,70 @@ static void reply_msg(char *msg, pid_t pid){
 		printk(KERN_INFO "Error while sending bak to user\n");
 }
 
+
+static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
+	printk(KERN_INFO "Start new program %s\n", bprm->filename);
+	return;
+}
+
+static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *prev, struct task_struct *next){
+	return;
+}
+
+
+static void probe_trace_fork(void *ignore, struct task_struct *parent, struct task_struct * child){
+	return;
+}
+
+static void probe_trace_exit(void * ignore, struct task_struct *tsk){
+	return;
+}
+
+static bool set_trace_point(void){
+
+	//trace on exec
+	exec_tp = (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_exec");
+	
+	if(!exec_tp)
+		return false; 
+	
+	//trace fork of process
+	fork_tp =  (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_fork");	 
+	
+	if(!fork_tp)
+		return false; 
+
+	//trace process switch
+	switch_tp = (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_switch");
+	
+	if(!switch_tp)
+		return false; 
+
+	//trace exit of process
+	exit_tp =  (struct tracepoint*) kallsyms_lookup_name("__tracepoint_sched_process_exit");
+	
+	if(!exit_tp)
+		return false; 
+
+	tracepoint_probe_register(exec_tp, probe_trace_exec, NULL); 
+	tracepoint_probe_register(fork_tp, probe_trace_fork, NULL);
+	tracepoint_probe_register(switch_tp, probe_trace_switch, NULL);
+	tracepoint_probe_register(exit_tp, probe_trace_exit, NULL); 
+	
+	return true;
+}
+
+
+//all these communications are sequential. No lock needed. 
 static void pt_recv_msg(struct sk_buff *skb) {
-//Todo list:
-//Add a message state machine here
-//Receive Hello -> echo confirm
-//Receive Target -> echo confirm 
-//Receive PTBUF -> echo ToPA info
-//Lock is needed for synchronization 
+
 	struct nlmsghdr *nlh;
 	int pid;
 	char msg[MAX_MSG];
 
 	//receive new data
 	nlh=(struct nlmsghdr*)skb->data;
-	//copy contents 
 	strncpy(msg, (char*)nlmsg_data(nlh), MAX_MSG);
-
 	pid = nlh->nlmsg_pid; /*pid of sending process */
 
 	//check the message from proxy and then reply with the corresponding result
@@ -198,28 +254,52 @@ static void pt_recv_msg(struct sk_buff *skb) {
 				reply_msg("ERROR: Alread Started", pid); 	
 				break; 	
 			}	
-			//confirm start record status
-			//fill in reply message
 			ptm.p_stat = PSTART;
+			ptm.proxy_pid = pid;
+			//confirm start
+			reply_msg("SCONFIRM", pid); 
 			break;
 
+		//Target menssage format: "TARGET:/path/to/bin" 
 		case TARGET: 
 			if(ptm.p_stat != PSTART){
 				reply_msg("ERROR: Cannot attach target", pid);
 				break;
 			}
-			
+			if(!strstr(msg, DEM)){
+				reply_msg("ERROR: Target format not correct", pid);
+				break;
+			}
+		
+			ptm.p_stat = PTOPA;
+ 	
+			//Get the target binary path from the message
+			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
+
+			//set trace point on execv,fork,schedule,exit. 
+			if(!set_trace_point()){
+				ptm.p_stat = UNKNOWN;	
+				reply_msg("ERROR: Cannot register trace point. Sorry", pid);
+				break;
+			}	
+
+			reply_msg("TCONFIRM", pid);
+			printk(KERN_INFO "Target %s\n", ptm.target_path);	
 			break;
+
+		//PT buf format: "BUF:0x........." (8 bytes, since we are on 64 bit machine)
 		case PTBUF:
-			
+			if(ptm.p_stat != PTOPA){
+				reply_msg("ERROR: PT Buffer Address Expected\n", pid);		
+				break;
+
+			}
+
 			break;	
 
 		case ERROR:
 			reply_msg("ERROR: No such command!\n", pid); 
 			break;
-
-		default: 
-			break; 
 	}
 }
 
