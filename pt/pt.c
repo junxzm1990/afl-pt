@@ -183,7 +183,6 @@ static void reply_msg(char *msg, pid_t pid){
 
 
 static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
-	printk(KERN_INFO "Start new program %s\n", bprm->filename);
 	return;
 }
 
