@@ -24,17 +24,39 @@
 #include <net/sock.h>
 #include <linux/skbuff.h>
 #include <linux/sched.h>
+#include <linux/version.h>
+#include <asm/processor.h>	
+#include <linux/tracepoint.h>
 
 #include "pt.h"
+
+//kernel module parameters
+static unsigned long kallsyms_lookup_name_ptr;
+module_param(kallsyms_lookup_name_ptr, ulong, 0400);
+MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_lookup_name_ptr (for kernels without CONFIG_KALLSYMS_ALL)");
+
 
 #define MAXTHREAD 0x08
 #define PTEN 0x02
 #define MEGNUM 0x08
+#define MAX_MSG 1024
 
-char *proxy_msg[]={
-	"START",
-	"TARGET",
-	"PTBUF"
+#define NETLINK_USER 31 //Only allow one proxy to be attached
+#define DEM ":"
+
+enum proxy_status {
+	PSLEEP = 0,
+	PSTART,
+	PTOPA,
+	PFUZZ,
+	UNKNOWN
+};
+
+enum msg_etype{
+	START = 0,
+	TARGET,
+	PTBUF,
+	ERROR
 };
 
 struct topa_entry {
@@ -57,30 +79,10 @@ typedef struct topa_struct{
 
 //data structure for a thread in the fuzzed process
 typedef struct target_thread_struct{
-
 	pid_t pid; 
 	struct task_struct *task; 
 	topa_t  topa; 
-
 }target_thread_t;
-
-
-typedef struct pt_manager_struct{
-	pid_t proxy_pid; //process id of proxy
-
-	char target_path[PATH_MAX]; //path of target program
-
-	pid_t fserver_pid;  //process id of fork server
-
-	pid_t tgid; //thread group id of the fuzzed process (the pid of the master thread)
-
-	target_thread_t targets[MAXTHREAD]; //array for threads in the fuzzed process
-
-	int target_num; //how many threads are in running
-	
-	//todo list: create a set of locks for synchronizations
-
-}pt_manager_t;
 
 
 //Data structure for PT capability
@@ -94,7 +96,28 @@ typedef struct pt_cap_struct{
 	int psb_freq_mask; //psb packets frequency mast (psb->boundary packets)
 }pt_cap_t; 
 
+typedef struct pt_manager_struct{
+	enum proxy_status p_stat;
 
+	pid_t proxy_pid; //process id of proxy
+
+	char target_path[PATH_MAX]; //path of target program
+
+	pid_t fserver_pid;  //process id of fork server
+	pid_t tgid; //thread group id of the fuzzed process (the pid of the master thread)
+
+	target_thread_t targets[MAXTHREAD]; //array for threads in the fuzzed process
+	int target_num; //how many threads are in running
+}pt_manager_t;
+
+
+
+typedef struct netlink_struct{
+	struct sock *nl_sk;
+	struct netlink_kernel_cfg cfg;  
+}netlink_t;
+
+static void pt_recv_msg(struct sk_buff *skb);
 
 pt_cap_t pt_cap = {
 	.has_pt = false,
@@ -106,6 +129,216 @@ pt_cap_t pt_cap = {
 	.psb_freq_mask = 0
 };
 
+//data struct for netlink management 
+netlink_t nlt ={
+	.nl_sk = NULL,
+	.cfg = {
+		.input = pt_recv_msg,
+	},
+};
+
+
+pt_manager_t ptm = {
+	.p_stat = PSLEEP,
+	.target_num = 0,
+};
+
+static struct tracepoint *exec_tp; 
+static struct tracepoint *switch_tp; 
+static struct tracepoint *fork_tp;
+static struct tracepoint *exit_tp; 
+
+static enum msg_etype msg_type(char * msg){
+	
+	if(strstr(msg, "START"))
+		return START;
+
+	if(strstr(msg, "TARGET"))
+		return TARGET;
+
+	return ERROR; 	
+}
+
+
+
+static void reply_msg(char *msg, pid_t pid){
+
+	struct nlmsghdr *nlh;
+	struct sk_buff *skb_out;
+	char reply[MAX_MSG];
+	int res;
+
+	skb_out = nlmsg_new(MAX_MSG, 0);
+		
+	if(!skb_out){
+		printk(KERN_ERR "Failed to allocate new skb\n");
+		return;
+	}
+ 
+	nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,MAX_MSG,0);  
+	NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
+
+	strncpy(reply, msg, MAX_MSG);
+	strncpy(nlmsg_data(nlh),reply,MAX_MSG);
+
+	res = nlmsg_unicast(nlt.nl_sk,skb_out,pid);
+
+	if(res<0)
+		printk(KERN_INFO "Error while sending bak to user\n");
+}
+
+
+unsigned long (*ksyms_func)(const char *name) = NULL;
+
+static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
+	return;
+}
+static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *prev, struct task_struct *next){
+	return;
+}
+static void probe_trace_fork(void *ignore, struct task_struct *parent, struct task_struct * child){
+	return;
+}
+static void probe_trace_exit(void * ignore, struct task_struct *tsk){
+	return;
+}
+
+static bool set_trace_point(void){
+
+	int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data);
+	if(!kallsyms_lookup_name_ptr){
+		printk(KERN_INFO "Please specify the address of kallsyms_lookup_name_ptr");
+	}
+	ksyms_func = kallsyms_lookup_name_ptr; 
+
+	//trace on exec
+	exec_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exec");	
+	if(!exec_tp)
+		return false; 
+	
+	//trace fork of process
+	fork_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_fork");	 
+	if(!fork_tp)
+		return false; 
+
+	//trace process switch
+	switch_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_switch");
+	if(!switch_tp)
+		return false; 
+
+	//trace exit of process
+	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
+	if(!exit_tp)
+		return false; 
+
+       trace_probe_ptr = ksyms_func("tracepoint_probe_register");
+
+	if(!trace_probe_ptr)
+		return false;
+
+	trace_probe_ptr(exec_tp, probe_trace_exec, NULL); 
+	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
+	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
+	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
+	return true;
+}
+
+static void release_trace_point(void){
+	
+	int (*trace_release_ptr)(struct tracepoint *tp, void *probe, void *data); 
+
+	if(!ksyms_func){
+		printk(KERN_INFO "Cannot unregister trace points!!!");
+		return;	
+	}
+
+	trace_release_ptr = ksyms_func("tracepoint_probe_unregister"); 
+
+	if(!trace_release_ptr){
+		printk(KERN_INFO "Cannot unregister trace points!!!");
+		return;
+	}
+
+	if(exec_tp)
+		trace_release_ptr(exec_tp, (void*)probe_trace_exec, NULL);
+
+	if(fork_tp)
+		trace_release_ptr(fork_tp, (void*)probe_trace_fork, NULL);
+
+	if(switch_tp)
+		trace_release_ptr(switch_tp, (void*)probe_trace_switch, NULL);
+
+	if(exit_tp)
+		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);
+}
+
+//all these communications are sequential. No lock needed. 
+static void pt_recv_msg(struct sk_buff *skb) {
+
+	struct nlmsghdr *nlh;
+	int pid;
+	char msg[MAX_MSG];
+
+	//receive new data
+	nlh=(struct nlmsghdr*)skb->data;
+	strncpy(msg, (char*)nlmsg_data(nlh), MAX_MSG);
+	pid = nlh->nlmsg_pid; /*pid of sending process */
+
+	//check the message from proxy and then reply with the corresponding result
+	switch(msg_type(msg)){
+		case START:
+			if (ptm.p_stat != PSLEEP){
+				reply_msg("ERROR: Alread Started", pid); 	
+				break; 	
+			}	
+			ptm.p_stat = PSTART;
+			ptm.proxy_pid = pid;
+			//confirm start
+			reply_msg("SCONFIRM", pid); 
+			break;
+
+		//Target menssage format: "TARGET:/path/to/bin" 
+		case TARGET: 
+			if(ptm.p_stat != PSTART){
+				reply_msg("ERROR: Cannot attach target", pid);
+				break;
+			}
+			if(!strstr(msg, DEM)){
+				reply_msg("ERROR: Target format not correct", pid);
+				break;
+			}
+		
+			ptm.p_stat = PTOPA;
+ 	
+			//Get the target binary path from the message
+			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
+
+			//set trace point on execv,fork,schedule,exit. 
+			if(!set_trace_point()){
+				ptm.p_stat = UNKNOWN;	
+				reply_msg("ERROR: Cannot register trace point. Sorry", pid);
+				break;
+			}	
+
+			reply_msg("TCONFIRM", pid);
+			printk(KERN_INFO "Target %s\n", ptm.target_path);	
+			break;
+
+		//PT buf format: "BUF:0x........." (8 bytes, since we are on 64 bit machine)
+		case PTBUF:
+			if(ptm.p_stat != PTOPA){
+				reply_msg("ERROR: PT Buffer Address Expected\n", pid);		
+				break;
+
+			}
+
+			break;	
+
+		case ERROR:
+			reply_msg("ERROR: No such command!\n", pid); 
+			break;
+	}
+}
 
 //query CPU ID to check capability of PT
 static void query_pt_cap(void){
@@ -170,45 +403,6 @@ static bool check_pt(void){
 }
 
 
-#define NETLINK_USER 31
-struct sock *nl_sk = NULL;
-
-static void hello_nl_recv_msg(struct sk_buff *skb) {
-
-	struct nlmsghdr *nlh;
-	int pid;
-	struct sk_buff *skb_out;
-	int msg_size;
-	char *msg="Hello from kernel";
-	int res;
-
-	printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
-
-	msg_size=strlen(msg);
-
-	nlh=(struct nlmsghdr*)skb->data;
-	printk(KERN_INFO "Netlink received msg payload:%s\n",(char*)nlmsg_data(nlh));
-	pid = nlh->nlmsg_pid; /*pid of sending process */
-
-	skb_out = nlmsg_new(msg_size,0);
-
-	if(!skb_out)
-	{
-
-		printk(KERN_ERR "Failed to allocate new skb\n");
-		return;
-
-	} 
-	nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,msg_size,0);  
-	NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
-	strncpy(nlmsg_data(nlh),msg,msg_size);
-
-	res=nlmsg_unicast(nl_sk,skb_out,pid);
-
-	if(res<0)
-		printk(KERN_INFO "Error while sending bak to user\n");
-}
-
 
 //Init pt 
 //1. Check if pt is supported 
@@ -229,12 +423,7 @@ static int __init pt_init(void){
 	}
 	//next step: enable PT?  
 
-
-	struct netlink_kernel_cfg cfg = {
-		.input = hello_nl_recv_msg,
-	};
-
-	nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &cfg);
+	nlt.nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &nlt.cfg);
 
 	return 0;
 }
@@ -242,10 +431,9 @@ static int __init pt_init(void){
 
 static void __exit pt_exit(void){
 	printk(KERN_INFO "end test pt test\n");
-	netlink_kernel_release(nl_sk);
+	netlink_kernel_release(nlt.nl_sk);
+	release_trace_point();
 }
 
 module_init(pt_init);
 module_exit(pt_exit);
-
-
