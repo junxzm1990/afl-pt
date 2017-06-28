@@ -1,0 +1,1 @@
+sysvipc/ftok.o sysvipc/msgsnd.o sysvipc/msgrcv.o sysvipc/msgget.o sysvipc/msgctl.o sysvipc/semop.o sysvipc/semget.o sysvipc/semctl.o sysvipc/semtimedop.o sysvipc/shmat.o sysvipc/shmdt.o sysvipc/shmget.o sysvipc/shmctl.o

@@ -1,0 +1,1 @@
+iconv/iconv_open.o iconv/iconv.o iconv/iconv_close.o iconv/gconv_open.o iconv/gconv.o iconv/gconv_close.o iconv/gconv_db.o iconv/gconv_conf.o iconv/gconv_builtin.o iconv/gconv_simple.o iconv/gconv_trans.o iconv/gconv_cache.o iconv/gconv_dl.o

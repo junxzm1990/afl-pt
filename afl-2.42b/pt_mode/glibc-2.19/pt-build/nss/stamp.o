@@ -1,0 +1,1 @@
+nss/nsswitch.o nss/getnssent.o nss/getnssent_r.o nss/digits_dots.o nss/proto-lookup.o nss/service-lookup.o nss/hosts-lookup.o nss/network-lookup.o nss/grp-lookup.o nss/pwd-lookup.o nss/rpc-lookup.o nss/ethers-lookup.o nss/spwd-lookup.o nss/netgrp-lookup.o nss/key-lookup.o nss/alias-lookup.o nss/sgrp-lookup.o

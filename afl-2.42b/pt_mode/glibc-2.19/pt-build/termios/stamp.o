@@ -1,0 +1,1 @@
+termios/speed.o termios/cfsetspeed.o termios/tcsetattr.o termios/tcgetattr.o termios/tcgetpgrp.o termios/tcsetpgrp.o termios/tcdrain.o termios/tcflow.o termios/tcflush.o termios/tcsendbrk.o termios/cfmakeraw.o termios/tcgetsid.o

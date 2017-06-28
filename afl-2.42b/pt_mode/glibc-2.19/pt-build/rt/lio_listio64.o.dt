@@ -1,0 +1,13 @@
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/rt/lio_listio64.o: \
+ ../sysdeps/unix/sysv/linux/wordsize-64/lio_listio64.c \
+ ../include/stdc-predef.h ../include/libc-symbols.h \
+ /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h \
+ ../sysdeps/generic/symbol-hacks.h
+
+../include/stdc-predef.h:
+
+../include/libc-symbols.h:
+
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h:
+
+../sysdeps/generic/symbol-hacks.h:

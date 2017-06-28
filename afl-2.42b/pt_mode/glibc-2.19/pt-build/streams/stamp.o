@@ -1,0 +1,1 @@
+streams/isastream.o streams/getmsg.o streams/getpmsg.o streams/putmsg.o streams/putpmsg.o streams/fattach.o streams/fdetach.o

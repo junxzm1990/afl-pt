@@ -1,0 +1,1 @@
+csu/init-first.o csu/libc-start.o csu/sysdep.o csu/version.o csu/check_fds.o csu/libc-tls.o csu/elf-init.o csu/dso_handle.o csu/errno.o csu/init-arch.o csu/errno-loc.o csu/hp-timing.o

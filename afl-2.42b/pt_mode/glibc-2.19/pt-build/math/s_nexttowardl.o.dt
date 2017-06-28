@@ -1,0 +1,12 @@
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/math/s_nexttowardl.o: \
+ s_nexttowardl.c ../include/stdc-predef.h ../include/libc-symbols.h \
+ /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h \
+ ../sysdeps/generic/symbol-hacks.h
+
+../include/stdc-predef.h:
+
+../include/libc-symbols.h:
+
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h:
+
+../sysdeps/generic/symbol-hacks.h:

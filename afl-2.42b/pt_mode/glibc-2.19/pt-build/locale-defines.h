@@ -1,0 +1,5 @@
+#define LOCALE_T___LOCALES 0
+#define LC_CTYPE 0
+#define _NL_CTYPE_NONASCII_CASE 71
+#define LOCALE_DATA_VALUES 64
+#define SIZEOF_VALUES 8

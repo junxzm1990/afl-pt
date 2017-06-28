@@ -1,0 +1,9 @@
+#define cond_lock 0
+#define cond_futex 4
+#define cond_nwaiters 40
+#define total_seq 8
+#define wakeup_seq 16
+#define woken_seq 24
+#define dep_mutex 32
+#define broadcast_seq 44
+#define nwaiters_shift 1

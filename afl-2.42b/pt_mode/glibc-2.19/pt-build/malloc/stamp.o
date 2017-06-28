@@ -1,0 +1,1 @@
+malloc/malloc.o malloc/morecore.o malloc/mcheck.o malloc/mtrace.o malloc/obstack.o malloc/set-freeres.o malloc/thread-freeres.o

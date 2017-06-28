@@ -1,0 +1,14 @@
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/nss/hash-string.os: \
+ ../intl/hash-string.c ../include/stdc-predef.h ../include/libc-symbols.h \
+ /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h \
+ ../sysdeps/generic/symbol-hacks.h ../intl/hash-string.h
+
+../include/stdc-predef.h:
+
+../include/libc-symbols.h:
+
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/config.h:
+
+../sysdeps/generic/symbol-hacks.h:
+
+../intl/hash-string.h:

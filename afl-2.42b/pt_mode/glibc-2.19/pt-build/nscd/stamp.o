@@ -1,0 +1,1 @@
+nscd/nscd_getpw_r.o nscd/nscd_getgr_r.o nscd/nscd_gethst_r.o nscd/nscd_getai.o nscd/nscd_initgroups.o nscd/nscd_getserv_r.o nscd/nscd_netgroup.o nscd/nscd_helper.o

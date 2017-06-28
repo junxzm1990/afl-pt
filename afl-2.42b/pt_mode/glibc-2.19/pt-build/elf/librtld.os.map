@@ -1,0 +1,1257 @@
+Archive member included to satisfy reference by file (symbol)
+
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__libc_check_standard_fds)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (rtld_errno)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__closedir)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__readdir)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (rewinddir)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os) (__getdents)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__fdopendir)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__profil)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__profile_frequency)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__GI___xstat64)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__GI___fxstat64)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__GI___lxstat64)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__open)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__libc_read)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__libc_write)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__access)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os) (__libc_fcntl)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__close)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__mmap)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__munmap)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__mprotect)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__lseek)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__uname)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (waitpid)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (_exit)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__getpid)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__environ)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__sigsetjmp)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (__longjmp)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os) (__sigaction)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (strchr)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (strcmp)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (strcpy)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (strlen)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (strnlen)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (memchr)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (memcmp)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (memmove)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (memset)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (mempcpy)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (stpcpy)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (memcpy)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os) (_wordcopy_fwd_aligned)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os (rawmemchr)
+/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+                              /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os) (__setitimer)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+START GROUP
+LOAD /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+LOAD /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a
+LOAD /usr/lib/gcc/x86_64-linux-gnu/4.8/libgcc.a
+END GROUP
+
+.interp
+ *(.interp)
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.hash
+ *(.hash)
+
+.gnu.hash
+ *(.gnu.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rela.init
+ *(.rela.init)
+
+.rela.text
+ *(.rela.text)
+
+.rela.fini
+ *(.rela.fini)
+
+.rela.rodata
+ *(.rela.rodata)
+
+.rela.data.rel.ro
+ *(.rela.data.rel.ro)
+
+.rela.data
+ *(.rela.data)
+
+.rela.tdata
+ *(.rela.tdata)
+
+.rela.tbss
+ *(.rela.tbss)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rela.got
+ *(.rela.got)
+
+.rela.bss
+ *(.rela.bss)
+
+.rela.ldata
+ *(.rela.ldata)
+
+.rela.lbss
+ *(.rela.lbss)
+
+.rela.lrodata
+ *(.rela.lrodata)
+
+.rela.ifunc
+ *(.rela.ifunc)
+
+.rela.plt
+ *(.rela.plt)
+
+.init
+ *(SORT(.init))
+
+.plt
+ *(.plt)
+ *(.iplt)
+
+.text           0x0000000000000000    0x182c0
+ *(.text .stub)
+ .text          0x0000000000000000    0x15d01 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+                0x0000000000000000                _start
+                0x0000000000000008                _dl_start_user
+                0x0000000000000050                _dl_initial_error_catch_tsd
+                0x0000000000005f70                _dl_dst_count
+                0x0000000000006020                _dl_dst_substitute
+                0x0000000000006960                _dl_init_paths
+                0x0000000000006d80                _dl_map_object
+                0x0000000000007740                _dl_rtld_di_serinfo
+                0x0000000000008430                _dl_lookup_symbol_x
+                0x00000000000094b0                _dl_setup_hash
+                0x0000000000009560                _dl_add_to_namespace_list
+                0x00000000000095f0                _dl_new_object
+                0x0000000000009940                _dl_try_allocate_static_tls
+                0x0000000000009a20                _dl_allocate_static_tls
+                0x0000000000009a50                _dl_nothread_init_static_tls
+                0x0000000000009ae0                _dl_protect_relro
+                0x0000000000009b40                _dl_reloc_bad_type
+                0x0000000000009c20                _dl_relocate_object
+                0x000000000000b1c0                _dl_map_object_deps
+                0x000000000000c430                _dl_important_hwcaps
+                0x000000000000cb70                _dl_fixup
+                0x000000000000cd80                _dl_profile_fixup
+                0x000000000000d360                _dl_call_pltexit
+                0x000000000000d470                _dl_signal_error
+                0x000000000000d620                _dl_signal_cerror
+                0x000000000000d6a0                _dl_catch_error
+                0x000000000000d760                _dl_receive_error
+                0x000000000000d8d0                _dl_init_internal
+                0x000000000000d8d0                _dl_init
+                0x000000000000d9f0                _dl_sort_fini
+                0x000000000000dc80                _dl_fini
+                0x000000000000e0a0                _dl_debug_state
+                0x000000000000e0a0                __GI__dl_debug_state
+                0x000000000000e0b0                _dl_debug_initialize
+                0x000000000000e6e0                _dl_sysdep_read_whole_file
+                0x000000000000e770                _dl_debug_printf
+                0x000000000000e7d0                _dl_debug_printf_c
+                0x000000000000e830                _dl_dprintf
+                0x000000000000e880                _dl_name_match_p
+                0x000000000000e8f0                _dl_higher_prime_number
+                0x000000000000ed20                _dl_check_map_versions
+                0x000000000000f1a0                _dl_check_all_versions
+                0x000000000000f210                _dl_start_profile
+                0x000000000000fa10                _dl_mcount_internal
+                0x000000000000fa10                _dl_mcount
+                0x000000000000fc40                _dl_resolve_conflicts
+                0x000000000000fe60                _dl_next_tls_modid
+                0x000000000000ff40                _dl_determine_tlsoffset
+                0x0000000000010100                __GI__dl_tls_setup
+                0x0000000000010100                _dl_tls_setup
+                0x00000000000101b0                _dl_get_tls_static_info
+                0x00000000000101d0                _dl_allocate_tls_storage
+                0x0000000000010310                __GI__dl_allocate_tls_init
+                0x0000000000010310                _dl_allocate_tls_init
+                0x0000000000010530                __GI__dl_allocate_tls
+                0x0000000000010530                _dl_allocate_tls
+                0x0000000000010570                _dl_deallocate_tls
+                0x0000000000010570                __GI__dl_deallocate_tls
+                0x0000000000010600                _dl_update_slotinfo
+                0x0000000000010950                __tls_get_addr
+                0x0000000000010990                _dl_tls_get_addr_soft
+                0x0000000000010a00                _dl_add_to_slotinfo
+                0x0000000000010ae0                _dl_get_origin
+                0x0000000000010c50                _dl_scope_free
+                0x0000000000010d10                _dl_make_stack_executable
+                0x0000000000010d10                __GI__dl_make_stack_executable
+                0x0000000000010d90                _dl_check_caller
+                0x00000000000111c0                _dl_open
+                0x0000000000011530                _dl_show_scope
+                0x0000000000011680                _dl_addr_inside_object
+                0x00000000000116e0                __GI__dl_find_dso_for_object
+                0x00000000000116e0                _dl_find_dso_for_object
+                0x0000000000012200                _dl_close_worker
+                0x00000000000130a0                _dl_close
+                0x0000000000013120                _dl_runtime_resolve
+                0x0000000000013190                _dl_runtime_profile
+                0x00000000000136f0                _dl_x86_64_save_sse
+                0x00000000000137e0                _dl_x86_64_restore_sse
+                0x0000000000013890                _dl_cache_libcmp
+                0x0000000000013970                _dl_load_cache_lookup
+                0x0000000000013ec0                _dl_unload_cache
+                0x0000000000013f00                _dl_sysdep_start
+                0x00000000000141c0                _dl_sysdep_start_cleanup
+                0x00000000000141d0                _dl_show_auxv
+                0x0000000000014380                _dl_discover_osversion
+                0x0000000000014560                _dl_next_ld_env_entry
+                0x00000000000145a0                unsetenv
+                0x0000000000014620                __libc_memalign
+                0x0000000000014730                malloc
+                0x0000000000014740                calloc
+                0x0000000000014780                free
+                0x00000000000147b0                __sigjmp_save
+                0x00000000000147c0                __strerror_r
+                0x00000000000148a0                __GI___assert_fail
+                0x00000000000148a0                __assert_fail
+                0x00000000000148f0                realloc
+                0x0000000000014980                __GI___assert_perror_fail
+                0x0000000000014980                __assert_perror_fail
+                0x00000000000149f0                __strtoul_internal
+                0x0000000000014bc0                _itoa
+                0x0000000000014c10                __strsep
+                0x0000000000014c10                strsep
+                0x0000000000014c10                __strsep_g
+                0x0000000000014ca0                __GI___chk_fail
+                0x0000000000014ca0                __chk_fail
+                0x0000000000014cb0                __brk
+                0x0000000000014cb0                brk
+                0x0000000000014d10                sbrk
+                0x0000000000014d10                __sbrk
+                0x0000000000014da0                __getcwd
+                0x0000000000014da0                getcwd
+                0x00000000000153b0                openat64
+                0x0000000000015400                __alloc_dir
+                0x0000000000015500                __opendirat
+                0x0000000000015570                __opendir
+                0x0000000000015570                opendir
+                0x0000000000015580                __fxstatat
+                0x0000000000015580                __fxstatat64
+                0x0000000000015580                __GI___fxstatat64
+                0x00000000000155f0                _dl_make_tlsdesc_dynamic
+                0x00000000000158c0                _dl_tlsdesc_resolve_rela_fixup
+                0x0000000000015aa0                _dl_tlsdesc_resolve_hold_fixup
+                0x0000000000015ae0                _dl_unmap
+                0x0000000000015b60                _dl_tlsdesc_return
+                0x0000000000015b70                _dl_tlsdesc_undefweak
+                0x0000000000015b80                _dl_tlsdesc_dynamic
+                0x0000000000015c20                _dl_tlsdesc_resolve_rela
+                0x0000000000015c90                _dl_tlsdesc_resolve_hold
+ *fill*         0x0000000000015d01        0xf 
+ .text          0x0000000000015d10       0xe2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+                0x0000000000015dc0                __libc_check_standard_fds
+ .text          0x0000000000015df2        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ *fill*         0x0000000000015df2        0xe 
+ .text          0x0000000000015e00       0x28 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+                0x0000000000015e00                __closedir
+                0x0000000000015e00                closedir
+ *fill*         0x0000000000015e28        0x8 
+ .text          0x0000000000015e30       0x8a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+                0x0000000000015e30                readdir
+                0x0000000000015e30                __readdir64
+                0x0000000000015e30                __readdir
+                0x0000000000015e30                readdir64
+ *fill*         0x0000000000015eba        0x6 
+ .text          0x0000000000015ec0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+                0x0000000000015ec0                rewinddir
+ .text          0x0000000000015ef0       0x80 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+                0x0000000000015ef0                __getdents
+                0x0000000000015ef0                __getdents64
+ .text          0x0000000000015f70       0x7f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+                0x0000000000015f70                fdopendir
+                0x0000000000015f70                __fdopendir
+ *fill*         0x0000000000015fef        0x1 
+ .text          0x0000000000015ff0      0x110 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+                0x0000000000016040                __profil
+                0x0000000000016040                profil
+ .text          0x0000000000016100        0x7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+                0x0000000000016100                __profile_frequency
+ *fill*         0x0000000000016107        0x9 
+ .text          0x0000000000016110       0x3d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+                0x0000000000016110                _xstat
+                0x0000000000016110                __xstat64
+                0x0000000000016110                __GI___xstat64
+                0x0000000000016110                __GI___xstat
+                0x0000000000016110                __xstat
+ *fill*         0x000000000001614d        0x3 
+ .text          0x0000000000016150       0x3d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+                0x0000000000016150                __GI___fxstat
+                0x0000000000016150                __GI___fxstat64
+                0x0000000000016150                __fxstat64
+                0x0000000000016150                _fxstat
+                0x0000000000016150                __fxstat
+ *fill*         0x000000000001618d        0x3 
+ .text          0x0000000000016190       0x3d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+                0x0000000000016190                __GI___lxstat
+                0x0000000000016190                _lxstat
+                0x0000000000016190                __lxstat
+                0x0000000000016190                __lxstat64
+                0x0000000000016190                __GI___lxstat64
+ *fill*         0x00000000000161cd        0x3 
+ .text          0x00000000000161d0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+                0x00000000000161d0                __open
+                0x00000000000161d0                __libc_open
+                0x00000000000161d0                open64
+                0x00000000000161d0                open
+                0x00000000000161d0                __open64
+ .text          0x00000000000161f0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+                0x00000000000161f0                __read
+                0x00000000000161f0                __libc_read
+                0x00000000000161f0                read
+ .text          0x0000000000016210       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+                0x0000000000016210                __write
+                0x0000000000016210                write
+                0x0000000000016210                __libc_write
+ .text          0x0000000000016230       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+                0x0000000000016230                access
+                0x0000000000016230                __access
+ .text          0x0000000000016250       0xde /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+                0x0000000000016250                __libc_fcntl
+                0x0000000000016250                __fcntl
+                0x0000000000016250                fcntl
+ *fill*         0x000000000001632e        0x2 
+ .text          0x0000000000016330       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+                0x0000000000016330                __libc_close
+                0x0000000000016330                __close
+                0x0000000000016330                close
+ .text          0x0000000000016350       0x23 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+                0x0000000000016350                __mmap
+                0x0000000000016350                mmap
+                0x0000000000016350                __mmap64
+                0x0000000000016350                mmap64
+ *fill*         0x0000000000016373        0xd 
+ .text          0x0000000000016380       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+                0x0000000000016380                munmap
+                0x0000000000016380                __munmap
+ .text          0x00000000000163a0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+                0x00000000000163a0                __mprotect
+                0x00000000000163a0                mprotect
+ .text          0x00000000000163c0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+                0x00000000000163c0                __llseek
+                0x00000000000163c0                __lseek64
+                0x00000000000163c0                lseek
+                0x00000000000163c0                __libc_lseek64
+                0x00000000000163c0                llseek
+                0x00000000000163c0                __lseek
+                0x00000000000163c0                __libc_lseek
+                0x00000000000163c0                lseek64
+ .text          0x00000000000163e0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+                0x00000000000163e0                uname
+                0x00000000000163e0                __uname
+ .text          0x0000000000016400       0x27 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+                0x0000000000016400                waitpid
+                0x0000000000016400                __libc_waitpid
+                0x0000000000016400                __waitpid
+ *fill*         0x0000000000016427        0x9 
+ .text          0x0000000000016430       0x51 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+                0x0000000000016430                _Exit
+                0x0000000000016430                _exit
+ *fill*         0x0000000000016481        0xf 
+ .text          0x0000000000016490        0x8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+                0x0000000000016490                __getpid
+                0x0000000000016490                getpid
+ .text          0x0000000000016498        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ *fill*         0x0000000000016498        0x8 
+ .text          0x00000000000164a0       0x4f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+                0x00000000000164a0                __sigsetjmp
+                0x00000000000164a0                __GI___sigsetjmp
+ *fill*         0x00000000000164ef        0x1 
+ .text          0x00000000000164f0       0x4a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+                0x00000000000164f0                __longjmp
+ *fill*         0x000000000001653a        0x6 
+ .text          0x0000000000016540      0x22b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+                0x0000000000016560                __libc_sigaction
+                0x0000000000016750                sigaction
+                0x0000000000016750                __sigaction
+ *fill*         0x000000000001676b        0x5 
+ .text          0x0000000000016770      0x21a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+                0x0000000000016770                index
+                0x0000000000016770                strchr
+ *fill*         0x000000000001698a        0x6 
+ .text          0x0000000000016990       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+                0x0000000000016990                strcmp
+ *fill*         0x00000000000169b1        0xf 
+ .text          0x00000000000169c0       0xdc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+                0x00000000000169c0                strcpy
+ *fill*         0x0000000000016a9c        0x4 
+ .text          0x0000000000016aa0       0xe9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+                0x0000000000016aa0                strlen
+ *fill*         0x0000000000016b89        0x7 
+ .text          0x0000000000016b90      0x220 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+                0x0000000000016b90                __strnlen
+                0x0000000000016b90                strnlen
+ .text          0x0000000000016db0      0x344 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+                0x0000000000016db0                memchr
+                0x0000000000016db0                __memchr
+ *fill*         0x00000000000170f4        0xc 
+ .text          0x0000000000017100      0x4e1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+                0x0000000000017100                bcmp
+                0x0000000000017100                memcmp
+ *fill*         0x00000000000175e1        0xf 
+ .text          0x00000000000175f0      0x19f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+                0x00000000000175f0                memmove
+ *fill*         0x000000000001778f        0x1 
+ .text          0x0000000000017790       0x10 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+                0x0000000000017790                memset
+ .text          0x00000000000177a0      0x14d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+                0x00000000000177a0                mempcpy
+                0x00000000000177a0                __mempcpy
+ *fill*         0x00000000000178ed        0x3 
+ .text          0x00000000000178f0       0xdc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+                0x00000000000178f0                stpcpy
+                0x00000000000178f0                __stpcpy
+ *fill*         0x00000000000179cc        0x4 
+ .text          0x00000000000179d0      0x160 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+                0x00000000000179d0                memcpy
+ .text          0x0000000000017b30      0x556 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+                0x0000000000017b30                _wordcopy_fwd_aligned
+                0x0000000000017c70                _wordcopy_fwd_dest_aligned
+                0x0000000000017da0                _wordcopy_bwd_aligned
+                0x0000000000017f30                _wordcopy_bwd_dest_aligned
+ *fill*         0x0000000000018086        0xa 
+ .text          0x0000000000018090      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+                0x0000000000018090                __rawmemchr
+                0x0000000000018090                rawmemchr
+ *fill*         0x0000000000018294        0xc 
+ .text          0x00000000000182a0       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+                0x00000000000182a0                setitimer
+                0x00000000000182a0                __setitimer
+ *(.gnu.warning)
+
+.text.unlikely  0x0000000000000000      0x710
+ .text.unlikely
+                0x0000000000000000      0x710 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.fini
+ *(SORT(.fini))
+
+.rodata         0x0000000000000000      0xb70
+ *(.rodata)
+ .rodata        0x0000000000000000      0xb30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+                0x0000000000000b20                __GI__itoa_lower_digits
+                0x0000000000000b20                _itoa_lower_digits
+ .rodata        0x0000000000000b30       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+
+.rodata.str1.1  0x0000000000000000     0x10c0
+ .rodata.str1.1
+                0x0000000000000000     0x10ac /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .rodata.str1.1
+                0x00000000000010ac       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+
+.rodata.str1.8  0x0000000000000000     0x2551
+ .rodata.str1.8
+                0x0000000000000000     0x2551 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.rodata.str1.16
+                0x0000000000000000      0x3b3
+ .rodata.str1.16
+                0x0000000000000000      0x3b3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.rodata.cst16   0x0000000000000000       0x20
+ .rodata.cst16  0x0000000000000000       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.rodata.cst4    0x0000000000000000        0x4
+ .rodata.cst4   0x0000000000000000        0x4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.rodata.str1.32
+                0x0000000000000000      0x121
+ .rodata.str1.32
+                0x0000000000000000      0x121 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+
+.rodata1
+ *(.rodata1)
+
+.eh_frame_hdr
+ *(.eh_frame_hdr)
+
+.eh_frame       0x0000000000000000     0x2950
+ *(.eh_frame)
+ .eh_frame      0x0000000000000000     0x1ee0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .eh_frame      0x0000000000001ee0       0x68 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .eh_frame      0x0000000000001f48       0x38 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .eh_frame      0x0000000000001f80       0x48 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .eh_frame      0x0000000000001fc8       0x38 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .eh_frame      0x0000000000002000       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .eh_frame      0x0000000000002058       0x48 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .eh_frame      0x00000000000020a0       0x48 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .eh_frame      0x00000000000020e8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .eh_frame      0x0000000000002118       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .eh_frame      0x0000000000002148       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .eh_frame      0x0000000000002178       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .eh_frame      0x00000000000021a8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .eh_frame      0x00000000000021d8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .eh_frame      0x0000000000002208       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .eh_frame      0x0000000000002238       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .eh_frame      0x0000000000002268       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .eh_frame      0x0000000000002298       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .eh_frame      0x00000000000022c8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .eh_frame      0x00000000000022f8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .eh_frame      0x0000000000002328       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .eh_frame      0x0000000000002358       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .eh_frame      0x0000000000002388       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .eh_frame      0x00000000000023b8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .eh_frame      0x00000000000023e8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .eh_frame      0x0000000000002418       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .eh_frame      0x0000000000002448       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .eh_frame      0x0000000000002478       0x48 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .eh_frame      0x00000000000024c0       0xe8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .eh_frame      0x00000000000025a8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .eh_frame      0x00000000000025d8       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .eh_frame      0x0000000000002608       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .eh_frame      0x0000000000002638       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .eh_frame      0x0000000000002668       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .eh_frame      0x0000000000002698       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .eh_frame      0x00000000000026c8       0x68 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .eh_frame      0x0000000000002730       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .eh_frame      0x0000000000002790       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .eh_frame      0x00000000000027c0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .eh_frame      0x00000000000027f0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .eh_frame      0x0000000000002820       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .eh_frame      0x0000000000002850       0xa0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .eh_frame      0x00000000000028f0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .eh_frame      0x0000000000002920       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.exception_ranges
+ *(.exception_ranges .exception_ranges*)
+
+.eh_frame
+ *(.eh_frame)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.exception_ranges
+ *(.exception_ranges .exception_ranges*)
+
+.tdata
+ *(.tdata)
+
+.tbss
+ *(.tbss)
+
+.preinit_array
+ *(.preinit_array)
+
+.jcr
+ *(.jcr)
+
+.dynamic
+ *(.dynamic)
+
+.got
+ *(.got)
+ *(.igot)
+
+.got.plt
+ *(.got.plt)
+ *(.igot.plt)
+
+.data           0x0000000000000000      0xf84
+ *(.data)
+ .data          0x0000000000000000      0xf84 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+                0x0000000000000000                _rtld_global
+                0x0000000000000000                _rtld_local
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .data          0x0000000000000f84        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.data.rel.ro    0x0000000000000000      0x26c
+ .data.rel.ro   0x0000000000000000      0x26c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+                0x00000000000000c0                _rtld_global_ro
+                0x00000000000000c0                _rtld_local_ro
+                0x00000000000001f0                __pointer_chk_guard_local
+                0x00000000000001f8                _dl_skip_args
+                0x0000000000000200                _dl_argv_internal
+                0x0000000000000200                _dl_argv
+                0x0000000000000208                _dl_argc
+                0x0000000000000250                __stack_prot
+                0x0000000000000258                _dl_random
+                0x0000000000000260                __libc_stack_end
+                0x0000000000000260                __GI___libc_stack_end
+                0x0000000000000268                __libc_enable_secure_internal
+                0x0000000000000268                __libc_enable_secure
+
+.data1
+ *(.data1)
+
+.bss            0x0000000000000000      0x158
+ *(.dynbss)
+ *(.bss)
+ .bss           0x0000000000000000      0x124 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+                0x00000000000000f8                __libc_multiple_libcs
+                0x0000000000000118                __curbrk
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .bss           0x0000000000000124        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ *fill*         0x0000000000000124        0x4 
+ .bss           0x0000000000000128       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .bss           0x0000000000000148        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .bss           0x0000000000000148        0x4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .bss           0x000000000000014c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ *fill*         0x000000000000014c        0x4 
+ .bss           0x0000000000000150        0x8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+                0x0000000000000150                _environ
+                0x0000000000000150                __environ
+                0x0000000000000150                environ
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .bss           0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+ *(COMMON)
+ COMMON         0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ COMMON         0x0000000000000158        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+
+.lbss
+ *(.dynlbss)
+ *(.lbss)
+ *(LARGE_COMMON)
+
+.lrodata
+ *(.lrodata)
+
+.ldata
+ *(.ldata)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000      0x974
+ *(.comment)
+ .comment       0x0000000000000000      0x5d8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .comment       0x00000000000005d8       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .comment       0x0000000000000604       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .comment       0x0000000000000630       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .comment       0x000000000000065c       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .comment       0x0000000000000688       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .comment       0x00000000000006b4       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .comment       0x00000000000006e0       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .comment       0x000000000000070c       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .comment       0x0000000000000738       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .comment       0x0000000000000764       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .comment       0x0000000000000790       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .comment       0x00000000000007bc       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .comment       0x00000000000007e8       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .comment       0x0000000000000814       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .comment       0x0000000000000840       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .comment       0x000000000000086c       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .comment       0x0000000000000898       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .comment       0x00000000000008c4       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .comment       0x00000000000008f0       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .comment       0x000000000000091c       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .comment       0x0000000000000948       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+
+.note.GNU-stack
+                0x0000000000000000        0x0
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0xf80
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000      0x730 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_aranges
+                0x0000000000000730       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_aranges
+                0x0000000000000760       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .debug_aranges
+                0x0000000000000780       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .debug_aranges
+                0x00000000000007b0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_aranges
+                0x00000000000007e0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_aranges
+                0x0000000000000810       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_aranges
+                0x0000000000000840       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_aranges
+                0x0000000000000870       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_aranges
+                0x00000000000008a0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .debug_aranges
+                0x00000000000008d0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_aranges
+                0x0000000000000900       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_aranges
+                0x0000000000000930       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_aranges
+                0x0000000000000960       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .debug_aranges
+                0x0000000000000990       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .debug_aranges
+                0x00000000000009c0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .debug_aranges
+                0x00000000000009f0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .debug_aranges
+                0x0000000000000a20       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_aranges
+                0x0000000000000a50       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .debug_aranges
+                0x0000000000000a80       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .debug_aranges
+                0x0000000000000ab0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .debug_aranges
+                0x0000000000000ae0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .debug_aranges
+                0x0000000000000b10       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .debug_aranges
+                0x0000000000000b40       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .debug_aranges
+                0x0000000000000b70       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_aranges
+                0x0000000000000ba0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_aranges
+                0x0000000000000bd0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .debug_aranges
+                0x0000000000000c00       0x20 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .debug_aranges
+                0x0000000000000c20       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .debug_aranges
+                0x0000000000000c50       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .debug_aranges
+                0x0000000000000c80       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_aranges
+                0x0000000000000cb0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .debug_aranges
+                0x0000000000000ce0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .debug_aranges
+                0x0000000000000d10       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .debug_aranges
+                0x0000000000000d40       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .debug_aranges
+                0x0000000000000d70       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .debug_aranges
+                0x0000000000000da0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .debug_aranges
+                0x0000000000000dd0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_aranges
+                0x0000000000000e00       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_aranges
+                0x0000000000000e30       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .debug_aranges
+                0x0000000000000e60       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .debug_aranges
+                0x0000000000000e90       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .debug_aranges
+                0x0000000000000ec0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .debug_aranges
+                0x0000000000000ef0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .debug_aranges
+                0x0000000000000f20       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .debug_aranges
+                0x0000000000000f50       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000    0x5022b
+ *(.debug_info)
+ .debug_info    0x0000000000000000    0x49581 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_info    0x0000000000049581      0x492 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_info    0x0000000000049a13       0xc1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .debug_info    0x0000000000049ad4      0x2a2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .debug_info    0x0000000000049d76      0x3a4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_info    0x000000000004a11a      0x2bc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_info    0x000000000004a3d6      0x39f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_info    0x000000000004a775      0x4eb /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_info    0x000000000004ac60      0xa0d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_info    0x000000000004b66d     0x1466 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .debug_info    0x000000000004cad3      0x306 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_info    0x000000000004cdd9      0x2fa /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_info    0x000000000004d0d3      0x306 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_info    0x000000000004d3d9       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .debug_info    0x000000000004d465       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .debug_info    0x000000000004d4f1       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .debug_info    0x000000000004d57d       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .debug_info    0x000000000004d609      0x5a9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_info    0x000000000004dbb2       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .debug_info    0x000000000004dc3e       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .debug_info    0x000000000004dccc       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .debug_info    0x000000000004dd5a       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .debug_info    0x000000000004dde8       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .debug_info    0x000000000004de76       0x8f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .debug_info    0x000000000004df05      0x297 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_info    0x000000000004e19c      0x18e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_info    0x000000000004e32a      0x121 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .debug_info    0x000000000004e44b       0xaf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .debug_info    0x000000000004e4fa       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .debug_info    0x000000000004e582       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .debug_info    0x000000000004e60d      0x66c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_info    0x000000000004ec79       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .debug_info    0x000000000004ed0e       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .debug_info    0x000000000004eda3       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .debug_info    0x000000000004ee38       0x9a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .debug_info    0x000000000004eed2       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .debug_info    0x000000000004ef5a       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .debug_info    0x000000000004efe2      0x7f6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_info    0x000000000004f7d8      0x2b8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_info    0x000000000004fa90       0x8d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .debug_info    0x000000000004fb1d       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .debug_info    0x000000000004fba5       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .debug_info    0x000000000004fc3a       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .debug_info    0x000000000004fccf      0x443 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .debug_info    0x0000000000050112       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .debug_info    0x000000000005019d       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.debug_abbrev   0x0000000000000000     0x9e1b
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000     0x8084 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_abbrev  0x0000000000008084      0x1e0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_abbrev  0x0000000000008264       0x5f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .debug_abbrev  0x00000000000082c3      0x114 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .debug_abbrev  0x00000000000083d7      0x16d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_abbrev  0x0000000000008544      0x126 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_abbrev  0x000000000000866a      0x1a2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_abbrev  0x000000000000880c      0x182 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_abbrev  0x000000000000898e      0x2a3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_abbrev  0x0000000000008c31      0x248 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .debug_abbrev  0x0000000000008e79      0x10a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_abbrev  0x0000000000008f83      0x119 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_abbrev  0x000000000000909c      0x10a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_abbrev  0x00000000000091a6       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .debug_abbrev  0x00000000000091ba       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .debug_abbrev  0x00000000000091ce       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .debug_abbrev  0x00000000000091e2       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .debug_abbrev  0x00000000000091f6      0x1f6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_abbrev  0x00000000000093ec       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .debug_abbrev  0x0000000000009400       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .debug_abbrev  0x0000000000009414       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .debug_abbrev  0x0000000000009428       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .debug_abbrev  0x000000000000943c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .debug_abbrev  0x0000000000009450       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .debug_abbrev  0x0000000000009464      0x16a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_abbrev  0x00000000000095ce       0xd2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_abbrev  0x00000000000096a0       0xa0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .debug_abbrev  0x0000000000009740       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .debug_abbrev  0x0000000000009780       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .debug_abbrev  0x0000000000009794       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .debug_abbrev  0x00000000000097a8      0x1dd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_abbrev  0x0000000000009985       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .debug_abbrev  0x0000000000009999       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .debug_abbrev  0x00000000000099ad       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .debug_abbrev  0x00000000000099c1       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .debug_abbrev  0x00000000000099d5       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .debug_abbrev  0x00000000000099e9       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .debug_abbrev  0x00000000000099fd      0x176 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_abbrev  0x0000000000009b73      0x117 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_abbrev  0x0000000000009c8a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .debug_abbrev  0x0000000000009c9e       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .debug_abbrev  0x0000000000009cb2       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .debug_abbrev  0x0000000000009cc6       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .debug_abbrev  0x0000000000009cda      0x119 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .debug_abbrev  0x0000000000009df3       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .debug_abbrev  0x0000000000009e07       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.debug_line     0x0000000000000000     0xc70f
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x0000000000000000     0x9e3b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_line    0x0000000000009e3b      0x15e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_line    0x0000000000009f99       0x46 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .debug_line    0x0000000000009fdf      0x180 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .debug_line    0x000000000000a15f      0x1de /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_line    0x000000000000a33d      0x17a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_line    0x000000000000a4b7      0x191 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_line    0x000000000000a648      0x1f5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_line    0x000000000000a83d      0x286 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_line    0x000000000000aac3      0x1aa /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .debug_line    0x000000000000ac6d       0xf7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_line    0x000000000000ad64       0xf8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_line    0x000000000000ae5c       0xf8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_line    0x000000000000af54       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-open.os)
+ .debug_line    0x000000000000afad       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-read.os)
+ .debug_line    0x000000000000b006       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-write.os)
+ .debug_line    0x000000000000b05f       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-access.os)
+ .debug_line    0x000000000000b0b8      0x1cf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_line    0x000000000000b287       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-close.os)
+ .debug_line    0x000000000000b2e0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mmap.os)
+ .debug_line    0x000000000000b33a       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-munmap.os)
+ .debug_line    0x000000000000b393       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mprotect.os)
+ .debug_line    0x000000000000b3ec       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-llseek.os)
+ .debug_line    0x000000000000b445       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-uname.os)
+ .debug_line    0x000000000000b49e      0x163 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_line    0x000000000000b601       0xa5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_line    0x000000000000b6a6       0xa4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .debug_line    0x000000000000b74a       0x2a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .debug_line    0x000000000000b774       0x5f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setjmp.os)
+ .debug_line    0x000000000000b7d3       0x61 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-__longjmp.os)
+ .debug_line    0x000000000000b834      0x266 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_line    0x000000000000ba9a       0xde /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strchr.os)
+ .debug_line    0x000000000000bb78       0x68 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcmp.os)
+ .debug_line    0x000000000000bbe0       0xa2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strcpy.os)
+ .debug_line    0x000000000000bc82       0xa8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strlen.os)
+ .debug_line    0x000000000000bd2a       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-strnlen.os)
+ .debug_line    0x000000000000bdc2      0x117 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memchr.os)
+ .debug_line    0x000000000000bed9      0x1c5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_line    0x000000000000c09e      0x120 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_line    0x000000000000c1be       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memset.os)
+ .debug_line    0x000000000000c216       0xb1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-mempcpy.os)
+ .debug_line    0x000000000000c2c7       0xa2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-stpcpy.os)
+ .debug_line    0x000000000000c369       0xc0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcpy.os)
+ .debug_line    0x000000000000c429      0x1c5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+ .debug_line    0x000000000000c5ee       0xc8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rawmemchr.os)
+ .debug_line    0x000000000000c6b6       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-setitimer.os)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str      0x0000000000000000    0x2ce5b
+ *(.debug_str)
+ .debug_str     0x0000000000000000    0x28255 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_str     0x0000000000028255      0x36b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_str     0x00000000000285c0      0x1c8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-errno.os)
+ .debug_str     0x0000000000028788      0x2fe /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-closedir.os)
+ .debug_str     0x0000000000028a86      0x382 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_str     0x0000000000028e08      0x2fb /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_str     0x0000000000029103      0x2f3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_str     0x00000000000293f6      0x442 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_str     0x0000000000029838      0x6e9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_str     0x0000000000029f21      0xe43 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-prof-freq.os)
+ .debug_str     0x000000000002ad64      0x331 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_str     0x000000000002b095      0x32f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_str     0x000000000002b3c4      0x334 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_str     0x000000000002b6f8      0x485 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_str     0x000000000002bb7d      0x30b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_str     0x000000000002be88      0x203 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_str     0x000000000002c08b      0x208 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getpid.os)
+ .debug_str     0x000000000002c293      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-environ.os)
+ .debug_str     0x000000000002c3ee      0x4b8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_str     0x000000000002c8a6      0x1e6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_str     0x000000000002ca8c      0x210 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_str     0x000000000002cc9c      0x1bf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+
+.debug_loc      0x0000000000000000    0x2f385
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000    0x2a1d7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_loc     0x000000000002a1d7       0xe1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-check_fds.os)
+ .debug_loc     0x000000000002a2b8      0x1e2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_loc     0x000000000002a49a       0x4c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-rewinddir.os)
+ .debug_loc     0x000000000002a4e6      0x289 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_loc     0x000000000002a76f       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fdopendir.os)
+ .debug_loc     0x000000000002a804      0x23a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-profil.os)
+ .debug_loc     0x000000000002aa3e      0x20a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_loc     0x000000000002ac48      0x1ff /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_loc     0x000000000002ae47      0x20a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_loc     0x000000000002b051      0x692 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_loc     0x000000000002b6e3       0xea /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_loc     0x000000000002b7cd      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_loc     0x000000000002b928      0x297 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_loc     0x000000000002bbbf     0x2126 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_loc     0x000000000002dce5      0x67c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+ .debug_loc     0x000000000002e361     0x1024 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-wordcopy.os)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x0000000000000000     0x7290
+ *(.debug_ranges)
+ .debug_ranges  0x0000000000000000     0x6cd0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_ranges  0x0000000000006cd0       0xa0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-readdir.os)
+ .debug_ranges  0x0000000000006d70       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-getdents.os)
+ .debug_ranges  0x0000000000006e20       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-xstat.os)
+ .debug_ranges  0x0000000000006e50       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fxstat.os)
+ .debug_ranges  0x0000000000006e80       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-lxstat.os)
+ .debug_ranges  0x0000000000006eb0       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-fcntl.os)
+ .debug_ranges  0x0000000000006f60       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-waitpid.os)
+ .debug_ranges  0x0000000000006f90       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-_exit.os)
+ .debug_ranges  0x0000000000007020       0x70 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-sigaction.os)
+ .debug_ranges  0x0000000000007090       0xf0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memcmp.os)
+ .debug_ranges  0x0000000000007180      0x110 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/rtld-libc.a(rtld-memmove.os)
+
+.debug_macro
+ *(.debug_macro)
+
+.gnu.attributes
+ *(.gnu.attributes)
+OUTPUT(/home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/librtld.os elf64-x86-64)

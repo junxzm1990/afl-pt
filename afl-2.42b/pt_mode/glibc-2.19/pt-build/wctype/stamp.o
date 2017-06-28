@@ -1,0 +1,1 @@
+wctype/wcfuncs.o wctype/wctype.o wctype/iswctype.o wctype/wctrans.o wctype/towctrans.o wctype/wcfuncs_l.o wctype/wctype_l.o wctype/iswctype_l.o wctype/wctrans_l.o wctype/towctrans_l.o

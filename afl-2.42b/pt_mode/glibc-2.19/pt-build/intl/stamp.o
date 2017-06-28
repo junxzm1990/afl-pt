@@ -1,0 +1,1 @@
+intl/bindtextdom.o intl/dcgettext.o intl/dgettext.o intl/gettext.o intl/dcigettext.o intl/dcngettext.o intl/dngettext.o intl/ngettext.o intl/finddomain.o intl/loadmsgcat.o intl/localealias.o intl/textdomain.o intl/l10nflist.o intl/explodename.o intl/plural.o intl/plural-exp.o intl/hash-string.o

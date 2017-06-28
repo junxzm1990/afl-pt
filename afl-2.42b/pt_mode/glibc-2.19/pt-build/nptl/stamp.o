@@ -1,0 +1,1 @@
+nptl/alloca_cutoff.o nptl/libc-lowlevellock.o nptl/libc-cancellation.o nptl/libc-cleanup.o nptl/register-atfork.o nptl/unregister-atfork.o nptl/libc_pthread_init.o nptl/libc_multiple_threads.o

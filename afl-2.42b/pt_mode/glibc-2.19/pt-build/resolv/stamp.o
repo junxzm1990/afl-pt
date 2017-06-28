@@ -1,0 +1,1 @@
+resolv/herror.o resolv/inet_addr.o resolv/inet_ntop.o resolv/inet_pton.o resolv/nsap_addr.o resolv/res_init.o resolv/res_hconf.o resolv/res_libc.o resolv/res-state.o resolv/gai_sigqueue.o
