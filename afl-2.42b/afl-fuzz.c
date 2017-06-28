@@ -117,6 +117,7 @@ EXP_ST u8  skip_deterministic,        /* Skip deterministic stages?       */
            shuffle_queue,             /* Shuffle input queue?             */
            bitmap_changed = 1,        /* Time to update bitmap?           */
            qemu_mode,                 /* Running in QEMU mode?            */
+           pt_mode,                   /* Running in PT mode?              */
            skip_requested,            /* Skip request, via SIGUSR1        */
            run_over10m,               /* Run time over 10 minutes?        */
            persistent_mode;           /* Running in persistent mode?      */
@@ -6875,7 +6876,7 @@ EXP_ST void check_binary(u8* fname) {
 
 #endif /* ^!__APPLE__ */
 
-  if (!qemu_mode && !dumb_mode &&
+  if (!pt_mode && !qemu_mode && !dumb_mode &&
       !memmem(f_data, f_len, SHM_ENV_VAR, strlen(SHM_ENV_VAR) + 1)) {
 
     SAYF("\n" cLRD "[-] " cRST
@@ -6884,7 +6885,7 @@ EXP_ST void check_binary(u8* fname) {
          "    mutating the input data. For more information, and for tips on how to\n"
          "    instrument binaries, please see %s/README.\n\n"
 
-         "    When source code is not available, you may be able to leverage QEMU\n"
+         "    When source code is not available, you may be able to leverage PT\n"
          "    mode support. Consult the README for tips on how to enable this.\n"
 
          "    (It is also possible to use afl-fuzz as a traditional, \"dumb\" fuzzer.\n"
@@ -7567,6 +7568,72 @@ EXP_ST void setup_signal_handlers(void) {
 
 }
 
+/* Rewrite argv for AFLPT-PORXY. */
+static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
+
+  char** new_argv = ck_alloc(sizeof(char*) * (argc + 3));
+  u8 *tmp, *cp, *rsl, *own_copy;
+
+  memcpy(new_argv + 2, argv + 1, sizeof(char*) * argc);
+
+  new_argv[1] = target_path;
+
+  /* Now we need to actually find the QEMU binary to put in argv[0]. */
+
+  tmp = getenv("AFL_PATH");
+
+  if (tmp) {
+
+    cp = alloc_printf("%s/afl-pt-proxy", tmp);
+
+    if (access(cp, X_OK))
+      FATAL("Unable to find '%s'", tmp);
+
+    target_path = new_argv[0] = cp;
+    return new_argv;
+
+  }
+
+  own_copy = ck_strdup(own_loc);
+  rsl = strrchr(own_copy, '/');
+
+  if (rsl) {
+
+    *rsl = 0;
+
+    cp = alloc_printf("%s/afl-pt-proxy", own_copy);
+    ck_free(own_copy);
+
+    if (!access(cp, X_OK)) {
+
+      target_path = new_argv[0] = cp;
+      return new_argv;
+
+    }
+
+  } else ck_free(own_copy);
+
+  if (!access(BIN_PATH "/afl-pt-proxy", X_OK)) {
+
+    target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-pt-proxy");
+    return new_argv;
+
+  }
+
+
+  SAYF("\n" cLRD "[-] " cRST
+       "Oops, unable to find the 'afl-pt-proxy' binary. The binary must be built\n"
+       "    separately by following the instructions in pt_mode/README.pt. If you\n"
+       "    already have the binary installed, you may need to specify AFL_PATH in the\n"
+       "    environment.\n\n"
+
+       "    Of course, even without QEMU, afl-fuzz can still work with binaries that are\n"
+       "    instrumented at compile time with afl-gcc. It is also possible to use it as a\n"
+       "    traditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
+
+  FATAL("Failed to locate 'afl-pt-proxy'.");
+
+}
 
 /* Rewrite argv for QEMU. */
 
@@ -7618,9 +7685,14 @@ static char** get_qemu_argv(u8* own_loc, char** argv, int argc) {
   if (!access(BIN_PATH "/afl-qemu-trace", X_OK)) {
 
     target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-qemu-trace");
+    int i;
+    for(i=0; i< argc+4; ++i)
+      printf("%s\n", argv[i]);
+    exit(-1);
     return new_argv;
 
   }
+
 
   SAYF("\n" cLRD "[-] " cRST
        "Oops, unable to find the 'afl-qemu-trace' binary. The binary must be built\n"
@@ -7689,7 +7761,7 @@ int main(int argc, char** argv) {
   gettimeofday(&tv, &tz);
   srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());
 
-  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0)
+  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q:P")) > 0)
 
     switch (opt) {
 
@@ -7699,7 +7771,6 @@ int main(int argc, char** argv) {
         in_dir = optarg;
 
         if (!strcmp(in_dir, "-")) in_place_resume = 1;
-
         break;
 
       case 'o': /* output dir */
@@ -7731,7 +7802,7 @@ int main(int argc, char** argv) {
 
         break;
 
-      case 'S': 
+      case 'S':
 
         if (sync_id) FATAL("Multiple -S or -M options not supported");
         sync_id = ck_strdup(optarg);
@@ -7848,6 +7919,15 @@ int main(int argc, char** argv) {
         use_banner = optarg;
         break;
 
+      case 'P': /* PT mode */
+
+        if (pt_mode) FATAL("Multiple -P options not supported");
+        pt_mode = 1;
+
+        if (!mem_limit_given) mem_limit = MEM_LIMIT_PT;
+
+        break;
+
       case 'Q': /* QEMU mode */
 
         if (qemu_mode) FATAL("Multiple -Q options not supported");
@@ -7877,6 +7957,7 @@ int main(int argc, char** argv) {
 
     if (crash_mode) FATAL("-C and -n are mutually exclusive");
     if (qemu_mode)  FATAL("-Q and -n are mutually exclusive");
+    if (pt_mode)    FATAL("-P and -n are mutually exclusive");
 
   }
 
@@ -7939,6 +8020,8 @@ int main(int argc, char** argv) {
 
   if (qemu_mode)
     use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
+  else if (pt_mode)
+    use_argv = get_pt_proxy_argv(argv[0], argv + optind, argc - optind);
   else
     use_argv = argv + optind;
 
