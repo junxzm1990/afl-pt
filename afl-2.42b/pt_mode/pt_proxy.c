@@ -9,6 +9,7 @@
 #include "../config.h"
 #include "../types.h"
 #include "../debug.h"
+#include "../alloc-inl.h"
 
 void netlink_stuff();
 
@@ -84,6 +85,13 @@ static void __afl_proxy_loop(void) {
 
     /* Wait for target to report child status. Abort if read fails. */
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
+
+    /* we can parse the pt packet and present it to the trace_bits here*/
+    __afl_area_ptr[2424] = 1;
+    __afl_area_ptr[2433] = 1;
+    __afl_area_ptr[2429] = 1;
+
+
     /* Relay wait status to parent, then loop back. */
     if (write(FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
 
@@ -91,12 +99,23 @@ static void __afl_proxy_loop(void) {
 
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 
   static u8 tmp[4];
+  static u8 *target_path;
   static s32 proxy_pid;
   int proxy_st_pipe[2], proxy_ctl_pipe[2];
+
+  __afl_map_shm();
+
+  char **new_argv = ck_alloc(sizeof(char *) * argc);
+  memcpy(new_argv, argv + 1, sizeof(char *) * (argc - 1));
+  new_argv[argc-1] = 0;
+  target_path = new_argv[0];
+
+  printf("proxy starting %s", new_argv[0]);
+
 
   /*setup fds, fork and exec target program*/
   if (pipe(proxy_st_pipe) || pipe(proxy_ctl_pipe)) PFATAL("pipe() failed");
@@ -112,7 +131,7 @@ int main()
     close(proxy_st_pipe[0]);
     close(proxy_st_pipe[1]);
 
-    /* execv(); */
+    execv(target_path, new_argv);
     exit(0);
   }
 

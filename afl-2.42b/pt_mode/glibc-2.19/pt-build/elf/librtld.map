@@ -237,507 +237,507 @@ END GROUP
  *(.plt)
  *(.iplt)
 
-.text           0x0000000000000000    0x1cb3d
+.text           0x0000000000000000    0x1cadd
  *(.text .stub)
- .text          0x0000000000000000    0x15d01 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .text          0x0000000000000000    0x15ca1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
                 0x0000000000000000                _start
                 0x0000000000000008                _dl_start_user
                 0x0000000000000050                _dl_initial_error_catch_tsd
-                0x0000000000005f70                _dl_dst_count
-                0x0000000000006020                _dl_dst_substitute
-                0x0000000000006960                _dl_init_paths
-                0x0000000000006d80                _dl_map_object
-                0x0000000000007740                _dl_rtld_di_serinfo
-                0x0000000000008430                _dl_lookup_symbol_x
-                0x00000000000094b0                _dl_setup_hash
-                0x0000000000009560                _dl_add_to_namespace_list
-                0x00000000000095f0                _dl_new_object
-                0x0000000000009940                _dl_try_allocate_static_tls
-                0x0000000000009a20                _dl_allocate_static_tls
-                0x0000000000009a50                _dl_nothread_init_static_tls
-                0x0000000000009ae0                _dl_protect_relro
-                0x0000000000009b40                _dl_reloc_bad_type
-                0x0000000000009c20                _dl_relocate_object
-                0x000000000000b1c0                _dl_map_object_deps
-                0x000000000000c430                _dl_important_hwcaps
-                0x000000000000cb70                _dl_fixup
-                0x000000000000cd80                _dl_profile_fixup
-                0x000000000000d360                _dl_call_pltexit
-                0x000000000000d470                _dl_signal_error
-                0x000000000000d620                _dl_signal_cerror
-                0x000000000000d6a0                _dl_catch_error
-                0x000000000000d760                _dl_receive_error
-                0x000000000000d8d0                _dl_init_internal
-                0x000000000000d8d0                _dl_init
-                0x000000000000d9f0                _dl_sort_fini
-                0x000000000000dc80                _dl_fini
-                0x000000000000e0a0                _dl_debug_state
-                0x000000000000e0a0                __GI__dl_debug_state
-                0x000000000000e0b0                _dl_debug_initialize
-                0x000000000000e6e0                _dl_sysdep_read_whole_file
-                0x000000000000e770                _dl_debug_printf
-                0x000000000000e7d0                _dl_debug_printf_c
-                0x000000000000e830                _dl_dprintf
-                0x000000000000e880                _dl_name_match_p
-                0x000000000000e8f0                _dl_higher_prime_number
-                0x000000000000ed20                _dl_check_map_versions
-                0x000000000000f1a0                _dl_check_all_versions
-                0x000000000000f210                _dl_start_profile
-                0x000000000000fa10                _dl_mcount_internal
-                0x000000000000fa10                _dl_mcount
-                0x000000000000fc40                _dl_resolve_conflicts
-                0x000000000000fe60                _dl_next_tls_modid
-                0x000000000000ff40                _dl_determine_tlsoffset
-                0x0000000000010100                __GI__dl_tls_setup
-                0x0000000000010100                _dl_tls_setup
-                0x00000000000101b0                _dl_get_tls_static_info
-                0x00000000000101d0                _dl_allocate_tls_storage
-                0x0000000000010310                __GI__dl_allocate_tls_init
-                0x0000000000010310                _dl_allocate_tls_init
-                0x0000000000010530                __GI__dl_allocate_tls
-                0x0000000000010530                _dl_allocate_tls
-                0x0000000000010570                _dl_deallocate_tls
-                0x0000000000010570                __GI__dl_deallocate_tls
-                0x0000000000010600                _dl_update_slotinfo
-                0x0000000000010950                __tls_get_addr
-                0x0000000000010990                _dl_tls_get_addr_soft
-                0x0000000000010a00                _dl_add_to_slotinfo
-                0x0000000000010ae0                _dl_get_origin
-                0x0000000000010c50                _dl_scope_free
-                0x0000000000010d10                _dl_make_stack_executable
-                0x0000000000010d10                __GI__dl_make_stack_executable
-                0x0000000000010d90                _dl_check_caller
-                0x00000000000111c0                _dl_open
-                0x0000000000011530                _dl_show_scope
-                0x0000000000011680                _dl_addr_inside_object
-                0x00000000000116e0                __GI__dl_find_dso_for_object
-                0x00000000000116e0                _dl_find_dso_for_object
-                0x0000000000012200                _dl_close_worker
-                0x00000000000130a0                _dl_close
-                0x0000000000013120                _dl_runtime_resolve
-                0x0000000000013190                _dl_runtime_profile
-                0x00000000000136f0                _dl_x86_64_save_sse
-                0x00000000000137e0                _dl_x86_64_restore_sse
-                0x0000000000013890                _dl_cache_libcmp
-                0x0000000000013970                _dl_load_cache_lookup
-                0x0000000000013ec0                _dl_unload_cache
-                0x0000000000013f00                _dl_sysdep_start
-                0x00000000000141c0                _dl_sysdep_start_cleanup
-                0x00000000000141d0                _dl_show_auxv
-                0x0000000000014380                _dl_discover_osversion
-                0x0000000000014560                _dl_next_ld_env_entry
-                0x00000000000145a0                unsetenv
-                0x0000000000014620                __libc_memalign
-                0x0000000000014730                malloc
-                0x0000000000014740                calloc
-                0x0000000000014780                free
-                0x00000000000147b0                __sigjmp_save
-                0x00000000000147c0                __strerror_r
-                0x00000000000148a0                __GI___assert_fail
-                0x00000000000148a0                __assert_fail
-                0x00000000000148f0                realloc
-                0x0000000000014980                __GI___assert_perror_fail
-                0x0000000000014980                __assert_perror_fail
-                0x00000000000149f0                __strtoul_internal
-                0x0000000000014bc0                _itoa
-                0x0000000000014c10                __strsep
-                0x0000000000014c10                strsep
-                0x0000000000014c10                __strsep_g
-                0x0000000000014ca0                __GI___chk_fail
-                0x0000000000014ca0                __chk_fail
-                0x0000000000014cb0                __brk
-                0x0000000000014cb0                brk
-                0x0000000000014d10                sbrk
-                0x0000000000014d10                __sbrk
-                0x0000000000014da0                __getcwd
-                0x0000000000014da0                getcwd
-                0x00000000000153b0                openat64
-                0x0000000000015400                __alloc_dir
-                0x0000000000015500                __opendirat
-                0x0000000000015570                __opendir
-                0x0000000000015570                opendir
-                0x0000000000015580                __fxstatat
-                0x0000000000015580                __fxstatat64
-                0x0000000000015580                __GI___fxstatat64
-                0x00000000000155f0                _dl_make_tlsdesc_dynamic
-                0x00000000000158c0                _dl_tlsdesc_resolve_rela_fixup
-                0x0000000000015aa0                _dl_tlsdesc_resolve_hold_fixup
-                0x0000000000015ae0                _dl_unmap
-                0x0000000000015b60                _dl_tlsdesc_return
-                0x0000000000015b70                _dl_tlsdesc_undefweak
-                0x0000000000015b80                _dl_tlsdesc_dynamic
-                0x0000000000015c20                _dl_tlsdesc_resolve_rela
-                0x0000000000015c90                _dl_tlsdesc_resolve_hold
- *fill*         0x0000000000015d01        0xf 
- .text          0x0000000000015d10       0xe2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
-                0x0000000000015dc0                __libc_check_standard_fds
- .text          0x0000000000015df2        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
- *fill*         0x0000000000015df2        0xe 
- .text          0x0000000000015e00       0x57 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
-                0x0000000000015e00                __sigsetjmp
-                0x0000000000015e00                __GI___sigsetjmp
- *fill*         0x0000000000015e57        0x9 
- .text          0x0000000000015e60       0x50 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
-                0x0000000000015e60                __longjmp
- .text          0x0000000000015eb0      0x24a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
-                0x0000000000015eb0                index
-                0x0000000000015eb0                strchr
-                0x0000000000015ee0                __strchr_sse2
-                0x0000000000015ee0                __GI_strchr
- *fill*         0x00000000000160fa        0x6 
- .text          0x0000000000016100     0x1479 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
-                0x0000000000016100                strcmp
-                0x0000000000016140                __strcmp_sse2
-                0x0000000000016140                __GI_strcmp
- *fill*         0x0000000000017579        0x7 
- .text          0x0000000000017580      0x11c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
-                0x0000000000017580                strcpy
-                0x00000000000175c0                __GI_strcpy
-                0x00000000000175c0                __strcpy_sse2
- *fill*         0x000000000001769c        0x4 
- .text          0x00000000000176a0      0x1b4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
-                0x00000000000176a0                strlen
-                0x00000000000176a0                __GI_strlen
- *fill*         0x0000000000017854        0xc 
- .text          0x0000000000017860      0x220 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
-                0x0000000000017860                __strnlen
-                0x0000000000017860                strnlen
-                0x0000000000017860                __GI___strnlen
-                0x0000000000017860                __GI_strnlen
- .text          0x0000000000017a80      0x344 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
-                0x0000000000017a80                __GI_memchr
-                0x0000000000017a80                memchr
-                0x0000000000017a80                __memchr
- *fill*         0x0000000000017dc4        0xc 
- .text          0x0000000000017dd0      0x440 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
-                0x0000000000017dd0                bcmp
-                0x0000000000017dd0                memcmp
-                0x0000000000017e10                __GI_memcmp
-                0x0000000000017e10                __memcmp_sse2
- .text          0x0000000000018210      0x1e7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
-                0x0000000000018210                __GI_memmove
-                0x0000000000018210                __memmove_sse2
-                0x00000000000183b0                memmove
-                0x00000000000183b0                memcpy@GLIBC_2.2.5
-                0x00000000000183b0                __libc_memmove
- *fill*         0x00000000000183f7        0x9 
- .text          0x0000000000018400      0x137 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
-                0x0000000000018400                __bzero
-                0x0000000000018400                bzero
-                0x0000000000018410                __memset_tail
-                0x0000000000018430                __memset_chk
-                0x0000000000018440                __GI_memset
-                0x0000000000018440                memset
- *fill*         0x0000000000018537        0x9 
- .text          0x0000000000018540      0x4a2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
-                0x0000000000018540                mempcpy
-                0x0000000000018540                __mempcpy
-                0x0000000000018580                __mempcpy_chk_sse2
-                0x0000000000018590                __GI_mempcpy
-                0x0000000000018590                __mempcpy_sse2
-                0x0000000000018590                __GI___mempcpy
- *fill*         0x00000000000189e2        0xe 
- .text          0x00000000000189f0      0x11c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
-                0x00000000000189f0                stpcpy
-                0x00000000000189f0                __stpcpy
-                0x0000000000018a30                __GI_stpcpy
-                0x0000000000018a30                __GI___stpcpy
-                0x0000000000018a30                __stpcpy_sse2
- *fill*         0x0000000000018b0c        0x4 
- .text          0x0000000000018b10      0x4b5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
-                0x0000000000018b10                __new_memcpy
-                0x0000000000018b10                memcpy@@GLIBC_2.14
-                0x0000000000018b50                __memcpy_chk_sse2
-                0x0000000000018b60                __memcpy_sse2
-                0x0000000000018b60                __GI_memcpy
- *fill*         0x0000000000018fc5        0xb 
- .text          0x0000000000018fd0      0x556 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
-                0x0000000000018fd0                _wordcopy_fwd_aligned
-                0x0000000000019110                _wordcopy_fwd_dest_aligned
-                0x0000000000019240                _wordcopy_bwd_aligned
-                0x00000000000193d0                _wordcopy_bwd_dest_aligned
- *fill*         0x0000000000019526        0xa 
- .text          0x0000000000019530      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
-                0x0000000000019530                __GI___rawmemchr
-                0x0000000000019530                __rawmemchr
-                0x0000000000019530                rawmemchr
- .text          0x0000000000019734        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
- *fill*         0x0000000000019734        0xc 
- .text          0x0000000000019740      0x2a3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
-                0x0000000000019740                __strcmp_sse2_unaligned
- .text          0x00000000000199e3        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
- .text          0x00000000000199e3        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
- *fill*         0x00000000000199e3        0xd 
- .text          0x00000000000199f0      0x217 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
-                0x00000000000199f0                __memcpy_sse2_unaligned
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
- .text          0x0000000000019c07        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
- *fill*         0x0000000000019c07        0x9 
- .text          0x0000000000019c10      0x630 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
-                0x0000000000019c10                __strcpy_sse2_unaligned
- .text          0x000000000001a240      0x6b0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
-                0x000000000001a240                __stpcpy_sse2_unaligned
- .text          0x000000000001a8f0        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
- .text          0x000000000001a8f0        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
- .text          0x000000000001a8f0      0x5e7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
-                0x000000000001ae80                __cache_sysconf
- *fill*         0x000000000001aed7        0x9 
- .text          0x000000000001aee0       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
-                0x000000000001aee0                __closedir
-                0x000000000001aee0                closedir
- *fill*         0x000000000001af0c        0x4 
- .text          0x000000000001af10      0x10d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
-                0x000000000001af10                readdir
-                0x000000000001af10                __readdir64
-                0x000000000001af10                __readdir
-                0x000000000001af10                readdir64
- *fill*         0x000000000001b01d        0x3 
- .text          0x000000000001b020       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
-                0x000000000001b020                rewinddir
-                0x000000000001b020                __GI_rewinddir
- *fill*         0x000000000001b0b7        0x9 
- .text          0x000000000001b0c0       0x84 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
-                0x000000000001b0c0                __getdents
-                0x000000000001b0c0                __getdents64
- *fill*         0x000000000001b144        0xc 
- .text          0x000000000001b150       0x87 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
-                0x000000000001b150                fdopendir
-                0x000000000001b150                __fdopendir
- *fill*         0x000000000001b1d7        0x9 
- .text          0x000000000001b1e0       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
-                0x000000000001b1e0                uname
-                0x000000000001b1e0                __GI_uname
-                0x000000000001b1e0                __uname
-                0x000000000001b1e0                __GI___uname
- *fill*         0x000000000001b201        0xf 
- .text          0x000000000001b210       0x96 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
-                0x000000000001b210                waitpid
-                0x000000000001b210                __libc_waitpid
-                0x000000000001b210                __waitpid
-                0x000000000001b210                __GI___waitpid
- *fill*         0x000000000001b2a6        0xa 
- .text          0x000000000001b2b0       0x55 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
-                0x000000000001b2b0                _Exit
-                0x000000000001b2b0                __GI__exit
-                0x000000000001b2b0                _exit
- *fill*         0x000000000001b305        0xb 
- .text          0x000000000001b310       0x3b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
-                0x000000000001b310                __getpid
-                0x000000000001b310                getpid
-                0x000000000001b310                __GI_getpid
-                0x000000000001b310                __GI___getpid
- .text          0x000000000001b34b        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
- *fill*         0x000000000001b34b        0x5 
- .text          0x000000000001b350       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
-                0x000000000001b350                _xstat
-                0x000000000001b350                __xstat64
-                0x000000000001b350                __GI___xstat64
-                0x000000000001b350                __GI___xstat
-                0x000000000001b350                __xstat
- *fill*         0x000000000001b395        0xb 
- .text          0x000000000001b3a0       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
-                0x000000000001b3a0                __GI___fxstat
-                0x000000000001b3a0                __GI___fxstat64
-                0x000000000001b3a0                __fxstat64
-                0x000000000001b3a0                _fxstat
-                0x000000000001b3a0                __fxstat
- *fill*         0x000000000001b3e5        0xb 
- .text          0x000000000001b3f0       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
-                0x000000000001b3f0                __GI___lxstat
-                0x000000000001b3f0                _lxstat
-                0x000000000001b3f0                __lxstat
-                0x000000000001b3f0                __lxstat64
-                0x000000000001b3f0                __GI___lxstat64
- *fill*         0x000000000001b435        0xb 
- .text          0x000000000001b440       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
-                0x000000000001b440                __GI___open64
-                0x000000000001b440                __open
-                0x000000000001b440                __GI_open
-                0x000000000001b440                __GI___open
-                0x000000000001b440                __GI_open64
-                0x000000000001b440                __libc_open
-                0x000000000001b440                open64
-                0x000000000001b440                __GI___libc_open
-                0x000000000001b440                open
-                0x000000000001b440                __open64
-                0x000000000001b449                __open_nocancel
+                0x0000000000005f10                _dl_dst_count
+                0x0000000000005fc0                _dl_dst_substitute
+                0x0000000000006900                _dl_init_paths
+                0x0000000000006d20                _dl_map_object
+                0x00000000000076e0                _dl_rtld_di_serinfo
+                0x00000000000083d0                _dl_lookup_symbol_x
+                0x0000000000009450                _dl_setup_hash
+                0x0000000000009500                _dl_add_to_namespace_list
+                0x0000000000009590                _dl_new_object
+                0x00000000000098e0                _dl_try_allocate_static_tls
+                0x00000000000099c0                _dl_allocate_static_tls
+                0x00000000000099f0                _dl_nothread_init_static_tls
+                0x0000000000009a80                _dl_protect_relro
+                0x0000000000009ae0                _dl_reloc_bad_type
+                0x0000000000009bc0                _dl_relocate_object
+                0x000000000000b160                _dl_map_object_deps
+                0x000000000000c3d0                _dl_important_hwcaps
+                0x000000000000cb10                _dl_fixup
+                0x000000000000cd20                _dl_profile_fixup
+                0x000000000000d300                _dl_call_pltexit
+                0x000000000000d410                _dl_signal_error
+                0x000000000000d5c0                _dl_signal_cerror
+                0x000000000000d640                _dl_catch_error
+                0x000000000000d700                _dl_receive_error
+                0x000000000000d870                _dl_init_internal
+                0x000000000000d870                _dl_init
+                0x000000000000d990                _dl_sort_fini
+                0x000000000000dc20                _dl_fini
+                0x000000000000e040                _dl_debug_state
+                0x000000000000e040                __GI__dl_debug_state
+                0x000000000000e050                _dl_debug_initialize
+                0x000000000000e680                _dl_sysdep_read_whole_file
+                0x000000000000e710                _dl_debug_printf
+                0x000000000000e770                _dl_debug_printf_c
+                0x000000000000e7d0                _dl_dprintf
+                0x000000000000e820                _dl_name_match_p
+                0x000000000000e890                _dl_higher_prime_number
+                0x000000000000ecc0                _dl_check_map_versions
+                0x000000000000f140                _dl_check_all_versions
+                0x000000000000f1b0                _dl_start_profile
+                0x000000000000f9b0                _dl_mcount_internal
+                0x000000000000f9b0                _dl_mcount
+                0x000000000000fbe0                _dl_resolve_conflicts
+                0x000000000000fe00                _dl_next_tls_modid
+                0x000000000000fee0                _dl_determine_tlsoffset
+                0x00000000000100a0                __GI__dl_tls_setup
+                0x00000000000100a0                _dl_tls_setup
+                0x0000000000010150                _dl_get_tls_static_info
+                0x0000000000010170                _dl_allocate_tls_storage
+                0x00000000000102b0                __GI__dl_allocate_tls_init
+                0x00000000000102b0                _dl_allocate_tls_init
+                0x00000000000104d0                __GI__dl_allocate_tls
+                0x00000000000104d0                _dl_allocate_tls
+                0x0000000000010510                _dl_deallocate_tls
+                0x0000000000010510                __GI__dl_deallocate_tls
+                0x00000000000105a0                _dl_update_slotinfo
+                0x00000000000108f0                __tls_get_addr
+                0x0000000000010930                _dl_tls_get_addr_soft
+                0x00000000000109a0                _dl_add_to_slotinfo
+                0x0000000000010a80                _dl_get_origin
+                0x0000000000010bf0                _dl_scope_free
+                0x0000000000010cb0                _dl_make_stack_executable
+                0x0000000000010cb0                __GI__dl_make_stack_executable
+                0x0000000000010d30                _dl_check_caller
+                0x0000000000011160                _dl_open
+                0x00000000000114d0                _dl_show_scope
+                0x0000000000011620                _dl_addr_inside_object
+                0x0000000000011680                __GI__dl_find_dso_for_object
+                0x0000000000011680                _dl_find_dso_for_object
+                0x00000000000121a0                _dl_close_worker
+                0x0000000000013040                _dl_close
+                0x00000000000130c0                _dl_runtime_resolve
+                0x0000000000013130                _dl_runtime_profile
+                0x0000000000013690                _dl_x86_64_save_sse
+                0x0000000000013780                _dl_x86_64_restore_sse
+                0x0000000000013830                _dl_cache_libcmp
+                0x0000000000013910                _dl_load_cache_lookup
+                0x0000000000013e60                _dl_unload_cache
+                0x0000000000013ea0                _dl_sysdep_start
+                0x0000000000014160                _dl_sysdep_start_cleanup
+                0x0000000000014170                _dl_show_auxv
+                0x0000000000014320                _dl_discover_osversion
+                0x0000000000014500                _dl_next_ld_env_entry
+                0x0000000000014540                unsetenv
+                0x00000000000145c0                __libc_memalign
+                0x00000000000146d0                malloc
+                0x00000000000146e0                calloc
+                0x0000000000014720                free
+                0x0000000000014750                __sigjmp_save
+                0x0000000000014760                __strerror_r
+                0x0000000000014840                __GI___assert_fail
+                0x0000000000014840                __assert_fail
+                0x0000000000014890                realloc
+                0x0000000000014920                __GI___assert_perror_fail
+                0x0000000000014920                __assert_perror_fail
+                0x0000000000014990                __strtoul_internal
+                0x0000000000014b60                _itoa
+                0x0000000000014bb0                __strsep
+                0x0000000000014bb0                strsep
+                0x0000000000014bb0                __strsep_g
+                0x0000000000014c40                __GI___chk_fail
+                0x0000000000014c40                __chk_fail
+                0x0000000000014c50                __brk
+                0x0000000000014c50                brk
+                0x0000000000014cb0                sbrk
+                0x0000000000014cb0                __sbrk
+                0x0000000000014d40                __getcwd
+                0x0000000000014d40                getcwd
+                0x0000000000015350                openat64
+                0x00000000000153a0                __alloc_dir
+                0x00000000000154a0                __opendirat
+                0x0000000000015510                __opendir
+                0x0000000000015510                opendir
+                0x0000000000015520                __fxstatat
+                0x0000000000015520                __fxstatat64
+                0x0000000000015520                __GI___fxstatat64
+                0x0000000000015590                _dl_make_tlsdesc_dynamic
+                0x0000000000015860                _dl_tlsdesc_resolve_rela_fixup
+                0x0000000000015a40                _dl_tlsdesc_resolve_hold_fixup
+                0x0000000000015a80                _dl_unmap
+                0x0000000000015b00                _dl_tlsdesc_return
+                0x0000000000015b10                _dl_tlsdesc_undefweak
+                0x0000000000015b20                _dl_tlsdesc_dynamic
+                0x0000000000015bc0                _dl_tlsdesc_resolve_rela
+                0x0000000000015c30                _dl_tlsdesc_resolve_hold
+ *fill*         0x0000000000015ca1        0xf 
+ .text          0x0000000000015cb0       0xe2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+                0x0000000000015d60                __libc_check_standard_fds
+ .text          0x0000000000015d92        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
+ *fill*         0x0000000000015d92        0xe 
+ .text          0x0000000000015da0       0x57 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
+                0x0000000000015da0                __sigsetjmp
+                0x0000000000015da0                __GI___sigsetjmp
+ *fill*         0x0000000000015df7        0x9 
+ .text          0x0000000000015e00       0x50 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
+                0x0000000000015e00                __longjmp
+ .text          0x0000000000015e50      0x24a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
+                0x0000000000015e50                index
+                0x0000000000015e50                strchr
+                0x0000000000015e80                __strchr_sse2
+                0x0000000000015e80                __GI_strchr
+ *fill*         0x000000000001609a        0x6 
+ .text          0x00000000000160a0     0x1479 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
+                0x00000000000160a0                strcmp
+                0x00000000000160e0                __strcmp_sse2
+                0x00000000000160e0                __GI_strcmp
+ *fill*         0x0000000000017519        0x7 
+ .text          0x0000000000017520      0x11c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
+                0x0000000000017520                strcpy
+                0x0000000000017560                __GI_strcpy
+                0x0000000000017560                __strcpy_sse2
+ *fill*         0x000000000001763c        0x4 
+ .text          0x0000000000017640      0x1b4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
+                0x0000000000017640                strlen
+                0x0000000000017640                __GI_strlen
+ *fill*         0x00000000000177f4        0xc 
+ .text          0x0000000000017800      0x220 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
+                0x0000000000017800                __strnlen
+                0x0000000000017800                strnlen
+                0x0000000000017800                __GI___strnlen
+                0x0000000000017800                __GI_strnlen
+ .text          0x0000000000017a20      0x344 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
+                0x0000000000017a20                __GI_memchr
+                0x0000000000017a20                memchr
+                0x0000000000017a20                __memchr
+ *fill*         0x0000000000017d64        0xc 
+ .text          0x0000000000017d70      0x440 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
+                0x0000000000017d70                bcmp
+                0x0000000000017d70                memcmp
+                0x0000000000017db0                __GI_memcmp
+                0x0000000000017db0                __memcmp_sse2
+ .text          0x00000000000181b0      0x1e7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+                0x00000000000181b0                __GI_memmove
+                0x00000000000181b0                __memmove_sse2
+                0x0000000000018350                memmove
+                0x0000000000018350                memcpy@GLIBC_2.2.5
+                0x0000000000018350                __libc_memmove
+ *fill*         0x0000000000018397        0x9 
+ .text          0x00000000000183a0      0x137 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
+                0x00000000000183a0                __bzero
+                0x00000000000183a0                bzero
+                0x00000000000183b0                __memset_tail
+                0x00000000000183d0                __memset_chk
+                0x00000000000183e0                __GI_memset
+                0x00000000000183e0                memset
+ *fill*         0x00000000000184d7        0x9 
+ .text          0x00000000000184e0      0x4a2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
+                0x00000000000184e0                mempcpy
+                0x00000000000184e0                __mempcpy
+                0x0000000000018520                __mempcpy_chk_sse2
+                0x0000000000018530                __GI_mempcpy
+                0x0000000000018530                __mempcpy_sse2
+                0x0000000000018530                __GI___mempcpy
+ *fill*         0x0000000000018982        0xe 
+ .text          0x0000000000018990      0x11c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
+                0x0000000000018990                stpcpy
+                0x0000000000018990                __stpcpy
+                0x00000000000189d0                __GI_stpcpy
+                0x00000000000189d0                __GI___stpcpy
+                0x00000000000189d0                __stpcpy_sse2
+ *fill*         0x0000000000018aac        0x4 
+ .text          0x0000000000018ab0      0x4b5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
+                0x0000000000018ab0                __new_memcpy
+                0x0000000000018ab0                memcpy@@GLIBC_2.14
+                0x0000000000018af0                __memcpy_chk_sse2
+                0x0000000000018b00                __memcpy_sse2
+                0x0000000000018b00                __GI_memcpy
+ *fill*         0x0000000000018f65        0xb 
+ .text          0x0000000000018f70      0x556 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+                0x0000000000018f70                _wordcopy_fwd_aligned
+                0x00000000000190b0                _wordcopy_fwd_dest_aligned
+                0x00000000000191e0                _wordcopy_bwd_aligned
+                0x0000000000019370                _wordcopy_bwd_dest_aligned
+ *fill*         0x00000000000194c6        0xa 
+ .text          0x00000000000194d0      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
+                0x00000000000194d0                __GI___rawmemchr
+                0x00000000000194d0                __rawmemchr
+                0x00000000000194d0                rawmemchr
+ .text          0x00000000000196d4        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
+ *fill*         0x00000000000196d4        0xc 
+ .text          0x00000000000196e0      0x2a3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
+                0x00000000000196e0                __strcmp_sse2_unaligned
+ .text          0x0000000000019983        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
+ .text          0x0000000000019983        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
+ *fill*         0x0000000000019983        0xd 
+ .text          0x0000000000019990      0x217 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
+                0x0000000000019990                __memcpy_sse2_unaligned
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
+ .text          0x0000000000019ba7        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
+ *fill*         0x0000000000019ba7        0x9 
+ .text          0x0000000000019bb0      0x630 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
+                0x0000000000019bb0                __strcpy_sse2_unaligned
+ .text          0x000000000001a1e0      0x6b0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
+                0x000000000001a1e0                __stpcpy_sse2_unaligned
+ .text          0x000000000001a890        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
+ .text          0x000000000001a890        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
+ .text          0x000000000001a890      0x5e7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+                0x000000000001ae20                __cache_sysconf
+ *fill*         0x000000000001ae77        0x9 
+ .text          0x000000000001ae80       0x2c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
+                0x000000000001ae80                __closedir
+                0x000000000001ae80                closedir
+ *fill*         0x000000000001aeac        0x4 
+ .text          0x000000000001aeb0      0x10d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+                0x000000000001aeb0                readdir
+                0x000000000001aeb0                __readdir64
+                0x000000000001aeb0                __readdir
+                0x000000000001aeb0                readdir64
+ *fill*         0x000000000001afbd        0x3 
+ .text          0x000000000001afc0       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+                0x000000000001afc0                rewinddir
+                0x000000000001afc0                __GI_rewinddir
+ *fill*         0x000000000001b057        0x9 
+ .text          0x000000000001b060       0x84 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+                0x000000000001b060                __getdents
+                0x000000000001b060                __getdents64
+ *fill*         0x000000000001b0e4        0xc 
+ .text          0x000000000001b0f0       0x87 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+                0x000000000001b0f0                fdopendir
+                0x000000000001b0f0                __fdopendir
+ *fill*         0x000000000001b177        0x9 
+ .text          0x000000000001b180       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
+                0x000000000001b180                uname
+                0x000000000001b180                __GI_uname
+                0x000000000001b180                __uname
+                0x000000000001b180                __GI___uname
+ *fill*         0x000000000001b1a1        0xf 
+ .text          0x000000000001b1b0       0x96 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+                0x000000000001b1b0                waitpid
+                0x000000000001b1b0                __libc_waitpid
+                0x000000000001b1b0                __waitpid
+                0x000000000001b1b0                __GI___waitpid
+ *fill*         0x000000000001b246        0xa 
+ .text          0x000000000001b250       0x55 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+                0x000000000001b250                _Exit
+                0x000000000001b250                __GI__exit
+                0x000000000001b250                _exit
+ *fill*         0x000000000001b2a5        0xb 
+ .text          0x000000000001b2b0       0x3b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+                0x000000000001b2b0                __getpid
+                0x000000000001b2b0                getpid
+                0x000000000001b2b0                __GI_getpid
+                0x000000000001b2b0                __GI___getpid
+ .text          0x000000000001b2eb        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
+ *fill*         0x000000000001b2eb        0x5 
+ .text          0x000000000001b2f0       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+                0x000000000001b2f0                _xstat
+                0x000000000001b2f0                __xstat64
+                0x000000000001b2f0                __GI___xstat64
+                0x000000000001b2f0                __GI___xstat
+                0x000000000001b2f0                __xstat
+ *fill*         0x000000000001b335        0xb 
+ .text          0x000000000001b340       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+                0x000000000001b340                __GI___fxstat
+                0x000000000001b340                __GI___fxstat64
+                0x000000000001b340                __fxstat64
+                0x000000000001b340                _fxstat
+                0x000000000001b340                __fxstat
+ *fill*         0x000000000001b385        0xb 
+ .text          0x000000000001b390       0x45 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+                0x000000000001b390                __GI___lxstat
+                0x000000000001b390                _lxstat
+                0x000000000001b390                __lxstat
+                0x000000000001b390                __lxstat64
+                0x000000000001b390                __GI___lxstat64
+ *fill*         0x000000000001b3d5        0xb 
+ .text          0x000000000001b3e0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
+                0x000000000001b3e0                __GI___open64
+                0x000000000001b3e0                __open
+                0x000000000001b3e0                __GI_open
+                0x000000000001b3e0                __GI___open
+                0x000000000001b3e0                __GI_open64
+                0x000000000001b3e0                __libc_open
+                0x000000000001b3e0                open64
+                0x000000000001b3e0                __GI___libc_open
+                0x000000000001b3e0                open
+                0x000000000001b3e0                __open64
+                0x000000000001b3e9                __open_nocancel
+ *fill*         0x000000000001b43a        0x6 
+ .text          0x000000000001b440       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
+                0x000000000001b440                __read
+                0x000000000001b440                __GI_read
+                0x000000000001b440                __libc_read
+                0x000000000001b440                __GI___read
+                0x000000000001b440                read
+                0x000000000001b440                __GI___libc_read
+                0x000000000001b449                __read_nocancel
  *fill*         0x000000000001b49a        0x6 
- .text          0x000000000001b4a0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
-                0x000000000001b4a0                __read
-                0x000000000001b4a0                __GI_read
-                0x000000000001b4a0                __libc_read
-                0x000000000001b4a0                __GI___read
-                0x000000000001b4a0                read
-                0x000000000001b4a0                __GI___libc_read
-                0x000000000001b4a9                __read_nocancel
+ .text          0x000000000001b4a0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
+                0x000000000001b4a0                __write
+                0x000000000001b4a0                __GI_write
+                0x000000000001b4a0                write
+                0x000000000001b4a0                __GI___libc_write
+                0x000000000001b4a0                __GI___write
+                0x000000000001b4a0                __libc_write
+                0x000000000001b4a9                __write_nocancel
  *fill*         0x000000000001b4fa        0x6 
- .text          0x000000000001b500       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
-                0x000000000001b500                __write
-                0x000000000001b500                __GI_write
-                0x000000000001b500                write
-                0x000000000001b500                __GI___libc_write
-                0x000000000001b500                __GI___write
-                0x000000000001b500                __libc_write
-                0x000000000001b509                __write_nocancel
- *fill*         0x000000000001b55a        0x6 
- .text          0x000000000001b560       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
-                0x000000000001b560                __GI_access
-                0x000000000001b560                __GI___access
-                0x000000000001b560                access
-                0x000000000001b560                __access
- *fill*         0x000000000001b581        0xf 
- .text          0x000000000001b590      0x173 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
-                0x000000000001b660                __fcntl_nocancel
-                0x000000000001b690                __libc_fcntl
-                0x000000000001b690                __GI___libc_fcntl
-                0x000000000001b690                __GI___fcntl
-                0x000000000001b690                __fcntl
-                0x000000000001b690                fcntl
- *fill*         0x000000000001b703        0xd 
- .text          0x000000000001b710       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
-                0x000000000001b710                __GI_close
-                0x000000000001b710                __GI___libc_close
-                0x000000000001b710                __libc_close
-                0x000000000001b710                __close
-                0x000000000001b710                __GI___close
-                0x000000000001b710                close
-                0x000000000001b719                __close_nocancel
- *fill*         0x000000000001b76a        0x6 
- .text          0x000000000001b770       0x24 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
-                0x000000000001b770                __GI___mmap
-                0x000000000001b770                __GI_mmap64
-                0x000000000001b770                __mmap
-                0x000000000001b770                mmap
-                0x000000000001b770                __GI___mmap64
-                0x000000000001b770                __mmap64
-                0x000000000001b770                __GI_mmap
-                0x000000000001b770                mmap64
- *fill*         0x000000000001b794        0xc 
- .text          0x000000000001b7a0       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
-                0x000000000001b7a0                munmap
-                0x000000000001b7a0                __GI___munmap
-                0x000000000001b7a0                __GI_munmap
-                0x000000000001b7a0                __munmap
- *fill*         0x000000000001b7c1        0xf 
- .text          0x000000000001b7d0       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
-                0x000000000001b7d0                __mprotect
-                0x000000000001b7d0                __GI___mprotect
-                0x000000000001b7d0                __GI_mprotect
-                0x000000000001b7d0                mprotect
- *fill*         0x000000000001b7f1        0xf 
- .text          0x000000000001b800       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
-                0x000000000001b800                __GI___lseek
-                0x000000000001b800                __GI_lseek64
-                0x000000000001b800                __llseek
-                0x000000000001b800                __GI_llseek
-                0x000000000001b800                __lseek64
-                0x000000000001b800                lseek
-                0x000000000001b800                __libc_lseek64
-                0x000000000001b800                __GI___libc_lseek64
-                0x000000000001b800                __GI___libc_lseek
-                0x000000000001b800                llseek
-                0x000000000001b800                __lseek
-                0x000000000001b800                __GI___lseek64
-                0x000000000001b800                __libc_lseek
-                0x000000000001b800                __GI___llseek
-                0x000000000001b800                __GI_lseek
-                0x000000000001b800                lseek64
-                0x000000000001b809                __lseek_nocancel
- *fill*         0x000000000001b85a        0x6 
- .text          0x000000000001b860      0x1ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
-                0x000000000001b8b0                __profil
-                0x000000000001b8b0                profil
- *fill*         0x000000000001ba2e        0x2 
- .text          0x000000000001ba30        0xb /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
-                0x000000000001ba30                __GI___profile_frequency
-                0x000000000001ba30                __profile_frequency
- *fill*         0x000000000001ba3b        0x5 
- .text          0x000000000001ba40       0x52 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
-                0x000000000001ba40                __lll_lock_wait_private
-                0x000000000001ba70                __lll_unlock_wake_private
- *fill*         0x000000000001ba92        0xe 
- .text          0x000000000001baa0       0xbc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
-                0x000000000001baa0                __libc_enable_asynccancel
-                0x000000000001bb00                __libc_disable_asynccancel
- .text          0x000000000001bb5c        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
- *fill*         0x000000000001bb5c        0x4 
- .text          0x000000000001bb60      0x267 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
-                0x000000000001bb60                __init_cpu_features
-                0x000000000001bdb0                __get_cpu_features
- *fill*         0x000000000001bdc7        0x9 
- .text          0x000000000001bdd0      0x22f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
-                0x000000000001bdf0                __libc_sigaction
-                0x000000000001bdf0                __GI___libc_sigaction
-                0x000000000001bfe0                sigaction
-                0x000000000001bfe0                __GI___sigaction
-                0x000000000001bfe0                __sigaction
- *fill*         0x000000000001bfff        0x1 
- .text          0x000000000001c000       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
-                0x000000000001c000                setitimer
-                0x000000000001c000                __setitimer
-                0x000000000001c000                __GI_setitimer
-                0x000000000001c000                __GI___setitimer
- *fill*         0x000000000001c021        0xf 
- .text          0x000000000001c030      0x5c6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
-                0x000000000001c030                pthread_equal
-                0x000000000001c060                pthread_attr_destroy
-                0x000000000001c090                pthread_attr_init@@GLIBC_2.2.5
-                0x000000000001c090                __pthread_attr_init_2_1
-                0x000000000001c0c0                pthread_attr_getdetachstate
-                0x000000000001c0f0                pthread_attr_setdetachstate
-                0x000000000001c120                pthread_attr_getinheritsched
-                0x000000000001c150                pthread_attr_setinheritsched
-                0x000000000001c180                pthread_attr_getschedparam
-                0x000000000001c1b0                pthread_attr_setschedparam
-                0x000000000001c1e0                pthread_attr_getschedpolicy
-                0x000000000001c210                pthread_attr_setschedpolicy
-                0x000000000001c240                pthread_attr_getscope
-                0x000000000001c270                pthread_attr_setscope
-                0x000000000001c2a0                pthread_condattr_destroy
-                0x000000000001c2d0                pthread_condattr_init
-                0x000000000001c300                pthread_cond_broadcast@@GLIBC_2.3.2
-                0x000000000001c300                __pthread_cond_broadcast
-                0x000000000001c330                pthread_cond_destroy@@GLIBC_2.3.2
-                0x000000000001c330                __pthread_cond_destroy
-                0x000000000001c360                pthread_cond_init@@GLIBC_2.3.2
-                0x000000000001c360                __pthread_cond_init
-                0x000000000001c390                pthread_cond_signal@@GLIBC_2.3.2
-                0x000000000001c390                __pthread_cond_signal
-                0x000000000001c3c0                pthread_cond_wait@@GLIBC_2.3.2
-                0x000000000001c3c0                __pthread_cond_wait
-                0x000000000001c3f0                pthread_cond_timedwait@@GLIBC_2.3.2
-                0x000000000001c3f0                __pthread_cond_timedwait
-                0x000000000001c420                pthread_exit
-                0x000000000001c420                __pthread_exit
-                0x000000000001c450                pthread_getschedparam
-                0x000000000001c480                pthread_setschedparam
-                0x000000000001c4b0                pthread_mutex_destroy
-                0x000000000001c4e0                pthread_mutex_init
-                0x000000000001c510                pthread_mutex_lock
-                0x000000000001c540                pthread_mutex_unlock
-                0x000000000001c570                pthread_self
-                0x000000000001c5a0                pthread_setcancelstate
-                0x000000000001c5d0                pthread_setcanceltype
- *fill*         0x000000000001c5f6        0xa 
- .text          0x000000000001c600      0x125 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
-                0x000000000001c600                __run_exit_handlers
-                0x000000000001c710                __GI_exit
-                0x000000000001c710                exit
- *fill*         0x000000000001c725        0xb 
- .text          0x000000000001c730      0x24d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
-                0x000000000001c730                __new_exitfn
-                0x000000000001c8a0                __internal_atexit
-                0x000000000001c8f0                __cxa_atexit_internal
-                0x000000000001c8f0                __cxa_atexit
- *fill*         0x000000000001c97d        0x3 
- .text          0x000000000001c980      0x1bd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
-                0x000000000001c980                __cxa_thread_atexit_impl
-                0x000000000001ca80                __GI___call_tls_dtors
-                0x000000000001ca80                __call_tls_dtors
+ .text          0x000000000001b500       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
+                0x000000000001b500                __GI_access
+                0x000000000001b500                __GI___access
+                0x000000000001b500                access
+                0x000000000001b500                __access
+ *fill*         0x000000000001b521        0xf 
+ .text          0x000000000001b530      0x173 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+                0x000000000001b600                __fcntl_nocancel
+                0x000000000001b630                __libc_fcntl
+                0x000000000001b630                __GI___libc_fcntl
+                0x000000000001b630                __GI___fcntl
+                0x000000000001b630                __fcntl
+                0x000000000001b630                fcntl
+ *fill*         0x000000000001b6a3        0xd 
+ .text          0x000000000001b6b0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
+                0x000000000001b6b0                __GI_close
+                0x000000000001b6b0                __GI___libc_close
+                0x000000000001b6b0                __libc_close
+                0x000000000001b6b0                __close
+                0x000000000001b6b0                __GI___close
+                0x000000000001b6b0                close
+                0x000000000001b6b9                __close_nocancel
+ *fill*         0x000000000001b70a        0x6 
+ .text          0x000000000001b710       0x24 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
+                0x000000000001b710                __GI___mmap
+                0x000000000001b710                __GI_mmap64
+                0x000000000001b710                __mmap
+                0x000000000001b710                mmap
+                0x000000000001b710                __GI___mmap64
+                0x000000000001b710                __mmap64
+                0x000000000001b710                __GI_mmap
+                0x000000000001b710                mmap64
+ *fill*         0x000000000001b734        0xc 
+ .text          0x000000000001b740       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
+                0x000000000001b740                munmap
+                0x000000000001b740                __GI___munmap
+                0x000000000001b740                __GI_munmap
+                0x000000000001b740                __munmap
+ *fill*         0x000000000001b761        0xf 
+ .text          0x000000000001b770       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
+                0x000000000001b770                __mprotect
+                0x000000000001b770                __GI___mprotect
+                0x000000000001b770                __GI_mprotect
+                0x000000000001b770                mprotect
+ *fill*         0x000000000001b791        0xf 
+ .text          0x000000000001b7a0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
+                0x000000000001b7a0                __GI___lseek
+                0x000000000001b7a0                __GI_lseek64
+                0x000000000001b7a0                __llseek
+                0x000000000001b7a0                __GI_llseek
+                0x000000000001b7a0                __lseek64
+                0x000000000001b7a0                lseek
+                0x000000000001b7a0                __libc_lseek64
+                0x000000000001b7a0                __GI___libc_lseek64
+                0x000000000001b7a0                __GI___libc_lseek
+                0x000000000001b7a0                llseek
+                0x000000000001b7a0                __lseek
+                0x000000000001b7a0                __GI___lseek64
+                0x000000000001b7a0                __libc_lseek
+                0x000000000001b7a0                __GI___llseek
+                0x000000000001b7a0                __GI_lseek
+                0x000000000001b7a0                lseek64
+                0x000000000001b7a9                __lseek_nocancel
+ *fill*         0x000000000001b7fa        0x6 
+ .text          0x000000000001b800      0x1ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+                0x000000000001b850                __profil
+                0x000000000001b850                profil
+ *fill*         0x000000000001b9ce        0x2 
+ .text          0x000000000001b9d0        0xb /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
+                0x000000000001b9d0                __GI___profile_frequency
+                0x000000000001b9d0                __profile_frequency
+ *fill*         0x000000000001b9db        0x5 
+ .text          0x000000000001b9e0       0x52 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
+                0x000000000001b9e0                __lll_lock_wait_private
+                0x000000000001ba10                __lll_unlock_wake_private
+ *fill*         0x000000000001ba32        0xe 
+ .text          0x000000000001ba40       0xbc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
+                0x000000000001ba40                __libc_enable_asynccancel
+                0x000000000001baa0                __libc_disable_asynccancel
+ .text          0x000000000001bafc        0x0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
+ *fill*         0x000000000001bafc        0x4 
+ .text          0x000000000001bb00      0x267 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+                0x000000000001bb00                __init_cpu_features
+                0x000000000001bd50                __get_cpu_features
+ *fill*         0x000000000001bd67        0x9 
+ .text          0x000000000001bd70      0x22f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+                0x000000000001bd90                __libc_sigaction
+                0x000000000001bd90                __GI___libc_sigaction
+                0x000000000001bf80                sigaction
+                0x000000000001bf80                __GI___sigaction
+                0x000000000001bf80                __sigaction
+ *fill*         0x000000000001bf9f        0x1 
+ .text          0x000000000001bfa0       0x21 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
+                0x000000000001bfa0                setitimer
+                0x000000000001bfa0                __setitimer
+                0x000000000001bfa0                __GI_setitimer
+                0x000000000001bfa0                __GI___setitimer
+ *fill*         0x000000000001bfc1        0xf 
+ .text          0x000000000001bfd0      0x5c6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+                0x000000000001bfd0                pthread_equal
+                0x000000000001c000                pthread_attr_destroy
+                0x000000000001c030                pthread_attr_init@@GLIBC_2.2.5
+                0x000000000001c030                __pthread_attr_init_2_1
+                0x000000000001c060                pthread_attr_getdetachstate
+                0x000000000001c090                pthread_attr_setdetachstate
+                0x000000000001c0c0                pthread_attr_getinheritsched
+                0x000000000001c0f0                pthread_attr_setinheritsched
+                0x000000000001c120                pthread_attr_getschedparam
+                0x000000000001c150                pthread_attr_setschedparam
+                0x000000000001c180                pthread_attr_getschedpolicy
+                0x000000000001c1b0                pthread_attr_setschedpolicy
+                0x000000000001c1e0                pthread_attr_getscope
+                0x000000000001c210                pthread_attr_setscope
+                0x000000000001c240                pthread_condattr_destroy
+                0x000000000001c270                pthread_condattr_init
+                0x000000000001c2a0                pthread_cond_broadcast@@GLIBC_2.3.2
+                0x000000000001c2a0                __pthread_cond_broadcast
+                0x000000000001c2d0                pthread_cond_destroy@@GLIBC_2.3.2
+                0x000000000001c2d0                __pthread_cond_destroy
+                0x000000000001c300                pthread_cond_init@@GLIBC_2.3.2
+                0x000000000001c300                __pthread_cond_init
+                0x000000000001c330                pthread_cond_signal@@GLIBC_2.3.2
+                0x000000000001c330                __pthread_cond_signal
+                0x000000000001c360                pthread_cond_wait@@GLIBC_2.3.2
+                0x000000000001c360                __pthread_cond_wait
+                0x000000000001c390                pthread_cond_timedwait@@GLIBC_2.3.2
+                0x000000000001c390                __pthread_cond_timedwait
+                0x000000000001c3c0                pthread_exit
+                0x000000000001c3c0                __pthread_exit
+                0x000000000001c3f0                pthread_getschedparam
+                0x000000000001c420                pthread_setschedparam
+                0x000000000001c450                pthread_mutex_destroy
+                0x000000000001c480                pthread_mutex_init
+                0x000000000001c4b0                pthread_mutex_lock
+                0x000000000001c4e0                pthread_mutex_unlock
+                0x000000000001c510                pthread_self
+                0x000000000001c540                pthread_setcancelstate
+                0x000000000001c570                pthread_setcanceltype
+ *fill*         0x000000000001c596        0xa 
+ .text          0x000000000001c5a0      0x125 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+                0x000000000001c5a0                __run_exit_handlers
+                0x000000000001c6b0                __GI_exit
+                0x000000000001c6b0                exit
+ *fill*         0x000000000001c6c5        0xb 
+ .text          0x000000000001c6d0      0x24d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+                0x000000000001c6d0                __new_exitfn
+                0x000000000001c840                __internal_atexit
+                0x000000000001c890                __cxa_atexit_internal
+                0x000000000001c890                __cxa_atexit
+ *fill*         0x000000000001c91d        0x3 
+ .text          0x000000000001c920      0x1bd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+                0x000000000001c920                __cxa_thread_atexit_impl
+                0x000000000001ca20                __GI___call_tls_dtors
+                0x000000000001ca20                __call_tls_dtors
  *(.gnu.warning)
 
 .text.unlikely  0x0000000000000000      0x710
@@ -1556,283 +1556,283 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000    0x583ae
+.debug_info     0x0000000000000000    0x576d2
  *(.debug_info)
- .debug_info    0x0000000000000000    0x49581 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_info    0x0000000000049581      0x5ba /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
- .debug_info    0x0000000000049b3b      0x207 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
- .debug_info    0x0000000000049d42       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
- .debug_info    0x0000000000049dca       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
- .debug_info    0x0000000000049e55       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
- .debug_info    0x0000000000049ee7       0x86 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
- .debug_info    0x0000000000049f6d       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
- .debug_info    0x0000000000049fff       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
- .debug_info    0x000000000004a087       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
- .debug_info    0x000000000004a10f       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
- .debug_info    0x000000000004a197       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
- .debug_info    0x000000000004a229      0x46b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_info    0x000000000004a694       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
- .debug_info    0x000000000004a71c       0x93 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
- .debug_info    0x000000000004a7af       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
- .debug_info    0x000000000004a841       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
- .debug_info    0x000000000004a8d3      0x443 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
- .debug_info    0x000000000004ad16       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
- .debug_info    0x000000000004ada1       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
- .debug_info    0x000000000004ae36       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
- .debug_info    0x000000000004aed7       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
- .debug_info    0x000000000004af6e       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
- .debug_info    0x000000000004b006       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
- .debug_info    0x000000000004b0a7       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
- .debug_info    0x000000000004b13f       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
- .debug_info    0x000000000004b1d7       0x9d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
- .debug_info    0x000000000004b274       0x9d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
- .debug_info    0x000000000004b311       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
- .debug_info    0x000000000004b3a9       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
- .debug_info    0x000000000004b441       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
- .debug_info    0x000000000004b4e2       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
- .debug_info    0x000000000004b583       0x9e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
- .debug_info    0x000000000004b621       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
- .debug_info    0x000000000004b6b9     0x1147 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_info    0x000000000004c800      0x2e9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
- .debug_info    0x000000000004cae9      0x437 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_info    0x000000000004cf20      0x357 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_info    0x000000000004d277      0x4ca /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_info    0x000000000004d741      0x536 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
- .debug_info    0x000000000004dc77       0x8f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
- .debug_info    0x000000000004dd06      0x44a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
- .debug_info    0x000000000004e150      0x2c1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_info    0x000000000004e411      0x31a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_info    0x000000000004e72b       0xaf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
- .debug_info    0x000000000004e7da      0x42c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_info    0x000000000004ec06      0x42b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_info    0x000000000004f031      0x42c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_info    0x000000000004f45d       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
- .debug_info    0x000000000004f4e9       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
- .debug_info    0x000000000004f575       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
- .debug_info    0x000000000004f601       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
- .debug_info    0x000000000004f68d      0x809 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_info    0x000000000004fe96       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
- .debug_info    0x000000000004ff22       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
- .debug_info    0x000000000004ffb0       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
- .debug_info    0x000000000005003e       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
- .debug_info    0x00000000000500cc       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
- .debug_info    0x000000000005015a      0xc28 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
- .debug_info    0x0000000000050d82     0x156d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
- .debug_info    0x00000000000522ef       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
- .debug_info    0x0000000000052390       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
- .debug_info    0x0000000000052431      0x2ee /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
- .debug_info    0x000000000005271f      0x4e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_info    0x0000000000052c04      0x7a3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_info    0x00000000000533a7       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
- .debug_info    0x0000000000053435     0x279a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_info    0x0000000000055bcf      0xdff /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_info    0x00000000000569ce      0x681 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_info    0x000000000005704f     0x135f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_info    0x0000000000000000    0x488a5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_info    0x00000000000488a5      0x5ba /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+ .debug_info    0x0000000000048e5f      0x207 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
+ .debug_info    0x0000000000049066       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
+ .debug_info    0x00000000000490ee       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
+ .debug_info    0x0000000000049179       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
+ .debug_info    0x000000000004920b       0x86 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
+ .debug_info    0x0000000000049291       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
+ .debug_info    0x0000000000049323       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
+ .debug_info    0x00000000000493ab       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
+ .debug_info    0x0000000000049433       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
+ .debug_info    0x00000000000494bb       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
+ .debug_info    0x000000000004954d      0x46b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_info    0x00000000000499b8       0x88 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
+ .debug_info    0x0000000000049a40       0x93 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
+ .debug_info    0x0000000000049ad3       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
+ .debug_info    0x0000000000049b65       0x92 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
+ .debug_info    0x0000000000049bf7      0x443 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+ .debug_info    0x000000000004a03a       0x8b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
+ .debug_info    0x000000000004a0c5       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
+ .debug_info    0x000000000004a15a       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
+ .debug_info    0x000000000004a1fb       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
+ .debug_info    0x000000000004a292       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
+ .debug_info    0x000000000004a32a       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
+ .debug_info    0x000000000004a3cb       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
+ .debug_info    0x000000000004a463       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
+ .debug_info    0x000000000004a4fb       0x9d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
+ .debug_info    0x000000000004a598       0x9d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
+ .debug_info    0x000000000004a635       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
+ .debug_info    0x000000000004a6cd       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
+ .debug_info    0x000000000004a765       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
+ .debug_info    0x000000000004a806       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
+ .debug_info    0x000000000004a8a7       0x9e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
+ .debug_info    0x000000000004a945       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
+ .debug_info    0x000000000004a9dd     0x1147 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_info    0x000000000004bb24      0x2e9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
+ .debug_info    0x000000000004be0d      0x437 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_info    0x000000000004c244      0x357 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_info    0x000000000004c59b      0x4ca /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_info    0x000000000004ca65      0x536 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+ .debug_info    0x000000000004cf9b       0x8f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
+ .debug_info    0x000000000004d02a      0x44a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+ .debug_info    0x000000000004d474      0x2c1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_info    0x000000000004d735      0x31a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_info    0x000000000004da4f       0xaf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
+ .debug_info    0x000000000004dafe      0x42c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_info    0x000000000004df2a      0x42b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_info    0x000000000004e355      0x42c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_info    0x000000000004e781       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
+ .debug_info    0x000000000004e80d       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
+ .debug_info    0x000000000004e899       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
+ .debug_info    0x000000000004e925       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
+ .debug_info    0x000000000004e9b1      0x809 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_info    0x000000000004f1ba       0x8c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
+ .debug_info    0x000000000004f246       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
+ .debug_info    0x000000000004f2d4       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
+ .debug_info    0x000000000004f362       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
+ .debug_info    0x000000000004f3f0       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
+ .debug_info    0x000000000004f47e      0xc28 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+ .debug_info    0x00000000000500a6     0x156d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
+ .debug_info    0x0000000000051613       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
+ .debug_info    0x00000000000516b4       0xa1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
+ .debug_info    0x0000000000051755      0x2ee /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
+ .debug_info    0x0000000000051a43      0x4e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_info    0x0000000000051f28      0x7a3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_info    0x00000000000526cb       0x8e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
+ .debug_info    0x0000000000052759     0x279a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_info    0x0000000000054ef3      0xdff /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_info    0x0000000000055cf2      0x681 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_info    0x0000000000056373     0x135f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
-.debug_abbrev   0x0000000000000000     0xb3d4
+.debug_abbrev   0x0000000000000000     0xb3a6
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000     0x8084 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_abbrev  0x0000000000008084      0x212 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
- .debug_abbrev  0x0000000000008296       0xcc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
- .debug_abbrev  0x0000000000008362       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
- .debug_abbrev  0x0000000000008376       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
- .debug_abbrev  0x000000000000838a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
- .debug_abbrev  0x000000000000839e       0x12 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
- .debug_abbrev  0x00000000000083b0       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
- .debug_abbrev  0x00000000000083c4       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
- .debug_abbrev  0x00000000000083d8       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
- .debug_abbrev  0x00000000000083ec       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
- .debug_abbrev  0x0000000000008400       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
- .debug_abbrev  0x0000000000008414      0x1cf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_abbrev  0x00000000000085e3       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
- .debug_abbrev  0x00000000000085f7       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
- .debug_abbrev  0x000000000000860b       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
- .debug_abbrev  0x000000000000861f       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
- .debug_abbrev  0x0000000000008633      0x119 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
- .debug_abbrev  0x000000000000874c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
- .debug_abbrev  0x0000000000008760       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
- .debug_abbrev  0x0000000000008774       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
- .debug_abbrev  0x0000000000008788       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
- .debug_abbrev  0x000000000000879c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
- .debug_abbrev  0x00000000000087b0       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
- .debug_abbrev  0x00000000000087c4       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
- .debug_abbrev  0x00000000000087d8       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
- .debug_abbrev  0x00000000000087ec       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
- .debug_abbrev  0x0000000000008800       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
- .debug_abbrev  0x0000000000008814       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
- .debug_abbrev  0x0000000000008828       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
- .debug_abbrev  0x000000000000883c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
- .debug_abbrev  0x0000000000008850       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
- .debug_abbrev  0x0000000000008864       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
- .debug_abbrev  0x0000000000008878       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
- .debug_abbrev  0x000000000000888c      0x33a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_abbrev  0x0000000000008bc6      0x114 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
- .debug_abbrev  0x0000000000008cda      0x18c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_abbrev  0x0000000000008e66      0x14b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_abbrev  0x0000000000008fb1      0x1e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_abbrev  0x0000000000009196      0x182 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
- .debug_abbrev  0x0000000000009318       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
- .debug_abbrev  0x000000000000932c      0x17f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
- .debug_abbrev  0x00000000000094ab      0x141 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_abbrev  0x00000000000095ec      0x17e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_abbrev  0x000000000000976a       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
- .debug_abbrev  0x00000000000097aa      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_abbrev  0x00000000000098e4      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_abbrev  0x0000000000009a1e      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_abbrev  0x0000000000009b58       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
- .debug_abbrev  0x0000000000009b6c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
- .debug_abbrev  0x0000000000009b80       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
- .debug_abbrev  0x0000000000009b94       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
- .debug_abbrev  0x0000000000009ba8      0x2a1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_abbrev  0x0000000000009e49       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
- .debug_abbrev  0x0000000000009e5d       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
- .debug_abbrev  0x0000000000009e71       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
- .debug_abbrev  0x0000000000009e85       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
- .debug_abbrev  0x0000000000009e99       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
- .debug_abbrev  0x0000000000009ead      0x2c3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
- .debug_abbrev  0x000000000000a170      0x237 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
- .debug_abbrev  0x000000000000a3a7       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
- .debug_abbrev  0x000000000000a3bb       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
- .debug_abbrev  0x000000000000a3cf      0x113 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
- .debug_abbrev  0x000000000000a4e2      0x1f0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_abbrev  0x000000000000a6d2      0x1e6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_abbrev  0x000000000000a8b8       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
- .debug_abbrev  0x000000000000a8cc      0x32c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_abbrev  0x000000000000abf8      0x28b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_abbrev  0x000000000000ae83      0x27e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_abbrev  0x000000000000b101      0x2d3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_abbrev  0x0000000000000000     0x8056 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_abbrev  0x0000000000008056      0x212 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+ .debug_abbrev  0x0000000000008268       0xcc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
+ .debug_abbrev  0x0000000000008334       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
+ .debug_abbrev  0x0000000000008348       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
+ .debug_abbrev  0x000000000000835c       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
+ .debug_abbrev  0x0000000000008370       0x12 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
+ .debug_abbrev  0x0000000000008382       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
+ .debug_abbrev  0x0000000000008396       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
+ .debug_abbrev  0x00000000000083aa       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
+ .debug_abbrev  0x00000000000083be       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
+ .debug_abbrev  0x00000000000083d2       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
+ .debug_abbrev  0x00000000000083e6      0x1cf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_abbrev  0x00000000000085b5       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
+ .debug_abbrev  0x00000000000085c9       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
+ .debug_abbrev  0x00000000000085dd       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
+ .debug_abbrev  0x00000000000085f1       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
+ .debug_abbrev  0x0000000000008605      0x119 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+ .debug_abbrev  0x000000000000871e       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
+ .debug_abbrev  0x0000000000008732       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
+ .debug_abbrev  0x0000000000008746       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
+ .debug_abbrev  0x000000000000875a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
+ .debug_abbrev  0x000000000000876e       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
+ .debug_abbrev  0x0000000000008782       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
+ .debug_abbrev  0x0000000000008796       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
+ .debug_abbrev  0x00000000000087aa       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
+ .debug_abbrev  0x00000000000087be       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
+ .debug_abbrev  0x00000000000087d2       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
+ .debug_abbrev  0x00000000000087e6       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
+ .debug_abbrev  0x00000000000087fa       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
+ .debug_abbrev  0x000000000000880e       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
+ .debug_abbrev  0x0000000000008822       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
+ .debug_abbrev  0x0000000000008836       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
+ .debug_abbrev  0x000000000000884a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
+ .debug_abbrev  0x000000000000885e      0x33a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_abbrev  0x0000000000008b98      0x114 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
+ .debug_abbrev  0x0000000000008cac      0x18c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_abbrev  0x0000000000008e38      0x14b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_abbrev  0x0000000000008f83      0x1e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_abbrev  0x0000000000009168      0x182 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+ .debug_abbrev  0x00000000000092ea       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
+ .debug_abbrev  0x00000000000092fe      0x17f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+ .debug_abbrev  0x000000000000947d      0x141 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_abbrev  0x00000000000095be      0x17e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_abbrev  0x000000000000973c       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
+ .debug_abbrev  0x000000000000977c      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_abbrev  0x00000000000098b6      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_abbrev  0x00000000000099f0      0x13a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_abbrev  0x0000000000009b2a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
+ .debug_abbrev  0x0000000000009b3e       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
+ .debug_abbrev  0x0000000000009b52       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
+ .debug_abbrev  0x0000000000009b66       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
+ .debug_abbrev  0x0000000000009b7a      0x2a1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_abbrev  0x0000000000009e1b       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
+ .debug_abbrev  0x0000000000009e2f       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
+ .debug_abbrev  0x0000000000009e43       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
+ .debug_abbrev  0x0000000000009e57       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
+ .debug_abbrev  0x0000000000009e6b       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
+ .debug_abbrev  0x0000000000009e7f      0x2c3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+ .debug_abbrev  0x000000000000a142      0x237 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
+ .debug_abbrev  0x000000000000a379       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
+ .debug_abbrev  0x000000000000a38d       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
+ .debug_abbrev  0x000000000000a3a1      0x113 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
+ .debug_abbrev  0x000000000000a4b4      0x1f0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_abbrev  0x000000000000a6a4      0x1e6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_abbrev  0x000000000000a88a       0x14 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
+ .debug_abbrev  0x000000000000a89e      0x32c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_abbrev  0x000000000000abca      0x28b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_abbrev  0x000000000000ae55      0x27e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_abbrev  0x000000000000b0d3      0x2d3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
-.debug_line     0x0000000000000000    0x13974
+.debug_line     0x0000000000000000    0x1389e
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x0000000000000000     0x9e3b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_line    0x0000000000009e3b      0x1f4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
- .debug_line    0x000000000000a02f       0xa8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
- .debug_line    0x000000000000a0d7       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
- .debug_line    0x000000000000a137       0x61 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
- .debug_line    0x000000000000a198      0x112 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
- .debug_line    0x000000000000a2aa      0x7b9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
- .debug_line    0x000000000000aa63       0xd9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
- .debug_line    0x000000000000ab3c       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
- .debug_line    0x000000000000abd3       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
- .debug_line    0x000000000000ac6b      0x117 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
- .debug_line    0x000000000000ad82      0x192 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
- .debug_line    0x000000000000af14      0x18b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_line    0x000000000000b09f       0x94 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
- .debug_line    0x000000000000b133      0x19b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
- .debug_line    0x000000000000b2ce       0xd9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
- .debug_line    0x000000000000b3a7      0x1aa /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
- .debug_line    0x000000000000b551      0x1c5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
- .debug_line    0x000000000000b716       0xc8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
- .debug_line    0x000000000000b7de      0x45f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
- .debug_line    0x000000000000bc3d      0x10c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
- .debug_line    0x000000000000bd49      0x500 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
- .debug_line    0x000000000000c249      0x942 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
- .debug_line    0x000000000000cb8b       0xe3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
- .debug_line    0x000000000000cc6e      0x943 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
- .debug_line    0x000000000000d5b1      0x99b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
- .debug_line    0x000000000000df4c      0x879 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
- .debug_line    0x000000000000e7c5      0x882 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
- .debug_line    0x000000000000f047      0x627 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
- .debug_line    0x000000000000f66e      0x627 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
- .debug_line    0x000000000000fc95      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
- .debug_line    0x000000000000fe99      0x1e2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
- .debug_line    0x000000000001007b      0x111 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
- .debug_line    0x000000000001018c      0x5cd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
- .debug_line    0x0000000000010759      0x40b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_line    0x0000000000010b64      0x19c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
- .debug_line    0x0000000000010d00      0x203 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_line    0x0000000000010f03      0x19b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_line    0x000000000001109e      0x1de /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_line    0x000000000001127c      0x211 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
- .debug_line    0x000000000001148d       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
- .debug_line    0x00000000000114e5      0x20b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
- .debug_line    0x00000000000116f0       0xfc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_line    0x00000000000117ec      0x115 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_line    0x0000000000011901       0x2a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
- .debug_line    0x000000000001192b      0x14d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_line    0x0000000000011a78      0x14e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_line    0x0000000000011bc6      0x14e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_line    0x0000000000011d14       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
- .debug_line    0x0000000000011d6e       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
- .debug_line    0x0000000000011dc8       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
- .debug_line    0x0000000000011e22       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
- .debug_line    0x0000000000011e7a      0x276 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_line    0x00000000000120f0       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
- .debug_line    0x000000000001214a       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
- .debug_line    0x00000000000121a3       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
- .debug_line    0x00000000000121fb       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
- .debug_line    0x0000000000012253       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
- .debug_line    0x00000000000122ad      0x2da /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
- .debug_line    0x0000000000012587      0x1f6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
- .debug_line    0x000000000001277d       0x86 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
- .debug_line    0x0000000000012803       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
- .debug_line    0x0000000000012893      0x166 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
- .debug_line    0x00000000000129f9      0x19f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_line    0x0000000000012b98      0x2b1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_line    0x0000000000012e49       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
- .debug_line    0x0000000000012ea1      0x496 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_line    0x0000000000013337      0x1e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_line    0x000000000001351c      0x1bf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_line    0x00000000000136db      0x299 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_line    0x0000000000000000     0x9d65 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_line    0x0000000000009d65      0x1f4 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+ .debug_line    0x0000000000009f59       0xa8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
+ .debug_line    0x000000000000a001       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setjmp.os)
+ .debug_line    0x000000000000a061       0x61 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(__longjmp.os)
+ .debug_line    0x000000000000a0c2      0x112 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr.os)
+ .debug_line    0x000000000000a1d4      0x7b9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
+ .debug_line    0x000000000000a98d       0xd9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy.os)
+ .debug_line    0x000000000000aa66       0x97 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strlen.os)
+ .debug_line    0x000000000000aafd       0x98 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strnlen.os)
+ .debug_line    0x000000000000ab95      0x117 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memchr.os)
+ .debug_line    0x000000000000acac      0x192 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp.os)
+ .debug_line    0x000000000000ae3e      0x18b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_line    0x000000000000afc9       0x94 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memset.os)
+ .debug_line    0x000000000000b05d      0x19b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy.os)
+ .debug_line    0x000000000000b1f8       0xd9 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy.os)
+ .debug_line    0x000000000000b2d1      0x1aa /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy.os)
+ .debug_line    0x000000000000b47b      0x1c5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+ .debug_line    0x000000000000b640       0xc8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rawmemchr.os)
+ .debug_line    0x000000000000b708      0x45f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-ssse3.os)
+ .debug_line    0x000000000000bb67      0x10c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp-sse2-unaligned.os)
+ .debug_line    0x000000000000bc73      0x500 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-sse4.os)
+ .debug_line    0x000000000000c173      0x942 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-ssse3.os)
+ .debug_line    0x000000000000cab5       0xe3 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcpy-sse2-unaligned.os)
+ .debug_line    0x000000000000cb98      0x943 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3.os)
+ .debug_line    0x000000000000d4db      0x99b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3.os)
+ .debug_line    0x000000000000de76      0x879 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mempcpy-ssse3-back.os)
+ .debug_line    0x000000000000e6ef      0x882 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove-ssse3-back.os)
+ .debug_line    0x000000000000ef71      0x627 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-ssse3.os)
+ .debug_line    0x000000000000f598      0x627 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-ssse3.os)
+ .debug_line    0x000000000000fbbf      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcpy-sse2-unaligned.os)
+ .debug_line    0x000000000000fdc3      0x1e2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(stpcpy-sse2-unaligned.os)
+ .debug_line    0x000000000000ffa5      0x111 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strchr-sse2-no-bsf.os)
+ .debug_line    0x00000000000100b6      0x5cd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memcmp-ssse3.os)
+ .debug_line    0x0000000000010683      0x40b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_line    0x0000000000010a8e      0x19c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
+ .debug_line    0x0000000000010c2a      0x203 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_line    0x0000000000010e2d      0x19b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_line    0x0000000000010fc8      0x1de /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_line    0x00000000000111a6      0x211 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+ .debug_line    0x00000000000113b7       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(uname.os)
+ .debug_line    0x000000000001140f      0x20b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+ .debug_line    0x000000000001161a       0xfc /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_line    0x0000000000011716      0x115 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_line    0x000000000001182b       0x2a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
+ .debug_line    0x0000000000011855      0x14d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_line    0x00000000000119a2      0x14e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_line    0x0000000000011af0      0x14e /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_line    0x0000000000011c3e       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(open.os)
+ .debug_line    0x0000000000011c98       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(read.os)
+ .debug_line    0x0000000000011cf2       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(write.os)
+ .debug_line    0x0000000000011d4c       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(access.os)
+ .debug_line    0x0000000000011da4      0x276 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_line    0x000000000001201a       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(close.os)
+ .debug_line    0x0000000000012074       0x59 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mmap.os)
+ .debug_line    0x00000000000120cd       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(munmap.os)
+ .debug_line    0x0000000000012125       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(mprotect.os)
+ .debug_line    0x000000000001217d       0x5a /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(llseek.os)
+ .debug_line    0x00000000000121d7      0x2da /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+ .debug_line    0x00000000000124b1      0x1f6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
+ .debug_line    0x00000000000126a7       0x86 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-lowlevellock.os)
+ .debug_line    0x000000000001272d       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc-cancellation.os)
+ .debug_line    0x00000000000127bd      0x166 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
+ .debug_line    0x0000000000012923      0x19f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_line    0x0000000000012ac2      0x2b1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_line    0x0000000000012d73       0x58 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(setitimer.os)
+ .debug_line    0x0000000000012dcb      0x496 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_line    0x0000000000013261      0x1e5 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_line    0x0000000000013446      0x1bf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_line    0x0000000000013605      0x299 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str      0x0000000000000000    0x32e26
+.debug_str      0x0000000000000000    0x32677
  *(.debug_str)
- .debug_str     0x0000000000000000    0x28255 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_str     0x0000000000028255      0x467 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
- .debug_str     0x00000000000286bc      0x2af /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
- .debug_str     0x000000000002896b      0x395 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_str     0x0000000000028d00      0x1bf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
- .debug_str     0x0000000000028ebf     0x14a1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_str     0x000000000002a360      0x32b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
- .debug_str     0x000000000002a68b      0x3ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_str     0x000000000002aa59      0x361 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_str     0x000000000002adba      0x3ed /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_str     0x000000000002b1a7      0x47c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
- .debug_str     0x000000000002b623      0x404 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
- .debug_str     0x000000000002ba27      0x2ef /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_str     0x000000000002bd16      0x343 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_str     0x000000000002c059      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
- .debug_str     0x000000000002c1b4      0x412 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_str     0x000000000002c5c6      0x410 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_str     0x000000000002c9d6      0x415 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_str     0x000000000002cdeb      0x5d6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_str     0x000000000002d3c1      0x7ff /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
- .debug_str     0x000000000002dbc0      0xf03 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
- .debug_str     0x000000000002eac3      0x45c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
- .debug_str     0x000000000002ef1f      0x453 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_str     0x000000000002f372      0x5c0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_str     0x000000000002f932     0x1934 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_str     0x0000000000031266      0x954 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_str     0x0000000000031bba      0x3db /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_str     0x0000000000031f95      0xe91 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_str     0x0000000000000000    0x27aa6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_str     0x0000000000027aa6      0x467 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+ .debug_str     0x0000000000027f0d      0x2af /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(errno.os)
+ .debug_str     0x00000000000281bc      0x395 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_str     0x0000000000028551      0x1bf /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+ .debug_str     0x0000000000028710     0x14a1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_str     0x0000000000029bb1      0x32b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(closedir.os)
+ .debug_str     0x0000000000029edc      0x3ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_str     0x000000000002a2aa      0x361 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_str     0x000000000002a60b      0x3ed /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_str     0x000000000002a9f8      0x47c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+ .debug_str     0x000000000002ae74      0x404 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+ .debug_str     0x000000000002b278      0x2ef /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_str     0x000000000002b567      0x343 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_str     0x000000000002b8aa      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(environ.os)
+ .debug_str     0x000000000002ba05      0x412 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_str     0x000000000002be17      0x410 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_str     0x000000000002c227      0x415 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_str     0x000000000002c63c      0x5d6 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_str     0x000000000002cc12      0x7ff /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+ .debug_str     0x000000000002d411      0xf03 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(prof-freq.os)
+ .debug_str     0x000000000002e314      0x45c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(libc_multiple_threads.os)
+ .debug_str     0x000000000002e770      0x453 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_str     0x000000000002ebc3      0x5c0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_str     0x000000000002f183     0x1934 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_str     0x0000000000030ab7      0x954 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_str     0x000000000003140b      0x3db /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_str     0x00000000000317e6      0xe91 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
-.debug_loc      0x0000000000000000    0x3066c
+.debug_loc      0x0000000000000000    0x303cc
  *(.debug_loc)
- .debug_loc     0x0000000000000000    0x2a1d7 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_loc     0x000000000002a1d7       0xe1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
- .debug_loc     0x000000000002a2b8      0x69f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_loc     0x000000000002a957     0x1024 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
- .debug_loc     0x000000000002b97b      0xc43 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_loc     0x000000000002c5be      0x1ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_loc     0x000000000002c78c       0x4c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_loc     0x000000000002c7d8      0x29f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_loc     0x000000000002ca77       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
- .debug_loc     0x000000000002cb0c      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_loc     0x000000000002cc67       0xc8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_loc     0x000000000002cd2f      0x253 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_loc     0x000000000002cf82      0x248 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_loc     0x000000000002d1ca      0x253 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_loc     0x000000000002d41d      0x94b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_loc     0x000000000002dd68      0x32d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
- .debug_loc     0x000000000002e095      0x51f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_loc     0x000000000002e5b4      0x2bd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_loc     0x000000000002e871     0x1399 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_loc     0x000000000002fc0a      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_loc     0x000000000002fe0e      0x6b2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_loc     0x00000000000304c0      0x1ac /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_loc     0x0000000000000000    0x29f37 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_loc     0x0000000000029f37       0xe1 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(check_fds.os)
+ .debug_loc     0x000000000002a018      0x69f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_loc     0x000000000002a6b7     0x1024 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(wordcopy.os)
+ .debug_loc     0x000000000002b6db      0xc43 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_loc     0x000000000002c31e      0x1ce /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_loc     0x000000000002c4ec       0x4c /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_loc     0x000000000002c538      0x29f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_loc     0x000000000002c7d7       0x95 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fdopendir.os)
+ .debug_loc     0x000000000002c86c      0x15b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_loc     0x000000000002c9c7       0xc8 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_loc     0x000000000002ca8f      0x253 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_loc     0x000000000002cce2      0x248 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_loc     0x000000000002cf2a      0x253 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_loc     0x000000000002d17d      0x94b /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_loc     0x000000000002dac8      0x32d /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(profil.os)
+ .debug_loc     0x000000000002ddf5      0x51f /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_loc     0x000000000002e314      0x2bd /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_loc     0x000000000002e5d1     0x1399 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_loc     0x000000000002f96a      0x204 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_loc     0x000000000002fb6e      0x6b2 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_loc     0x0000000000030220      0x1ac /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1852,28 +1852,28 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x0000000000000000     0x7880
+.debug_ranges   0x0000000000000000     0x77f0
  *(.debug_ranges)
- .debug_ranges  0x0000000000000000     0x6cd0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
- .debug_ranges  0x0000000000006cd0       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
- .debug_ranges  0x0000000000006d10      0x110 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
- .debug_ranges  0x0000000000006e20      0x360 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
- .debug_ranges  0x0000000000007180       0xc0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
- .debug_ranges  0x0000000000007240       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
- .debug_ranges  0x0000000000007270       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
- .debug_ranges  0x0000000000007320       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
- .debug_ranges  0x00000000000073d0       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
- .debug_ranges  0x0000000000007460       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
- .debug_ranges  0x00000000000074c0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
- .debug_ranges  0x00000000000074f0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
- .debug_ranges  0x0000000000007520       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
- .debug_ranges  0x0000000000007550       0xa0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
- .debug_ranges  0x00000000000075f0       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
- .debug_ranges  0x00000000000076a0       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
- .debug_ranges  0x0000000000007700       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
- .debug_ranges  0x0000000000007790       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
- .debug_ranges  0x00000000000077f0       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
- .debug_ranges  0x0000000000007850       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
+ .debug_ranges  0x0000000000000000     0x6c40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/elf/dl-allobjs.os
+ .debug_ranges  0x0000000000006c40       0x40 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(strcmp.os)
+ .debug_ranges  0x0000000000006c80      0x110 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(memmove.os)
+ .debug_ranges  0x0000000000006d90      0x360 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cacheinfo.os)
+ .debug_ranges  0x00000000000070f0       0xc0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(readdir.os)
+ .debug_ranges  0x00000000000071b0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(rewinddir.os)
+ .debug_ranges  0x00000000000071e0       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getdents.os)
+ .debug_ranges  0x0000000000007290       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(waitpid.os)
+ .debug_ranges  0x0000000000007340       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(_exit.os)
+ .debug_ranges  0x00000000000073d0       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(getpid.os)
+ .debug_ranges  0x0000000000007430       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(xstat.os)
+ .debug_ranges  0x0000000000007460       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fxstat.os)
+ .debug_ranges  0x0000000000007490       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(lxstat.os)
+ .debug_ranges  0x00000000000074c0       0xa0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(fcntl.os)
+ .debug_ranges  0x0000000000007560       0xb0 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(init-arch.os)
+ .debug_ranges  0x0000000000007610       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(sigaction.os)
+ .debug_ranges  0x0000000000007670       0x90 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(forward.os)
+ .debug_ranges  0x0000000000007700       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(exit.os)
+ .debug_ranges  0x0000000000007760       0x60 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_atexit.os)
+ .debug_ranges  0x00000000000077c0       0x30 /home/yaohui.c/work/afl-pt/afl-2.42b/pt_mode/glibc-2.19/pt-build/libc_pic.a(cxa_thread_atexit_impl.os)
 
 .debug_macro
  *(.debug_macro)

@@ -7627,9 +7627,9 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
        "    already have the binary installed, you may need to specify AFL_PATH in the\n"
        "    environment.\n\n"
 
-       "    Of course, even without QEMU, afl-fuzz can still work with binaries that are\n"
-       "    instrumented at compile time with afl-gcc. It is also possible to use it as a\n"
-       "    traditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
+       "    Of course, even without PT or QEMU, afl-fuzz can still work with binaries\n"
+       "    that are instrumented at compile time with afl-gcc. It is also possible to\n"
+       "     use it as atraditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
 
   FATAL("Failed to locate 'afl-pt-proxy'.");
 
@@ -7685,10 +7685,6 @@ static char** get_qemu_argv(u8* own_loc, char** argv, int argc) {
   if (!access(BIN_PATH "/afl-qemu-trace", X_OK)) {
 
     target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-qemu-trace");
-    int i;
-    for(i=0; i< argc+4; ++i)
-      printf("%s\n", argv[i]);
-    exit(-1);
     return new_argv;
 
   }

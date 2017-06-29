@@ -41,9 +41,10 @@ static void __pt_start_forkserver(void) {
 
     if (read(AFLPT_FORKSRV_FD, tmp, 4) != 4) _exit(2);
 
-    child_pid = INLINE_SYSCALL (clone, 5,						      \
-                    CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID | SIGCHLD, 0,     \
-                    NULL, NULL, &THREAD_SELF->tid);
+    // child_pid = INLINE_SYSCALL (clone, 5,						      \
+    //                 CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID | SIGCHLD, 0,     \
+    //                 NULL, NULL, &THREAD_SELF->tid);
+    child_pid = INLINE_SYSCALL (fork, 0);
     if (child_pid < 0) _exit(4);
 
     if (!child_pid) {
