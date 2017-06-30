@@ -329,9 +329,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			if(ptm.p_stat != PTOPA){
 				reply_msg("ERROR: PT Buffer Address Expected\n", pid);		
 				break;
-
 			}
-
 			break;	
 
 		case ERROR:
