@@ -47,7 +47,8 @@ MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_loo
 enum proxy_status {
 	PSLEEP = 0,
 	PSTART,
-	PTOPA,
+	PFS,
+	PTARGET,
 	PFUZZ,
 	UNKNOWN
 };
@@ -83,7 +84,6 @@ typedef struct target_thread_struct{
 	struct task_struct *task; 
 	topa_t  topa; 
 }target_thread_t;
-
 
 //Data structure for PT capability
 typedef struct pt_cap_struct{
@@ -190,13 +190,37 @@ static void reply_msg(char *msg, pid_t pid){
 
 unsigned long (*ksyms_func)(const char *name) = NULL;
 
+//Check if the forkserver is started by matching the target path
 static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
+
+	if( 0 == strncmp(bprm->filename, ptm.target_path, PATH_MAX)){
+		if(ptm.p_stat != PFS)
+			return;
+
+		ptm.fserver_pid = p->pid;	
+		ptm.p_stat = PTARGET; 		
+	}
+
 	return;
 }
 static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *prev, struct task_struct *next){
 	return;
 }
 static void probe_trace_fork(void *ignore, struct task_struct *parent, struct task_struct * child){
+
+	//the fork is invoked by the forkserver
+	if(parent->pid == ptm.fserver_pid){
+		if(ptm.p_stat != PTARGET)
+			return;			
+		//create_topa
+		//register_topa
+		//update ptm
+
+		reply_msg("TOPA", ptm.proxy_pid);
+		ptm.p_stat = PFUZZ;
+	}		
+	//check if the fork is from the target 
+
 	return;
 }
 static void probe_trace_exit(void * ignore, struct task_struct *tsk){
@@ -310,7 +334,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
 				break;
 			}
 		
-			ptm.p_stat = PTOPA;
+			ptm.p_stat = PFS;
  	
 			//Get the target binary path from the message
 			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
@@ -326,15 +350,15 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			printk(KERN_INFO "Target %s\n", ptm.target_path);	
 			break;
 
+/*
 		//PT buf format: "BUF:0x........." (8 bytes, since we are on 64 bit machine)
 		case PTBUF:
 			if(ptm.p_stat != PTOPA){
 				reply_msg("ERROR: PT Buffer Address Expected\n", pid);		
 				break;
-
 			}
-
 			break;	
+*/
 
 		case ERROR:
 			reply_msg("ERROR: No such command!\n", pid); 
