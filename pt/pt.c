@@ -90,7 +90,7 @@ typedef struct pt_cap_struct{
 	bool has_pt;  // if pt is included  
 	bool has_topa;	// if pt supports ToPA
 	bool cr3_match; // if pt can filter based on CR3
-	
+
  	int topa_num;	//number of ToPA entried	
 	int addr_range_num; //number of address ranges for filtering	
 	int psb_freq_mask; //psb packets frequency mast (psb->boundary packets)
@@ -143,10 +143,10 @@ pt_manager_t ptm = {
 	.target_num = 0,
 };
 
-static struct tracepoint *exec_tp; 
-static struct tracepoint *switch_tp; 
-static struct tracepoint *fork_tp;
-static struct tracepoint *exit_tp; 
+static struct tracepoint *exec_tp = NULL; 
+static struct tracepoint *switch_tp= NULL; 
+static struct tracepoint *fork_tp= NULL;
+static struct tracepoint *exit_tp= NULL; 
 
 static enum msg_etype msg_type(char * msg){
 	
@@ -156,7 +156,7 @@ static enum msg_etype msg_type(char * msg){
 	if(strstr(msg, "TARGET"))
 		return TARGET;
 
-	return ERROR; 	
+	return ERROR;
 }
 
 
@@ -169,12 +169,12 @@ static void reply_msg(char *msg, pid_t pid){
 	int res;
 
 	skb_out = nlmsg_new(MAX_MSG, 0);
-		
+
 	if(!skb_out){
 		printk(KERN_ERR "Failed to allocate new skb\n");
 		return;
 	}
- 
+
 	nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,MAX_MSG,0);  
 	NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
 
@@ -208,6 +208,8 @@ static bool set_trace_point(void){
 	int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data);
 	if(!kallsyms_lookup_name_ptr){
 		printk(KERN_INFO "Please specify the address of kallsyms_lookup_name_ptr");
+    return false; //if we don't stop here when kernel tries to access an invalid address
+                  // it will make the system crash
 	}
 	ksyms_func = kallsyms_lookup_name_ptr; 
 
