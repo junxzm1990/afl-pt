@@ -37,7 +37,147 @@
 #define MSR_IA32_ADDR1_START		0x00000582
 #define MSR_IA32_ADDR1_END		0x00000583
 
-#define DEF_TOPA_NUM			0x10
+#define DEF_TOPA_NUM			36
+
+#define MAXTHREAD 0x08
+
+#define TOPAINT 0x3
+#define TOPABACK 0x2
+#define TOPAEND 0x1
+
+#define PTEN 0x21 //32 entries for ToPA // 128 MB in total
+#define MEGNUM 0x08
+#define MAX_MSG 512
+
+#define NETLINK_USER 31 
+#define DEM ":"
+
+#define TOPA_ENTRY_SIZE_4K 0
+#define TOPA_ENTRY_SIZE_8K 1
+#define TOPA_ENTRY_SIZE_16K 2
+#define TOPA_ENTRY_SIZE_32K 3
+#define TOPA_ENTRY_SIZE_64K 4
+#define TOPA_ENTRY_SIZE_128K 5
+#define TOPA_ENTRY_SIZE_256K 6
+#define TOPA_ENTRY_SIZE_512K 7
+#define TOPA_ENTRY_SIZE_1M 8
+#define TOPA_ENTRY_SIZE_2M 9
+#define TOPA_ENTRY_SIZE_4M 10
+#define TOPA_ENTRY_SIZE_8M 11
+#define TOPA_ENTRY_SIZE_16M 12
+#define TOPA_ENTRY_SIZE_32M 13
+#define TOPA_ENTRY_SIZE_64M 14
+#define TOPA_ENTRY_SIZE_128M 15
+#define TOPA_ENTRY_UNIT_SIZE TOPA_ENTRY_SIZE_4M	
+#define TOPA_ENTRY_SIZE_BASE TOPA_ENTRY_SIZE_2M
+#define TOPA_ENTRY_SIZE_ALL TOPA_ENTRY_SIZE_4M
+
+#define TOPA_BUFFER_SIZE (1 << (12 + TOPA_ENTRY_SIZE_BASE))
+#define TOPA_T_SIZE TOPA_ENTRY_SIZE_8K
+
+#define VMA_SZ (1 << TOPA_ENTRY_UNIT_SIZE) * (PTEN - 1) * PAGE_SIZE
+
+enum proxy_status {
+	PSLEEP = 0,
+	PSTART,
+	PFS,
+	PTARGET,
+	PFUZZ,
+	UNKNOWN
+};
+
+enum msg_etype{
+	START = 0,
+	TARGET,
+	PTBUF,
+	ERROR,
+	TEST
+};
+
+enum tar_status{
+	TSTART = 0,
+	TRUN,
+	TEXIT
+};
+
+
+struct topa_entry {
+	u64 end:1;
+	u64 rsvd0:1;
+	u64 intr:1;
+	u64 rsvd1:1;
+	u64 stop:1;
+	u64 rsvd2:1;
+	u64 size:4;
+	u64 rsvd3:2;
+	u64 base:36;
+	u64 rsvd4:16;
+};
+
+//data struct for ToPA
+typedef struct topa_struct{
+	struct topa_entry entries[PTEN];
+}topa_t; 
+
+//Data structure for PT capability
+typedef struct pt_cap_struct{
+	bool has_pt;  // if pt is included  
+	bool has_topa;	// if pt supports ToPA
+	bool cr3_match; // if pt can filter based on CR3
+	
+ 	int topa_num;	//number of ToPA entried	
+	int addr_range_num; //number of address ranges for filtering	
+	int psb_freq_mask; //psb packets frequency mast (psb->boundary packets)
+}pt_cap_t; 
+
+//data structure for a thread in the fuzzed process
+typedef struct target_thread_struct{
+	pid_t pid; 
+	struct task_struct *task; 
+	topa_t  *topa; 
+	enum tar_status status; 
+
+	u64 pva; //virtual address for proxy to access	
+	u64 offset; //offset in the PT buffer 		
+
+}target_thread_t;
+
+typedef struct pt_manager_struct{
+	enum proxy_status p_stat;
+
+	pid_t proxy_pid; //process id of proxy
+	struct task_struct* proxy_task; 
+
+
+	char target_path[PATH_MAX]; //path of target program
+
+	pid_t fserver_pid;  //process id of fork server
+	pid_t tgid; //thread group id of the fuzzed process (the pid of the master thread)
+
+	target_thread_t targets[MAXTHREAD]; //array for threads in the fuzzed process
+	int target_num; //how many threads are in running
+}pt_manager_t;
+
+typedef struct netlink_struct{
+	struct sock *nl_sk;
+	struct netlink_kernel_cfg cfg;  
+}netlink_t;
+
+extern pt_manager_t ptm;
+
+extern unsigned long (*ksyms_func)(const char *name);
+
+unsigned long proxy_unmapped_area(struct task_struct *task, struct file * file, unsigned long addr, unsigned long len, unsigned long pgoff, unsigned long flags);
+
+struct vm_area_struct *proxy_special_mapping(
+	struct mm_struct *mm,
+	unsigned long addr, unsigned long len,
+	unsigned long vm_flags);
+
+
+void * proxy_find_symbol(char * name);
+void record_pt(int tx);
+void resume_pt(int tx);
 
 #endif
 
