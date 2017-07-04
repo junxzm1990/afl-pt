@@ -5,3 +5,4 @@
 *.dt
 afl-2.42b/afl-*
 *.files
+afl-pt-proxy
