@@ -553,3 +553,4 @@ static void __exit pt_exit(void){
 
 module_init(pt_init);
 module_exit(pt_exit);
+MODULE_LICENSE("GPL");
