@@ -139,6 +139,7 @@ typedef struct target_thread_struct{
 
 	u64 pva; //virtual address for proxy to access	
 	u64 offset; //offset in the PT buffer 		
+	u64 outmask;
 
 }target_thread_t;
 

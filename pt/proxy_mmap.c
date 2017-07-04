@@ -38,7 +38,7 @@
 void * proxy_find_symbol(char * name){
 	if(!ksyms_func)
 		return NULL;
-	return ksyms_func(name);	
+	return (void*)ksyms_func(name);	
 }
 
 unsigned long pp_unmapped_area(struct task_struct *task, struct vm_unmapped_area_info *info)
@@ -143,7 +143,6 @@ proxy_get_unmapped_area(struct task_struct *task, struct file* file, unsigned lo
 {
 
 	struct mm_struct *mm = task->mm;
-	struct vm_area_struct *vma;
 	struct vm_unmapped_area_info info;
 
 	if (flags & MAP_FIXED)
@@ -190,13 +189,13 @@ struct vm_area_struct *proxy_special_mapping(
 	vm_area_cachep = *((struct kmem_cache **)proxy_find_symbol("vm_area_cachep"));
 	if(!vm_area_cachep){
 		printk(KERN_INFO "Cannot locate VMA cache\n");
-		return -ENOMEM;
+		return ERR_PTR(-ENOMEM);
 	}
 
 	vma = kmem_cache_zalloc(vm_area_cachep, GFP_KERNEL);
 	if (unlikely(vma == NULL)){
 		printk(KERN_INFO "Cannot allocate VMA\n");
-		return -ENOMEM;
+		return ERR_PTR(-ENOMEM);
 	}
 
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
@@ -206,9 +205,11 @@ struct vm_area_struct *proxy_special_mapping(
 		addr = proxy_unmapped_area(mm->owner, NULL, 0, len, 0, vm_flags);
 	}
 
-	if(IS_ERR_VALUE(addr))
+	if(IS_ERR_VALUE(addr)){
+		ret = addr; 
 		goto out; 
-
+	}
+	
 	vma->vm_start = addr;
 	vma->vm_end = addr + len;
 	vma->vm_flags = vm_flags | mm->def_flags | VM_DONTEXPAND | VM_SOFTDIRTY;
@@ -217,7 +218,7 @@ struct vm_area_struct *proxy_special_mapping(
 	
 	if(!insert_vm_struct){
 		printk(KERN_INFO "Cannot insert VMA\n");
-		return -ENOMEM;
+		return ERR_PTR(-ENOMEM);
 	}
 
 	ret = insert_vm_struct(mm, vma);

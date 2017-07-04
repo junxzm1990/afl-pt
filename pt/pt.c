@@ -51,13 +51,14 @@ static void pt_recv_msg(struct sk_buff *skb);
 	.end = (_end), \
 }
 
-#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset) (target_thread_t) {\
+#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask) (target_thread_t) {\
 	.pid = _pid, \
 	.task = _task, \
 	.topa = _topa, \
 	.status = _status, \
 	.pva = _pva, \
 	.offset = _offset,\
+	.outmask = _mask, \
 }
 
 
@@ -182,41 +183,41 @@ static void reply_msg(char *msg, pid_t pid){
 //each entry with 4MB space
 static bool do_setup_topa(topa_t *topa)
 {
-
 	void *raw; 
 	int index; 
 	int it; 
 
-	//create the first 32 entries with real space 
+	//create the first 30 entries with real space and no interrupt 
 	for(index = 0; index < PTEN - 1; index++){
-		raw =__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
-		memset(raw, 0x41, (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE);
-		if(!raw)
-			goto fail; 
-		topa->entries[index] = TOPA_ENTRY(virt_to_phys(raw),
-			TOPA_ENTRY_UNIT_SIZE, 0, 0, 0);
+		raw =	(void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
+		if(!raw) goto fail; 
+
+		topa->entries[index] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 0, 0);
 	}
+
+
+	//create the 31th entry with real spce and interrupt
+	raw = (void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
+	if(!raw) goto fail; 
+
+	topa->entries[index++] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
+
+
+	//create the 32th entry as the backup area
+	raw = (void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
+	if(!raw) goto fail; 
+
+	topa->entries[index++] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
 
 	//Creat the last entry with end bit set
 	//Init a circular buffer
-	topa->entries[PTEN-TOPAEND] =  TOPA_ENTRY(virt_to_phys(topa),
-			0, 0, 0, 1);
-	//The last but second entry
-	//Work as the backup buffer
-	topa->entries[PTEN - TOPABACK] =  TOPA_ENTRY(virt_to_phys(topa),
-			TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
-	//The last entry
-	//Work as the interrupt indicator
-	topa->entries[PTEN -TOPAINT] =  TOPA_ENTRY(virt_to_phys(topa),
-			TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
-
+	topa->entries[PTEN-TOPAEND] =  TOPA_ENTRY(virt_to_phys(topa), 0, 0, 0, 1);
 	return true; 
 
 //In case of failure, free all the pages		
 fail: 	
 	for(it = 0; it < index; it++)
-		free_pages( phys_to_virt(topa->entries[it].base), 
-			TOPA_ENTRY_UNIT_SIZE);
+		free_pages((long unsigned int)phys_to_virt(topa->entries[it].base),  TOPA_ENTRY_UNIT_SIZE);
 	return false; 
 }
 
@@ -282,7 +283,7 @@ static bool setup_target_thread(struct task_struct *target){
 
 	printk(KERN_INFO "Address of VMA for proxy %lx\n", vma->vm_start);
 	//need a lock here when multiple target threads are running. 
-	ptm.targets[ptm.target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0); 
+	ptm.targets[ptm.target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0); 
 	ptm.target_num++;
 	return true; 
 }
@@ -445,7 +446,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 	struct nlmsghdr *nlh;
 	int pid;
 	char msg[MAX_MSG];
-	struct vm_area_struct * vma;
 	struct task_struct* (*find_task_by_vpid)(pid_t nr);
 	int tx;
 
@@ -506,7 +506,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
 		
 		case TEST:
 			for(tx = 0; tx < ptm.target_num; tx++)
-				printk(KERN_INFO "Offset of %d target %lx\n", tx, ptm.targets[tx].offset);	
+				printk(KERN_INFO "Offset of %d target %llx\n", tx, ptm.targets[tx].offset);	
 			break;
 
 		case ERROR:
