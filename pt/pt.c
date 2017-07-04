@@ -19,7 +19,6 @@
 #include <asm/processor.h>
 #include <asm/errno.h>
 #include <linux/tracepoint.h>
-#include <linux/debugfs.h>
 #include <linux/netlink.h>
 #include <net/sock.h>
 #include <linux/skbuff.h>
@@ -29,8 +28,6 @@
 #include <asm/mman.h>
 #include <linux/mman.h>
 #include <linux/tracepoint.h>
-#include <linux/sched/sysctl.h>
-#include <linux/hugetlb.h>
 #include "pt.h"
 
 //kernel module parameters

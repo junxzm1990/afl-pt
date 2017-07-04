@@ -1,37 +1,19 @@
-#include <linux/module.h>
-#include <linux/miscdevice.h>
-#include <linux/fs.h>
-#include <linux/cpu.h>
-#include <linux/moduleparam.h>
 #include <linux/kernel.h>
-#include <linux/gfp.h>
-#include <linux/io.h>
 #include <linux/mm.h>
-#include <linux/uaccess.h>
-#include <linux/sched.h>
 #include <linux/kallsyms.h>
-#include <linux/kprobes.h>
-#include <linux/dcache.h>
 #include <linux/ctype.h>
-#include <linux/syscore_ops.h>
-#include <trace/events/sched.h>
-#include <asm/msr.h>
-#include <asm/processor.h>
 #include <asm/errno.h>
 #include <linux/tracepoint.h>
-#include <linux/debugfs.h>
-#include <linux/netlink.h>
-#include <net/sock.h>
-#include <linux/skbuff.h>
 #include <linux/sched.h>
-#include <linux/version.h>
 #include <asm/processor.h>	
 #include <asm/mman.h>
 #include <linux/mman.h>
-#include <linux/tracepoint.h>
-#include <linux/sched/sysctl.h>
-#include <linux/hugetlb.h>
+#include <linux/slab.h>
+#include <linux/netlink.h>
+#include <net/sock.h>
+
 #include "pt.h"
+
 
 
 #define MSR_IA32_RTIT_CTL		0x00000570
