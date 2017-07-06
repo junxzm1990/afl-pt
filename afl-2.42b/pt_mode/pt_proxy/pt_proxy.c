@@ -50,6 +50,7 @@ static s32 forksrv_pid;                                /* fork server process id
 enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
 s64 pt_trace_buf = -1;                                 /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = -1;                            /* size of the pt trace buffer     */
+s64 pt_trace_off_bound = -1;                           /* boundary of trace buffer        */
 
 
 
@@ -220,6 +221,11 @@ static void __afl_proxy_loop(void) {
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
+
+
+
+    /* in PROXY_FUZZ_ING state, decode pt buffer and write to trace_bits */
+
 
 
     /* Wait for target to report child status. Abort if read fails. */
