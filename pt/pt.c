@@ -28,14 +28,25 @@
 #include <asm/mman.h>
 #include <linux/mman.h>
 #include <linux/tracepoint.h>
+#include <linux/kdebug.h>
+#include <asm/apic.h>
+#include <asm/nmi.h>
+
 #include "pt.h"
+
+#define MSR_LVT 0x834
+#define MSR_IA32_PERF_GLOBAL_STATUS 0x0000038e
+#define MSR_IA32_PERF_GLOBAL_CTRL 	0x0000038f
+#define MSR_GLOBAL_STATUS_RESET 0x390
+
+#define read_global_status() native_read_msr(MSR_IA32_PERF_GLOBAL_STATUS)
+#define read_global_status_reset() native_read_msr(MSR_GLOBAL_STATUS_RESET)
+#define echo_pt_int() wrmsrl(MSR_GLOBAL_STATUS_RESET, BIT(55)) 
 
 //kernel module parameters
 static unsigned long kallsyms_lookup_name_ptr;
 module_param(kallsyms_lookup_name_ptr, ulong, 0400);
 MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_lookup_name_ptr (for kernels without CONFIG_KALLSYMS_ALL)");
-
-
 
 unsigned long (*ksyms_func)(const char *name) = NULL;
 static void pt_recv_msg(struct sk_buff *skb);
@@ -87,6 +98,7 @@ static struct tracepoint *exec_tp;
 static struct tracepoint *switch_tp; 
 static struct tracepoint *fork_tp;
 static struct tracepoint *exit_tp; 
+
 
 //query CPU ID to check capability of PT
 static void query_pt_cap(void){
@@ -185,13 +197,12 @@ static bool do_setup_topa(topa_t *topa)
 	int it; 
 
 	//create the first 30 entries with real space and no interrupt 
-	for(index = 0; index < PTEN - 1; index++){
+	for(index = 0; index < PTINT; index++){
 		raw =	(void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
 		if(!raw) goto fail; 
 
 		topa->entries[index] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 0, 0);
 	}
-
 
 	//create the 31th entry with real spce and interrupt
 	raw = (void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
@@ -199,16 +210,15 @@ static bool do_setup_topa(topa_t *topa)
 
 	topa->entries[index++] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
 
-
 	//create the 32th entry as the backup area
 	raw = (void*)__get_free_pages(GFP_KERNEL,TOPA_ENTRY_UNIT_SIZE);
 	if(!raw) goto fail; 
 
-	topa->entries[index++] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 1, 0);
+	topa->entries[index++] = TOPA_ENTRY(virt_to_phys(raw), TOPA_ENTRY_UNIT_SIZE, 0, 0, 0);
 
 	//Creat the last entry with end bit set
 	//Init a circular buffer
-	topa->entries[PTEN-TOPAEND] =  TOPA_ENTRY(virt_to_phys(topa), 0, 0, 0, 1);
+	topa->entries[index] =  TOPA_ENTRY(virt_to_phys(topa), 0, 0, 0, 1);
 	return true; 
 
 //In case of failure, free all the pages		
@@ -313,6 +323,7 @@ static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *p
 	}
 
 	for(tx = 0; tx < ptm.target_num; tx++){
+
 		if(ptm.targets[tx].pid == next->pid){
 			resume_pt(tx);
 		}		
@@ -347,6 +358,8 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		
 		printk(KERN_INFO "Start Target\n");
 
+		//todo, add the topa addr and size
+		//format: TOPA:0xaddr:0xsize
 		reply_msg("TOPA", ptm.proxy_pid);
 		ptm.p_stat = PFUZZ;
 	}		
@@ -386,6 +399,7 @@ static bool set_trace_point(void){
 	if(!exit_tp)
 		return false; 
 
+
        trace_probe_ptr = ksyms_func("tracepoint_probe_register");
 
 	if(!trace_probe_ptr)
@@ -395,6 +409,7 @@ static bool set_trace_point(void){
 	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
+
 	return true;
 }
 
@@ -421,6 +436,7 @@ static void release_trace_point(void){
 		trace_release_ptr(switch_tp, (void*)probe_trace_switch, NULL);
 	if(exit_tp)
 		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);
+
 }
 
 static enum msg_etype msg_type(char * msg){
@@ -501,6 +517,8 @@ static void pt_recv_msg(struct sk_buff *skb) {
 		case PTBUF:
 			break;	
 		
+		//Recv: NEXT:0xprevboundary
+		//Send: NEXT:0xnextboundary	
 		case TEST:
 			for(tx = 0; tx < ptm.target_num; tx++)
 				printk(KERN_INFO "Offset of %d target %llx\n", tx, ptm.targets[tx].offset);	
@@ -511,6 +529,55 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			break;
 	}
 }
+
+#if 1
+
+
+static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
+{
+	int tx;  
+	siginfo_t sgt; 
+	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
+
+	force_sig_info = proxy_find_symbol("force_sig_info");
+
+
+ 	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 0);
+	u64 status = read_global_status();
+
+	for(tx = 0; tx < ptm.target_num; tx++){
+		if(ptm.targets[tx].pid == current->pid)
+		{
+			if(status & BIT_ULL(55)){
+				printk(KERN_INFO "NMI TRIGGERED %llx\n", status);
+				force_sig_info(SIGSTOP, &sgt, current);
+	
+//				ptm.targets[tx].outmask = 0;
+					
+//				force_sig_info(SIGCONT, &sgt, current);
+			}
+		}
+		
+
+	}
+
+  	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 1);
+	return 0;
+
+}
+
+static int register_pmi_handler(void) {
+	register_nmi_handler(NMI_LOCAL, pt_nmi_handler, NMI_FLAG_FIRST, "perf_pt");
+}
+
+void unregister_pmi_handler(void){
+	void (*unregister_nmi_handler)(unsigned int type, const char *name);
+	unregister_nmi_handler =  proxy_find_symbol("unregister_nmi_handler");
+	unregister_nmi_handler(NMI_LOCAL, "perf_pt");
+}
+
+
+#endif
 
 //Init pt 
 //1. Check if pt is supported 
@@ -536,12 +603,16 @@ static int __init pt_init(void){
 	}
 
 	ksyms_func = kallsyms_lookup_name_ptr; 
+	
+	register_pmi_handler();
+
 	nlt.nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &nlt.cfg);
 	return 0;
 }
 
 static void __exit pt_exit(void){
-	
+
+	unregister_pmi_handler();
 	//release the netlink	
 	netlink_kernel_release(nlt.nl_sk);
 	//release the trace points

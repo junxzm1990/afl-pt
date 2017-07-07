@@ -41,11 +41,13 @@
 
 #define MAXTHREAD 0x08
 
-#define TOPAINT 0x3
+#define PTEN 0x21 //32 entries for ToPA // 128 MB in total
+#define PTINT PTEN-3
+
+#define TOPANROM 0x1e
 #define TOPABACK 0x2
 #define TOPAEND 0x1
 
-#define PTEN 0x21 //32 entries for ToPA // 128 MB in total
 #define MEGNUM 0x08
 #define MAX_MSG 512
 
@@ -179,6 +181,6 @@ struct vm_area_struct *proxy_special_mapping(
 void * proxy_find_symbol(char * name);
 void record_pt(int tx);
 void resume_pt(int tx);
-
+void restart_pt(int tx);
 #endif
 

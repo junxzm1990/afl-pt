@@ -11,7 +11,6 @@
 #include <linux/slab.h>
 #include <linux/netlink.h>
 #include <net/sock.h>
-
 #include "pt.h"
 
 void * proxy_find_symbol(char * name){

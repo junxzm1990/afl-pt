@@ -11,7 +11,6 @@
 #include <linux/slab.h>
 #include <linux/netlink.h>
 #include <net/sock.h>
-
 #include "pt.h"
 
 
@@ -54,8 +53,7 @@ static void pt_setup_msr(topa_t *topa, u64 mask)
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_BASE, virt_to_phys(topa));
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_MASK, mask);
 	wrmsrl(MSR_IA32_RTIT_CTL, RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
-			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR
-			| ((TOPA_ENTRY_SIZE_64K + 1) << 24));
+			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR);
 }
 
 void record_pt(int tx){
@@ -74,6 +72,15 @@ void record_pt(int tx){
 
 	ptm.targets[tx].outmask = mask;
 }
+
+void restart_pt(int tx){
+
+	if(pt_enabled())
+		pt_pause();
+
+	pt_setup_msr(ptm.targets[tx].topa, 0);
+}
+
 
 void resume_pt(int tx){
 
