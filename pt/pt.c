@@ -103,16 +103,12 @@ static struct tracepoint *exit_tp= NULL;
 
 static int get_target_tx(pid_t pid){
 	int tx; 
-
 	for(tx = 0; tx < ptm.target_num; tx++){
 		if (ptm.targets[tx].pid == pid)
 			return tx; 
 	}
-
 	return -1; 
 }
-
-
 
 //query CPU ID to check capability of PT
 static void query_pt_cap(void){
@@ -155,24 +151,19 @@ static void query_pt_cap(void){
 }
 
 static bool check_pt(void){
-
 	if(!pt_cap.has_pt){
 		printk(KERN_INFO "No PT support\n");
 		return false; 
 	}
-
 	if(!pt_cap.has_topa){
 		printk(KERN_INFO "No ToPA support\n");
 		return false; 
 	}
-
 	if(!pt_cap.cr3_match){
 		printk(KERN_INFO "No filtering based on CR3\n");
 		return false; 
 	}	
-
 	printk("The PT supports %d ToPA entries and %d address ranges for filtering\n", pt_cap.topa_num, pt_cap.addr_range_num);
-
 	return true; 
 }
 
@@ -189,7 +180,6 @@ static void reply_msg(char *msg, pid_t pid){
 		printk(KERN_ERR "Failed to allocate new skb\n");
 		return;
 	}
-
 	nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,MAX_MSG,0);  
 	NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
 
@@ -537,6 +527,49 @@ static enum msg_etype msg_type(char * msg){
 	return ERROR; 	
 }
 
+static void process_next_msg(char *msg_recvd, char*msg_send){
+	//get next boundary
+	//check if it is under interupt, if so, deal with interrupt
+	u64 coff; 	
+	int tx; 
+	siginfo_t sgt;
+	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
+
+	coff = 0;
+	kstrtoull(strstr(msg_recvd, DEM)+1, 16, &coff);
+	printk("Received next message %s and %llx\n", msg_send, coff);
+
+	force_sig_info = proxy_find_symbol("force_sig_info");	
+	
+	for(tx = 0; tx < ptm.target_num; tx++){
+		if(ptm.targets[tx].status == TSTART || 
+			ptm.targets[tx].status == TRUN){
+			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+			return;
+		}
+		//process the interrupt status
+		if(ptm.targets[tx].status == TINT){
+			if(coff == ptm.targets[tx].offset){
+				//continue the target
+				ptm.targets[tx].offset = (u64)0;
+				force_sig_info(SIGCONT, &sgt, ptm.targets[tx].task);
+				ptm.targets[tx].status = TRUN;	
+				snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				
+			}else{
+				snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+			}
+			return;
+		}
+		
+		if(ptm.targets[tx].status == TEXIT){
+			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				return;
+		}
+	}
+
+	snprintf(msg_send, MAX_MSG, "ERROR:NO TARHET");
+	return;
+}
+
 
 //all these communications are sequential. No lock needed. 
 static void pt_recv_msg(struct sk_buff *skb) {
@@ -544,36 +577,31 @@ static void pt_recv_msg(struct sk_buff *skb) {
 	struct nlmsghdr *nlh;
 	int pid;
 	char msg[MAX_MSG];
+	char next_msg[MAX_MSG];
 	struct task_struct* (*find_task_by_vpid)(pid_t nr);
-	int tx;
-
 
 	//receive new data
 	nlh=(struct nlmsghdr*)skb->data;
 	strncpy(msg, (char*)nlmsg_data(nlh), MAX_MSG);
 	pid = nlh->nlmsg_pid; /*pid of sending process */
-
 	find_task_by_vpid = proxy_find_symbol("find_task_by_vpid");
 
 	if(!find_task_by_vpid){
-		reply_msg("ERROR: Cannot get task of proxy", pid); 	
+		reply_msg("ERROR: Cannot get task of proxy", pid);
 		return; 	
 	}
 
 	switch(msg_type(msg)){
 		case START:
 			if (ptm.p_stat != PSLEEP){
-				reply_msg("ERROR: Alread Started", pid); 	
-				break; 	
+				reply_msg("ERROR: Alread Started",pid); 				break; 	
 			}	
 			ptm.p_stat = PSTART;
 			ptm.proxy_pid = pid;
-
 			ptm.proxy_task = find_task_by_vpid(pid); 
 			//confirm start
 			reply_msg("SCONFIRM", pid); 
 			break;
-
 		//Target menssage format: "TARGET:/path/to/bin" 
 		case TARGET: 
 			if(ptm.p_stat != PSTART){
@@ -604,8 +632,8 @@ static void pt_recv_msg(struct sk_buff *skb) {
 		//Recv: NEXT:0xprevboundary
 		//Send: NEXT:0xnextboundary	
 		case NEXT:
-			for(tx = 0; tx < ptm.target_num; tx++)
-				printk(KERN_INFO "Offset of %d target %llx\n", tx, ptm.targets[tx].offset);	
+			process_next_msg(msg, next_msg);
+			reply_msg(next_msg, pid); 
 			break;
 
 		case ERROR:
@@ -634,12 +662,10 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 		{
 			if(status & BIT_ULL(55)){
 				printk(KERN_INFO "NMI TRIGGERED %llx\n", status);
+				force_sig_info(SIGSTOP, &sgt, current);
 			}
 		}
-		
-
 	}
-
   	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 1);
 	return 0;
 
@@ -647,6 +673,7 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 
 static int register_pmi_handler(void) {
 	register_nmi_handler(NMI_LOCAL, pt_nmi_handler, NMI_FLAG_FIRST, "perf_pt");
+	return 0;
 }
 
 void unregister_pmi_handler(void){
@@ -654,7 +681,6 @@ void unregister_pmi_handler(void){
 	unregister_nmi_handler =  proxy_find_symbol("unregister_nmi_handler");
 	unregister_nmi_handler(NMI_LOCAL, "perf_pt");
 }
-
 
 #endif
 
