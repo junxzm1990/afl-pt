@@ -48,7 +48,9 @@ static unsigned long kallsyms_lookup_name_ptr;
 module_param(kallsyms_lookup_name_ptr, ulong, 0400);
 MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_lookup_name_ptr (for kernels without CONFIG_KALLSYMS_ALL)");
 
-unsigned long (*ksyms_func)(const char *name) = NULL;
+
+/* unsigned long (*ksyms_func)(const char *name) = NULL; */
+ksyms_func_ptr_ty ksyms_func = NULL;
 static void pt_recv_msg(struct sk_buff *skb);
 
 #define TOPA_ENTRY(_base, _size, _stop, _intr, _end) (struct topa_entry) { \
@@ -94,10 +96,10 @@ pt_manager_t ptm = {
 	.target_num = 0,
 };
 
-static struct tracepoint *exec_tp; 
-static struct tracepoint *switch_tp; 
-static struct tracepoint *fork_tp;
-static struct tracepoint *exit_tp; 
+static struct tracepoint *exec_tp = NULL; 
+static struct tracepoint *switch_tp= NULL; 
+static struct tracepoint *fork_tp= NULL;
+static struct tracepoint *exit_tp= NULL; 
 
 
 //query CPU ID to check capability of PT
@@ -170,12 +172,12 @@ static void reply_msg(char *msg, pid_t pid){
 	int res;
 
 	skb_out = nlmsg_new(MAX_MSG, 0);
-		
+
 	if(!skb_out){
 		printk(KERN_ERR "Failed to allocate new skb\n");
 		return;
 	}
- 
+
 	nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,MAX_MSG,0);  
 	NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
 
@@ -374,9 +376,12 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 
 static bool set_trace_point(void){
 
-	int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data);
+	/* int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data); */
+  trace_probe_ptr_ty trace_probe_ptr;
 	if(!kallsyms_lookup_name_ptr){
 		printk(KERN_INFO "Please specify the address of kallsyms_lookup_name_ptr");
+    return false; //if we don't stop here when kernel tries to access an invalid address
+                  // it will make the system crash
 	}
 
 	//trace on exec
@@ -399,8 +404,7 @@ static bool set_trace_point(void){
 	if(!exit_tp)
 		return false; 
 
-
-       trace_probe_ptr = ksyms_func("tracepoint_probe_register");
+  trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
 
 	if(!trace_probe_ptr)
 		return false;
@@ -415,14 +419,15 @@ static bool set_trace_point(void){
 
 static void release_trace_point(void){
 	
-	int (*trace_release_ptr)(struct tracepoint *tp, void *probe, void *data); 
+	/* int (*trace_release_ptr)(struct tracepoint *tp, void *probe, void *data);  */
+  trace_release_ptr_ty trace_release_ptr;
 
 	if(!ksyms_func){
 		printk(KERN_INFO "FFF Cannot unregister trace points!!!");
 		return;	
 	}
 
-	trace_release_ptr = ksyms_func("tracepoint_probe_unregister"); 
+	trace_release_ptr = (trace_release_ptr_ty)ksyms_func("tracepoint_probe_unregister"); 
 	if(!trace_release_ptr){
 		printk(KERN_INFO "Cannot unregister trace points!!!");
 		return;
@@ -602,10 +607,8 @@ static int __init pt_init(void){
 		printk(KERN_INFO "Please specify the address to kallsyms_lookup_name\n");
 	}
 
-	ksyms_func = kallsyms_lookup_name_ptr; 
-	
+	ksyms_func = (ksyms_func_ptr_ty)kallsyms_lookup_name_ptr; 
 	register_pmi_handler();
-
 	nlt.nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &nlt.cfg);
 	return 0;
 }
@@ -622,3 +625,4 @@ static void __exit pt_exit(void){
 
 module_init(pt_init);
 module_exit(pt_exit);
+MODULE_LICENSE("GPL");

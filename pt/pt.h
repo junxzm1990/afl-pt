@@ -182,5 +182,11 @@ void * proxy_find_symbol(char * name);
 void record_pt(int tx);
 void resume_pt(int tx);
 void restart_pt(int tx);
+
+
+typedef int (*trace_probe_ptr_ty)(struct tracepoint *tp, void *probe, void *data);
+typedef int (*trace_release_ptr_ty)(struct tracepoint *tp, void *probe, void *data); 
+typedef unsigned long (*ksyms_func_ptr_ty)(const char *name);
+
 #endif
 
