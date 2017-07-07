@@ -207,17 +207,17 @@ static void __afl_proxy_loop(void) {
 
 
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
-    if (proxy_cur_state == PROXY_FORKSRV)
-      proxy_recv_msg();
+   // if (proxy_cur_state == PROXY_FORKSRV)
+   //   proxy_recv_msg();
 
 
     /* Wait for target  by reading from the pipe. Abort if read fails. */
     if (read(proxy_st_fd, &child_pid, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_RDY -> PROXY_FUZZ_ING */
-      if (proxy_cur_state != PROXY_FUZZ_RDY)
-        PFATAL("proxy is not on fuzz_ready state");
-      proxy_cur_state = PROXY_FUZZ_ING;
+     // if (proxy_cur_state != PROXY_FUZZ_RDY)
+     //   PFATAL("proxy is not on fuzz_ready state");
+     // proxy_cur_state = PROXY_FUZZ_ING;
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
@@ -232,8 +232,8 @@ static void __afl_proxy_loop(void) {
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
-      if (proxy_cur_state != PROXY_FUZZ_ING)
-        PFATAL("proxy is not on fuzzing state");
+    //  if (proxy_cur_state != PROXY_FUZZ_ING)
+    //    PFATAL("proxy is not on fuzzing state");
       proxy_cur_state = PROXY_FUZZ_STOP;
     }
 
