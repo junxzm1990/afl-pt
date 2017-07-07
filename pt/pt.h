@@ -93,12 +93,13 @@ enum msg_etype{
 	TARGET,
 	PTBUF,
 	ERROR,
-	TEST
+	NEXT
 };
 
 enum tar_status{
 	TSTART = 0,
 	TRUN,
+	TINT,
 	TEXIT
 };
 
