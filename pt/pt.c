@@ -1,5 +1,4 @@
 #include <linux/module.h>
-#include <linux/miscdevice.h>
 #include <linux/fs.h>
 #include <linux/cpu.h>
 #include <linux/moduleparam.h>
@@ -11,7 +10,6 @@
 #include <linux/sched.h>
 #include <linux/kallsyms.h>
 #include <linux/kprobes.h>
-#include <linux/dcache.h>
 #include <linux/ctype.h>
 #include <linux/syscore_ops.h>
 #include <trace/events/sched.h>
@@ -27,11 +25,8 @@
 #include <asm/processor.h>	
 #include <asm/mman.h>
 #include <linux/mman.h>
-#include <linux/tracepoint.h>
-#include <linux/kdebug.h>
 #include <asm/apic.h>
 #include <asm/nmi.h>
-
 #include "pt.h"
 
 #define MSR_LVT 0x834
@@ -52,6 +47,7 @@ MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_loo
 /* unsigned long (*ksyms_func)(const char *name) = NULL; */
 ksyms_func_ptr_ty ksyms_func = NULL;
 static void pt_recv_msg(struct sk_buff *skb);
+static void release_trace_point(void);
 
 #define TOPA_ENTRY(_base, _size, _stop, _intr, _end) (struct topa_entry) { \
 	.base = (_base) >> 12, \
@@ -71,6 +67,10 @@ static void pt_recv_msg(struct sk_buff *skb);
 	.outmask = _mask, \
 }
 
+#define RESET_TARGET(tx) ptm.targets[tx].pva = 0; \
+			 ptm.targets[tx].offset = 0;\
+			ptm.targets[tx].outmask = 0;\
+			ptm.targets[tx].status = TEXIT; 
 
 pt_cap_t pt_cap = {
 	.has_pt = false,
@@ -100,7 +100,6 @@ static struct tracepoint *exec_tp = NULL;
 static struct tracepoint *switch_tp= NULL; 
 static struct tracepoint *fork_tp= NULL;
 static struct tracepoint *exit_tp= NULL; 
-
 
 //query CPU ID to check capability of PT
 static void query_pt_cap(void){
@@ -226,7 +225,7 @@ static bool do_setup_topa(topa_t *topa)
 //In case of failure, free all the pages		
 fail: 	
 	for(it = 0; it < index; it++)
-		free_pages((long unsigned int)phys_to_virt(topa->entries[it].base),  TOPA_ENTRY_UNIT_SIZE);
+		free_pages((long unsigned int)phys_to_virt(topa->entries[it].base << PAGE_SHIFT),  TOPA_ENTRY_UNIT_SIZE);
 	return false; 
 }
 
@@ -269,7 +268,7 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 	set_fs(fs);	
 
 	for(index = 0; index < PTEN - 1; index++)
-		remap_pfn_range(vma, 
+		remap_pfn_range(vma,
 			mapaddr + index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE , 
 			topa->entries[index].base, 
 			(1 << TOPA_ENTRY_UNIT_SIZE ) *PAGE_SIZE, 
@@ -281,8 +280,23 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 //Set up the ToPA 
 static bool setup_target_thread(struct task_struct *target){
 
+	int tx; 
 	struct vm_area_struct *vma;
 	topa_t *topa;
+	
+	//check if any target can be reused
+	//only need to reset the pid, task, status, offset, and outmask
+	for(tx = 0; tx < ptm.target_num; tx++){
+		if(ptm.targets[tx].status == TEXIT){
+			printk(KERN_INFO "Reuse ToPA for target %x\n", target->pid);
+			ptm.targets[tx].pid = target->pid; 
+			ptm.targets[tx].task = target;
+			ptm.targets[tx].status = TSTART;
+			ptm.targets[tx].offset = 0;
+			ptm.targets[tx].outmask = 0;
+			return true; 
+		}		
+	}
 
 	topa = pt_alloc_topa();
 	if(!topa) return false; 
@@ -343,11 +357,8 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 
 	//the fork is invoked by the forkserver
 	if(parent->pid == ptm.fserver_pid){
-		if(ptm.p_stat != PTARGET)
+		if(ptm.p_stat != PTARGET && ptm.p_stat != PFUZZ)
 			return;			
-		//create_topa
-		//register_topa
-		//update ptm
 
 		//Fork a thread? Does this really happen? 
 		if(parent->mm == child->mm)
@@ -358,7 +369,7 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 			return; 
 		}
 		
-		printk(KERN_INFO "Start Target\n");
+		printk(KERN_INFO "Start Target %d\n", child->pid);
 
 		//todo, add the topa addr and size
 		//format: TOPA:0xaddr:0xsize
@@ -366,11 +377,55 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		ptm.p_stat = PFUZZ;
 	}		
 	//check if the fork is from the target 
-
 	return;
 }
 
+//register handler for process exit
+//take care of the target process and the proxy process
 static void probe_trace_exit(void * ignore, struct task_struct *tsk){
+
+	int tx;
+	int index;
+	topa_t *topa;
+
+
+	for(tx = 0; tx < ptm.target_num; tx++){
+		//exit of one target thread
+		//Simply set the status to TEXIT
+
+		if(ptm.targets[tx].pid == tsk->pid){
+			printk(KERN_INFO "Exit of target thread %x\n", tsk->pid);
+			RESET_TARGET(tx);
+		}	
+	}
+
+	//exit of the proxy process	
+	if(tsk->pid == ptm.proxy_pid){
+
+		printk(KERN_INFO "Exit of the proxy process\n");
+		ptm.p_stat = PSLEEP;  
+	
+		for(tx = 0; tx < ptm.target_num; tx++){
+			RESET_TARGET(tx);
+			topa = ptm.targets[tx].topa;
+
+			//free topa entries
+			for(index = 0; index < PTEN - 1; index++)
+				free_pages((long unsigned int)phys_to_virt(topa->entries[index].base << PAGE_SHIFT),  
+					TOPA_ENTRY_UNIT_SIZE);
+			
+			//free topa
+			free_pages((unsigned long)topa, TOPA_T_SIZE);
+			ptm.targets[tx].topa = NULL;
+		}
+		//reset target number
+		ptm.target_num = 0;
+
+		//release the trace points
+		if(ksyms_func);
+			release_trace_point();
+	}	
+
 	return;
 }
 
@@ -414,6 +469,8 @@ static bool set_trace_point(void){
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
 
+	printk(KERN_INFO "Set up trace point\n");
+
 	return true;
 }
 
@@ -442,6 +499,7 @@ static void release_trace_point(void){
 	if(exit_tp)
 		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);
 
+	printk(KERN_INFO "Release trace point\n");
 }
 
 static enum msg_etype msg_type(char * msg){
@@ -452,8 +510,8 @@ static enum msg_etype msg_type(char * msg){
 	if(strstr(msg, "TARGET"))
 		return TARGET;
 
-	if(strstr(msg, "TEST"))
-		return TEST;
+	if(strstr(msg, "NEXT"))
+		return NEXT;
 
 	return ERROR; 	
 }
@@ -509,7 +567,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			//Get the target binary path from the message
 			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
 			//set trace point on execv,fork,schedule,exit. 
-
 			if(!set_trace_point()){
 				ptm.p_stat = UNKNOWN;	
 				reply_msg("ERROR: Cannot register trace point. Sorry", pid);
@@ -524,7 +581,9 @@ static void pt_recv_msg(struct sk_buff *skb) {
 		
 		//Recv: NEXT:0xprevboundary
 		//Send: NEXT:0xnextboundary	
-		case TEST:
+		case NEXT:
+
+			printk(KERN_INFO "Received next message\n");
 			for(tx = 0; tx < ptm.target_num; tx++)
 				printk(KERN_INFO "Offset of %d target %llx\n", tx, ptm.targets[tx].offset);	
 			break;
@@ -555,11 +614,6 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 		{
 			if(status & BIT_ULL(55)){
 				printk(KERN_INFO "NMI TRIGGERED %llx\n", status);
-				force_sig_info(SIGSTOP, &sgt, current);
-	
-//				ptm.targets[tx].outmask = 0;
-					
-//				force_sig_info(SIGCONT, &sgt, current);
 			}
 		}
 		
@@ -618,9 +672,6 @@ static void __exit pt_exit(void){
 	unregister_pmi_handler();
 	//release the netlink	
 	netlink_kernel_release(nlt.nl_sk);
-	//release the trace points
-	if(ksyms_func);
-		release_trace_point();
 }
 
 module_init(pt_init);
