@@ -256,8 +256,10 @@ static void __afl_proxy_loop(void) {
 
 
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
-    if (proxy_cur_state == PROXY_FORKSRV)
+    if (proxy_cur_state == PROXY_FORKSRV){
         proxy_recv_msg();
+        start_pt_parser();
+    }
 
 
     /* Wait for target  by reading from the pipe. Abort if read fails. */
