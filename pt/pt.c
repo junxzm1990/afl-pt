@@ -101,6 +101,19 @@ static struct tracepoint *switch_tp= NULL;
 static struct tracepoint *fork_tp= NULL;
 static struct tracepoint *exit_tp= NULL; 
 
+static int get_target_tx(pid_t pid){
+	int tx; 
+
+	for(tx = 0; tx < ptm.target_num; tx++){
+		if (ptm.targets[tx].pid == pid)
+			return tx; 
+	}
+
+	return -1; 
+}
+
+
+
 //query CPU ID to check capability of PT
 static void query_pt_cap(void){
 	
@@ -351,9 +364,14 @@ static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *p
 	return;
 }
 
+
+
 //when the fork server forks, create a TOPA, and send it to the proxy server. 
 //on context switch, tracing the target process
 static void probe_trace_fork(void *ignore, struct task_struct *parent, struct task_struct * child){
+
+	char target_msg[MAX_MSG];	
+	int tx;
 
 	//the fork is invoked by the forkserver
 	if(parent->pid == ptm.fserver_pid){
@@ -371,9 +389,12 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		
 		printk(KERN_INFO "Start Target %d\n", child->pid);
 
+		tx = get_target_tx(child->pid);
 		//todo, add the topa addr and size
 		//format: TOPA:0xaddr:0xsize
-		reply_msg("TOPA", ptm.proxy_pid);
+
+		snprintf(target_msg, MAX_MSG, "TOPA:0x%lx0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ);
+		reply_msg(target_msg, ptm.proxy_pid);
 		ptm.p_stat = PFUZZ;
 	}		
 	//check if the fork is from the target 
@@ -516,6 +537,7 @@ static enum msg_etype msg_type(char * msg){
 	return ERROR; 	
 }
 
+
 //all these communications are sequential. No lock needed. 
 static void pt_recv_msg(struct sk_buff *skb) {
 
@@ -582,8 +604,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 		//Recv: NEXT:0xprevboundary
 		//Send: NEXT:0xnextboundary	
 		case NEXT:
-
-			printk(KERN_INFO "Received next message\n");
 			for(tx = 0; tx < ptm.target_num; tx++)
 				printk(KERN_INFO "Offset of %d target %llx\n", tx, ptm.targets[tx].offset);	
 			break;
@@ -599,15 +619,15 @@ static void pt_recv_msg(struct sk_buff *skb) {
 
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
-	int tx;  
+	int tx; 
+	u64 status;  
 	siginfo_t sgt; 
 	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
 
 	force_sig_info = proxy_find_symbol("force_sig_info");
 
-
  	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 0);
-	u64 status = read_global_status();
+	status = read_global_status();
 
 	for(tx = 0; tx < ptm.target_num; tx++){
 		if(ptm.targets[tx].pid == current->pid)
