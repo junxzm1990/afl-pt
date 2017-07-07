@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "../../config.h"
 #include "../../types.h"
@@ -53,6 +54,37 @@ s64 pt_trace_buf_size = -1;                            /* size of the pt trace b
 s64 pt_trace_off_bound = -1;                           /* boundary of trace buffer        */
 
 
+inline s64 req_next(s64 cur_boundary){
+    return -1;
+} 
+
+
+/* this function run in a thread until the whole fuzzing is done */
+static void *pt_parse_worker(void *arg)
+{
+    s64 cursor_pos = -1;
+    s64 next;
+
+    while(1){
+        if(proxy_cur_state != PROXY_FUZZ_ING) pthread_yield();
+        if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
+
+        if(cursor_pos < pt_trace_off_bound){
+            //parse the buffer
+            cursor_pos++;
+        }else{
+            while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
+                pthread_yield();
+            pt_trace_off_bound = next;
+        }
+    }
+}
+
+
+void start_pt_parser(){
+    pthread_t worker;
+    pthread_create(&worker, NULL, pt_parse_worker, NULL);
+}
 
 
 /*possible types of msg received from PT module*/
