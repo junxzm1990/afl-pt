@@ -92,6 +92,7 @@ enum msg_etype{
 	START = 0,
 	TARGET,
 	PTBUF,
+	PTNEXT,
 	ERROR,
 	NEXT
 };

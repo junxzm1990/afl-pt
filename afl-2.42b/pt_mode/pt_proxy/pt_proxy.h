@@ -13,5 +13,10 @@ enum msg_type{
 	START_CONFIRM = 0,
 	TARGET_CONFIRM,
 	TOPA_RDY,
+	PTNEXT,
 	ERROR
 };
+
+
+void proxy_recv_msg();
+void proxy_send_msg(char *msg);

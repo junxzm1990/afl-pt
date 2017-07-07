@@ -43,20 +43,26 @@ static s32 forksrv_pid;                                /* fork server process id
 /* proxy-ptm data structures */
 #define PT_START "START"                               /* fork server process id          */
 #define PT_TARGET "TARGET"                             /* fork server process id          */
+#define PT_BUF_NEXT "NEXT"                             /* fork server process id          */
 #define DEM ":"                                        /* fork server process id          */
 #define PT_TARGET_CONFIRM "TCONFIRM"                   /* fork server process id          */
 #define PT_START_CONFIRM "SCONFIRM"                    /* fork server process id          */
 #define PT_TARGET_CONFIRM "TCONFIRM"                   /* fork server process id          */
 #define PT_TOPA_READY "TOPA"                           /* fork server process id          */
 enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
-s64 pt_trace_buf = -1;                                 /* address of the pt trace buffer  */
-s64 pt_trace_buf_size = -1;                            /* size of the pt trace buffer     */
-s64 pt_trace_off_bound = -1;                           /* boundary of trace buffer        */
+s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
+s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
+s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
 
 
 inline s64 req_next(s64 cur_boundary){
-    return -1;
-} 
+    char sendstr[64];
+    snprintf(sendstr, 63, "NEXT:%lx", cur_boundary); 
+
+    proxy_send_msg(sendstr);
+    proxy_recv_msg();
+    return pt_trace_off_bound;
+}
 
 
 /* this function run in a thread until the whole fuzzing is done */
@@ -98,6 +104,9 @@ static enum msg_type msg_type(char * msg){
 
 	if(strstr(msg, PT_TOPA_READY))
 		return TOPA_RDY;
+
+	if(strstr(msg, PT_BUF_NEXT))
+      return PTNEXT;
 
 	return ERROR;
 }
@@ -171,13 +180,21 @@ void proxy_recv_msg(){
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
       char *tmp = strstr(msg, DEM);
-      pt_trace_buf_size = atoi(strstr(tmp+1, DEM) + 1);
+      pt_trace_buf_size = strtol(strstr(tmp+1, DEM) + 1, NULL ,16);
       strstr(tmp+1, DEM)[0] = '\0';
-      pt_trace_buf = atoi(tmp);
+      pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
       assert((pt_trace_buf > 0 && pt_trace_buf_size > 0)
              &&"invalid trace buffer and size" );
       break;
+      
+    case PTNEXT:
+      if(proxy_cur_state != PROXY_FUZZ_ING)
+          PFATAL("proxy is not on fuzzing state");
+
+      pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16); 
+      break;
+        
 
     case ERROR:
       WARNF("got error message from pt-module");
@@ -239,17 +256,17 @@ static void __afl_proxy_loop(void) {
 
 
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
-   // if (proxy_cur_state == PROXY_FORKSRV)
-   //   proxy_recv_msg();
+    if (proxy_cur_state == PROXY_FORKSRV)
+        proxy_recv_msg();
 
 
     /* Wait for target  by reading from the pipe. Abort if read fails. */
     if (read(proxy_st_fd, &child_pid, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_RDY -> PROXY_FUZZ_ING */
-     // if (proxy_cur_state != PROXY_FUZZ_RDY)
-     //   PFATAL("proxy is not on fuzz_ready state");
-     // proxy_cur_state = PROXY_FUZZ_ING;
+        if (proxy_cur_state != PROXY_FUZZ_RDY)
+            PFATAL("proxy is not on fuzz_ready state");
+        proxy_cur_state = PROXY_FUZZ_ING;
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
