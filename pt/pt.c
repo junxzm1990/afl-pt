@@ -642,7 +642,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 	}
 }
 
-#if 1
 
 
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
@@ -682,7 +681,6 @@ void unregister_pmi_handler(void){
 	unregister_nmi_handler(NMI_LOCAL, "perf_pt");
 }
 
-#endif
 
 //Init pt 
 //1. Check if pt is supported 
