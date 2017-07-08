@@ -14,6 +14,7 @@
 #include "../../alloc-inl.h"
 #include "pt_proxy.h"
 
+//#define debug
 
 /* using global data because afl will start one proxy instance per target                 */
 
@@ -72,16 +73,18 @@ static void *pt_parse_worker(void *arg)
     s64 next;
 
     while(1){
-        if(proxy_cur_state != PROXY_FUZZ_ING) pthread_yield();
+    //    if(proxy_cur_state != PROXY_FUZZ_ING) pthread_yield();
         if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
 
         if(cursor_pos < pt_trace_off_bound){
             //parse the buffer
             cursor_pos++;
         }else{
-            while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
+          /*  while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
                 pthread_yield();
             pt_trace_off_bound = next;
+*/
+	   pt_trace_off_bound = cursor_pos + 500;
         }
     }
 }
@@ -179,18 +182,19 @@ void proxy_recv_msg(){
     case TOPA_RDY:
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
+
       char *tmp = strstr(msg, DEM);
       pt_trace_buf_size = strtol(strstr(tmp+1, DEM) + 1, NULL ,16);
       strstr(tmp+1, DEM)[0] = '\0';
-      pt_trace_buf = strtol(tmp, NULL, 16);
+      pt_trace_buf = strtol(tmp+1, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
       assert((pt_trace_buf > 0 && pt_trace_buf_size > 0)
              &&"invalid trace buffer and size" );
       break;
       
     case PTNEXT:
-      if(proxy_cur_state != PROXY_FUZZ_ING)
-          PFATAL("proxy is not on fuzzing state");
+     // if(proxy_cur_state != PROXY_FUZZ_ING)
+     //     PFATAL("proxy is not on fuzzing state");
 
       pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16); 
       break;
@@ -283,11 +287,14 @@ static void __afl_proxy_loop(void) {
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
-    //  if (proxy_cur_state != PROXY_FUZZ_ING)
-    //    PFATAL("proxy is not on fuzzing state");
+      if (proxy_cur_state != PROXY_FUZZ_ING)
+         PFATAL("proxy is not on fuzzing state");
       proxy_cur_state = PROXY_FUZZ_STOP;
     }
-
+#ifdef debug
+	proxy_send_msg("NEXT:0x0");
+	proxy_recv_msg();	
+#endif
     /* we can parse the pt packet and present it to the trace_bits here*/
     __afl_area_ptr[2424] = 1;
     __afl_area_ptr[2433] = 1;
