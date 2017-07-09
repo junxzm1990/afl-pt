@@ -318,10 +318,10 @@ void proxy_recv_msg(){
       break;
       
     case PTNEXT:
-     if(proxy_cur_state != PROXY_FUZZ_ING)
-         PFATAL("proxy is not on fuzzing state");
+     /* if(proxy_cur_state != PROXY_FUZZ_ING) */
+     /*     PFATAL("proxy is not on fuzzing state"); */
 
-      /* pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16);  */
+      pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16);
       break;
         
 
