@@ -200,17 +200,16 @@ static void *pt_parse_worker(void *arg)
 #endif
 
     while(1){
-        if(proxy_cur_state == PROXY_FUZZ_ING){
-            if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
+        if(proxy_cur_state != PROXY_FUZZ_ING)pthread_yield();
+        if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
 
-            if(cursor_pos < pt_trace_off_bound){
-                //parse the buffer
-                cursor_pos++;
-            }else{
-                while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
-                    pthread_yield();
-                pt_trace_off_bound = next;
-            }
+        if(cursor_pos < pt_trace_off_bound){
+            //parse the buffer
+            cursor_pos++;
+        }else{
+            while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
+                pthread_yield();
+            pt_trace_off_bound = next;
         }
     }
 }
@@ -261,7 +260,7 @@ void netlink_init(){
 
 void proxy_send_msg(char *msg){
 
-  printf("Sent message payload: %s\n", msg);
+  /* printf("Sent message payload: %s\n", msg); */
   nlh = (struct nlmsghdr *)malloc(NLMSG_LENGTH(MAX_PAYLOAD));
   memset(nlh, 0, NLMSG_LENGTH(MAX_PAYLOAD));
   nlh->nlmsg_len = NLMSG_LENGTH(MAX_PAYLOAD);
@@ -277,14 +276,14 @@ void proxy_send_msg(char *msg){
   nl_msg.msg_iov = &iov;
   nl_msg.msg_iovlen = 1;
 
-  printf("Sending message to kernel\n");
+  /* printf("Sending message to kernel\n"); */
   sendmsg(sock_fd,&nl_msg,0);
 
 }
 
 void proxy_recv_msg(){
   char msg[MAX_PAYLOAD];
-  printf("Waiting for message from kernel\n");
+  /* printf("Waiting for message from kernel\n"); */
   /* Read message from kernel */
   recvmsg(sock_fd, &nl_msg, 0);
   printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
