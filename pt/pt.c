@@ -552,11 +552,17 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
             return;
         }
 		
-        if(ptm.targets[tx].status == TEXIT){
-            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);			
-            printk("Sending next message on exit %s\n", msg_send);
-	    return;
-        }
+	if(ptm.targets[tx].status == TEXIT){
+		if(coff == ptm.targets[tx].offset){
+			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);			
+			printk("Sending next message on exit %s\n", msg_send);
+		}else{
+			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);			
+			printk("Sending next message on exit %s\n", msg_send);
+		}
+
+		return;
+	}
     }
     printk("Sending next message %s\n", msg_send);
     snprintf(msg_send, MAX_MSG, "ERROR:NO TARHET");
