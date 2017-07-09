@@ -43,7 +43,6 @@ static unsigned long kallsyms_lookup_name_ptr;
 module_param(kallsyms_lookup_name_ptr, ulong, 0400);
 MODULE_PARM_DESC(kallsyms_lookup_name_ptr, "Set address of function kallsyms_lookup_name_ptr (for kernels without CONFIG_KALLSYMS_ALL)");
 
-
 /* unsigned long (*ksyms_func)(const char *name) = NULL; */
 ksyms_func_ptr_ty ksyms_func = NULL;
 static void pt_recv_msg(struct sk_buff *skb);
@@ -68,11 +67,6 @@ static void release_trace_point(void);
 }
 
 #define RESET_TARGET(tx) ptm.targets[tx].status = TEXIT
-
-//ptm.targets[tx].pva = 0; \
-//ptm.targets[tx].offset = 0;\
-//ptm.targets[tx].outmask = 0;\
-//ptm.targets[tx].status = TEXIT; 
 
 pt_cap_t pt_cap = {
 	.has_pt = false,
@@ -263,7 +257,6 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 
 	//Insert a vma into the Proxy address space
 	vma = proxy_special_mapping(ptm.proxy_task->mm, 0, VMA_SZ, VM_READ);
-	
 	if(IS_ERR(vma))
 		return NULL;
 
@@ -272,6 +265,7 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 		return NULL;
 	set_fs(fs);	
 
+	//remap each topa to the address space of proxy
 	for(index = 0; index < PTEN - 1; index++)
 		remap_pfn_range(vma,
 			mapaddr + index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE , 
@@ -329,6 +323,7 @@ static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, s
 	}
 	return;
 }
+
 static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *prev, struct task_struct *next){
 	
 	int tx; 
@@ -381,20 +376,14 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		
 		printk(KERN_INFO "Start Target %d\n", child->pid);
 
-		tx = get_target_tx(child->pid);
-		//todo, add the topa addr and size
-		//format: TOPA:0xaddr:0xsize
-
-		snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ);
-			
-		printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
-
-		if(ptm.p_stat == PTARGET)
+		if(ptm.p_stat == PTARGET){
+			tx = get_target_tx(child->pid);
+			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ);
+			printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
 			reply_msg(target_msg, ptm.proxy_pid);
-
+		}
 		ptm.p_stat = PFUZZ;
 	}		
-	//check if the fork is from the target 
 	return;
 }
 
@@ -406,14 +395,13 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 	int index;
 	topa_t *topa;
 
-
 	for(tx = 0; tx < ptm.target_num; tx++){
-		//exit of one target thread
-		//Simply set the status to TEXIT
 
+		//exit of a target thread
 		if(ptm.targets[tx].pid == tsk->pid){
+			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-			printk(KERN_INFO "Exit of target thread %x and offset %d\n", tsk->pid, ptm.targets[tx].offset);
+			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm.targets[tx].offset);
 			RESET_TARGET(tx);
 		}	
 	}
@@ -430,8 +418,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 
 			//free topa entries
 			for(index = 0; index < PTEN - 1; index++)
-				free_pages((long unsigned int)phys_to_virt(topa->entries[index].base << PAGE_SHIFT),  
-					TOPA_ENTRY_UNIT_SIZE);
+				free_pages((long unsigned int)phys_to_virt(topa->entries[index].base << PAGE_SHIFT), TOPA_ENTRY_UNIT_SIZE);
 			
 			//free topa
 			free_pages((unsigned long)topa, TOPA_T_SIZE);
@@ -439,47 +426,35 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		}
 		//reset target number
 		ptm.target_num = 0;
+		release_trace_point();
 
-		//release the trace points
-		if(ksyms_func);
-			release_trace_point();
 	}	
-
 	return;
 }
 
+
+//set up the trace point to handle exec, fork, switch, and exit
 static bool set_trace_point(void){
 
-	/* int (*trace_probe_ptr)(struct tracepoint *tp, void *probe, void *data); */
-  trace_probe_ptr_ty trace_probe_ptr;
-	if(!kallsyms_lookup_name_ptr){
-		printk(KERN_INFO "Please specify the address of kallsyms_lookup_name_ptr");
-    return false; //if we don't stop here when kernel tries to access an invalid address
-                  // it will make the system crash
-	}
+	trace_probe_ptr_ty trace_probe_ptr;
 
 	//trace on exec
 	exec_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exec");	
-	if(!exec_tp)
-		return false; 
-	
+	if(!exec_tp) return false; 
+
 	//trace fork of process
 	fork_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_fork");	 
-	if(!fork_tp)
-		return false; 
+	if(!fork_tp) return false; 
 
 	//trace process switch
 	switch_tp = (struct tracepoint*) ksyms_func("__tracepoint_sched_switch");
-	if(!switch_tp)
-		return false; 
+	if(!switch_tp) return false; 
 
 	//trace exit of process
 	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
-	if(!exit_tp)
-		return false; 
+	if(!exit_tp) return false; 
 
-  trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
-
+	trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
 	if(!trace_probe_ptr)
 		return false;
 
@@ -488,37 +463,38 @@ static bool set_trace_point(void){
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
 
-	printk(KERN_INFO "Set up trace point\n");
-
 	return true;
 }
 
 static void release_trace_point(void){
-	
-	/* int (*trace_release_ptr)(struct tracepoint *tp, void *probe, void *data);  */
-  trace_release_ptr_ty trace_release_ptr;
 
-	if(!ksyms_func){
-		printk(KERN_INFO "FFF Cannot unregister trace points!!!");
-		return;	
-	}
 
-	trace_release_ptr = (trace_release_ptr_ty)ksyms_func("tracepoint_probe_unregister"); 
-	if(!trace_release_ptr){
-		printk(KERN_INFO "Cannot unregister trace points!!!");
-		return;
-	}
-
-	if(exec_tp)
-		trace_release_ptr(exec_tp, (void*)probe_trace_exec, NULL);
-	if(fork_tp)
-		trace_release_ptr(fork_tp, (void*)probe_trace_fork, NULL);
-	if(switch_tp)
-		trace_release_ptr(switch_tp, (void*)probe_trace_switch, NULL);
-	if(exit_tp)
-		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);
+	trace_release_ptr_ty trace_release_ptr;
 
 	printk(KERN_INFO "Release trace point\n");
+	trace_release_ptr = (trace_release_ptr_ty)ksyms_func("tracepoint_probe_unregister"); 
+	WARN_ON(!trace_release_ptr);
+
+	if(exec_tp){
+		trace_release_ptr(exec_tp, (void*)probe_trace_exec, NULL);
+		exec_tp = NULL;
+	}
+
+	if(fork_tp){
+		trace_release_ptr(fork_tp, (void*)probe_trace_fork, NULL);
+		fork_tp = NULL; 
+	}
+
+	if(switch_tp){
+		trace_release_ptr(switch_tp, (void*)probe_trace_switch, NULL);
+		switch_tp = NULL;
+	}
+
+	if(exit_tp){
+		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);		
+		exit_tp = NULL;
+	}
+
 }
 
 static enum msg_etype msg_type(char * msg){
@@ -557,7 +533,7 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
         if(ptm.targets[tx].status == TSTART || 
            ptm.targets[tx].status == TRUN){
             snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
-            printk("Sending next message %s\n", msg_send);
+            printk("Sending next message on running %s\n", msg_send);
             return;
         }
         //process the interrupt status
@@ -568,17 +544,18 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
                 force_sig_info(SIGCONT, &sgt, ptm.targets[tx].task);
                 ptm.targets[tx].status = TRUN;	
                 snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				
-                printk("Sending next message %s\n", msg_send);
+                printk("Sending next message on interrupt %s\n", msg_send);
             }else{
                 snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
-                printk("Sending next message %s\n", msg_send);
+                printk("Sending next message on interupt release %s\n", msg_send);
             }
             return;
         }
 		
         if(ptm.targets[tx].status == TEXIT){
-            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);			return;
-            printk("Sending next message %s\n", msg_send);
+            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);			
+            printk("Sending next message on exit %s\n", msg_send);
+	    return;
         }
     }
     printk("Sending next message %s\n", msg_send);
@@ -598,25 +575,22 @@ static void pt_recv_msg(struct sk_buff *skb) {
 	//receive new data
 	nlh=(struct nlmsghdr*)skb->data;
 	strncpy(msg, (char*)nlmsg_data(nlh), MAX_MSG);
+
 	pid = nlh->nlmsg_pid; /*pid of sending process */
 	find_task_by_vpid = proxy_find_symbol("find_task_by_vpid");
-
-	if(!find_task_by_vpid){
-		reply_msg("ERROR: Cannot get task of proxy", pid);
-		return; 	
-	}
+	WARN_ON(!find_task_by_vpid);
 
 	switch(msg_type(msg)){
 		case START:
 			if (ptm.p_stat != PSLEEP){
 				reply_msg("ERROR: Alread Started",pid); 				break; 	
-			}	
+			}
+	
 			ptm.p_stat = PSTART;
 			ptm.proxy_pid = pid;
 			ptm.proxy_task = find_task_by_vpid(pid); 
 
 			printk(KERN_INFO "Proxy start with PID %d\n", pid);
-
 			//confirm start
 			reply_msg("SCONFIRM", pid); 
 			break;
@@ -631,7 +605,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 				break;
 			}
 
-			ptm.p_stat = PFS;
 			//Get the target binary path from the message
 			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
 			//set trace point on execv,fork,schedule,exit. 
@@ -641,12 +614,10 @@ static void pt_recv_msg(struct sk_buff *skb) {
 				break;
 			}	
 
+			ptm.p_stat = PFS;
 			reply_msg("TCONFIRM", pid);
 			break;
 
-		case PTBUF:
-			break;	
-		
 		//Recv: NEXT:0xprevboundary
 		//Send: NEXT:0xnextboundary	
 		case NEXT:
@@ -661,7 +632,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
 }
 
 
-
+//Process PMI interrupt when PT buffer is full
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
 	int tx; 
@@ -669,25 +640,24 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 	siginfo_t sgt; 
 	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
 
+	//find the symbol for force_sig_info
 	force_sig_info = proxy_find_symbol("force_sig_info");
-  if(!force_sig_info)
-    return -1;
+	WARN_ON(!force_sig_info);
 
-// 	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 0);
+	//get the status MSR to distinguish PT PMI
 	status = read_global_status();
-
 	for(tx = 0; tx < ptm.target_num; tx++){
 		if(ptm.targets[tx].pid == current->pid)
 		{
+			//the 55th bit is set
 			if(status & BIT_ULL(55)){
 				printk(KERN_INFO "NMI TRIGGERED %llx\n", status);
+				//stop the target thread
 				force_sig_info(SIGSTOP, &sgt, current);
 			}
 		}
 	}
- // 	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 1);
 	return 0;
-
 }
 
 static int register_pmi_handler(void) {
@@ -698,10 +668,10 @@ static int register_pmi_handler(void) {
 void unregister_pmi_handler(void){
 	void (*unregister_nmi_handler)(unsigned int type, const char *name);
 	unregister_nmi_handler = proxy_find_symbol("unregister_nmi_handler");
-  if (unregister_nmi_handler)
-    unregister_nmi_handler(NMI_LOCAL, "perf_pt");
-  else
-      printk(KERN_INFO "unregister_nmi_handler is null\n");
+	if (unregister_nmi_handler)
+		unregister_nmi_handler(NMI_LOCAL, "perf_pt");
+	else
+		printk(KERN_INFO "unregister_nmi_handler is null\n");
 }
 
 
@@ -723,13 +693,14 @@ static int __init pt_init(void){
 		return ENODEV;  	
 	}
 	//next step: enable PT?  
-
 	if(!kallsyms_lookup_name_ptr){
 		printk(KERN_INFO "Please specify the address to kallsyms_lookup_name\n");
 	}
-
 	ksyms_func = (ksyms_func_ptr_ty)kallsyms_lookup_name_ptr; 
+
+	//register the PMI handler	
 	register_pmi_handler();
+	//create a netlink server
 	nlt.nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &nlt.cfg);
 	return 0;
 }
@@ -737,6 +708,8 @@ static int __init pt_init(void){
 static void __exit pt_exit(void){
 
 	unregister_pmi_handler();
+
+	release_trace_point();
 	//release the netlink	
 	netlink_kernel_release(nlt.nl_sk);
 }

@@ -91,7 +91,6 @@ enum proxy_status {
 enum msg_etype{
 	START = 0,
 	TARGET,
-	PTBUF,
 	ERROR,
 	NEXT
 };
