@@ -69,10 +69,10 @@ static void release_trace_point(void);
 
 #define RESET_TARGET(tx) ptm.targets[tx].status = TEXIT
 
-//ptm.targets[tx].pva = 0; \
-//ptm.targets[tx].offset = 0;\
-//ptm.targets[tx].outmask = 0;\
-//ptm.targets[tx].status = TEXIT; 
+/* ptm.targets[tx].pva = 0; \ */
+/* ptm.targets[tx].offset = 0;\ */
+/* ptm.targets[tx].outmask = 0;\ */
+/* ptm.targets[tx].status = TEXIT;  */
 
 pt_cap_t pt_cap = {
 	.has_pt = false,
@@ -413,7 +413,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 
 		if(ptm.targets[tx].pid == tsk->pid){
 			record_pt(tx);
-			printk(KERN_INFO "Exit of target thread %x and offset %d\n", tsk->pid, ptm.targets[tx].offset);
+			printk(KERN_INFO "Exit of target thread %x and offset %llx\n", tsk->pid, ptm.targets[tx].offset);
 			RESET_TARGET(tx);
 		}	
 	}

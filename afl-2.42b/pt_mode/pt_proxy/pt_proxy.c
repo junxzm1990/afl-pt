@@ -26,7 +26,7 @@
 
 /* NETLINK data structures */
 #define NETLINK_USER 31                                /* self-define netlink number      */
-#define MAX_PAYLOAD 1024                               /* maximum payload size            */
+#define MAX_PAYLOAD 256                                /* maximum payload size            */
 int sock_fd;                                           /* sock fd connect to pt_m         */
 struct sockaddr_nl src_addr,                           /* sock src structure              */
                    dest_addr;                          /* sock dest structure             */
