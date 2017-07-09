@@ -190,9 +190,8 @@ static void reply_msg(char *msg, pid_t pid){
 
 	res = nlmsg_unicast(nlt.nl_sk,skb_out,pid);
 
-	if(res<0){
-		printk(KERN_INFO "Error while sending bak to user and proxy stat %d\n", ptm.p_stat);
-	}
+	if(res<0)
+	      printk(KERN_INFO "Error while sending bak [%s] to user [%d]\n", msg,pid);
 }
 
 //set up the topa table.
@@ -537,49 +536,53 @@ static enum msg_etype msg_type(char * msg){
 }
 
 static void process_next_msg(char *msg_recvd, char*msg_send){
-	//get next boundary
-	//check if it is under interupt, if so, deal with interrupt
-	u64 coff; 	
-	int tx; 
-	siginfo_t sgt;
-	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
-	coff = 0;
-	snprintf(msg_send, MAX_MSG, "TOPA:0");	
-	kstrtoull(strstr(msg_recvd, DEM)+1, 16, &coff);
+    //get next boundary
+    //check if it is under interupt, if so, deal with interrupt
+    u64 coff; 	
+    int tx; 
+    siginfo_t sgt;
+    int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
 
-	force_sig_info = proxy_find_symbol("force_sig_info");	
+    coff = 0;
+    kstrtoull(strstr(msg_recvd, DEM)+1, 16, &coff);
+    printk("Received next message %s and %llx\n", msg_recvd, coff);
+
+    force_sig_info = proxy_find_symbol("force_sig_info");	
+    if(!force_sig_info){
+        printk("force_sig_info is null\n");
+        return;
+    }
 	
-	for(tx = 0; tx < ptm.target_num; tx++){
-		if(ptm.targets[tx].status == TSTART || 
-			ptm.targets[tx].status == TRUN){
-			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
-			printk("Received next message %s and %llx\n", msg_recvd, (unsigned long)ptm.targets[tx].offset);
-			return;
-		}
-		//process the interrupt status
-		if(ptm.targets[tx].status == TINT){
-			if(coff == ptm.targets[tx].offset){
-				//continue the target
-				ptm.targets[tx].offset = (u64)0;
-				force_sig_info(SIGCONT, &sgt, ptm.targets[tx].task);
-				ptm.targets[tx].status = TRUN;	
-				snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				
-			}else{
-				snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
-			}
-			return;
-		}
+    for(tx = 0; tx < ptm.target_num; tx++){
+        if(ptm.targets[tx].status == TSTART || 
+           ptm.targets[tx].status == TRUN){
+            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+            printk("Sending next message %s\n", msg_send);
+            return;
+        }
+        //process the interrupt status
+        if(ptm.targets[tx].status == TINT){
+            if(coff == ptm.targets[tx].offset){
+                //continue the target
+                ptm.targets[tx].offset = (u64)0;
+                force_sig_info(SIGCONT, &sgt, ptm.targets[tx].task);
+                ptm.targets[tx].status = TRUN;	
+                snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				
+                printk("Sending next message %s\n", msg_send);
+            }else{
+                snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+                printk("Sending next message %s\n", msg_send);
+            }
+            return;
+        }
 		
-		if(ptm.targets[tx].status == TEXIT){
-			printk("Received next message in NEXT %s and %llx\n", msg_recvd, (unsigned long)ptm.targets[tx].offset);
-			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", 
-(unsigned long)ptm.targets[tx].offset);				
-			return;
-		}
-	}
-
-	snprintf(msg_send, MAX_MSG, "ERROR:NO TARHET");
-	return;
+        if(ptm.targets[tx].status == TEXIT){
+            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);			return;
+            printk("Sending next message %s\n", msg_send);
+        }
+    }
+    printk("Sending next message %s\n", msg_send);
+    snprintf(msg_send, MAX_MSG, "ERROR:NO TARHET");
 }
 
 
@@ -657,7 +660,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 	}
 }
 
-#if 1
 
 
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
@@ -668,6 +670,8 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
 
 	force_sig_info = proxy_find_symbol("force_sig_info");
+  if(!force_sig_info)
+    return -1;
 
 // 	wrmsrl(MSR_IA32_PERF_GLOBAL_CTRL, 0);
 	status = read_global_status();
@@ -693,11 +697,13 @@ static int register_pmi_handler(void) {
 
 void unregister_pmi_handler(void){
 	void (*unregister_nmi_handler)(unsigned int type, const char *name);
-	unregister_nmi_handler =  proxy_find_symbol("unregister_nmi_handler");
-	unregister_nmi_handler(NMI_LOCAL, "perf_pt");
+	unregister_nmi_handler = proxy_find_symbol("unregister_nmi_handler");
+  if (unregister_nmi_handler)
+    unregister_nmi_handler(NMI_LOCAL, "perf_pt");
+  else
+      printk(KERN_INFO "unregister_nmi_handler is null\n");
 }
 
-#endif
 
 //Init pt 
 //1. Check if pt is supported 

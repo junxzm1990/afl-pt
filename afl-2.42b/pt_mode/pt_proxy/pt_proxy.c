@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <sys/socket.h>
 #include <linux/netlink.h>
 #include <sys/shm.h>
@@ -7,6 +8,9 @@
 #include <unistd.h>
 #include <assert.h>
 #include <pthread.h>
+#include <sched.h>
+#include <dirent.h>
+#include <sched.h>
 
 #include "../../config.h"
 #include "../../types.h"
@@ -14,10 +18,11 @@
 #include "../../alloc-inl.h"
 #include "pt_proxy.h"
 
-//#define debug
-
 /* using global data because afl will start one proxy instance per target                 */
 
+#ifndef HAVE_AFFINITY
+#define HAVE_AFFINITY
+#endif
 
 /* NETLINK data structures */
 #define NETLINK_USER 31                                /* self-define netlink number      */
@@ -56,15 +61,133 @@ s64 pt_trace_buf_size = 0;                             /* size of the pt trace b
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
 
 
+
+#ifdef HAVE_AFFINITY
+
+/* Build a list of processes bound to specific cores. Returns -1 if nothing
+   can be found. Assumes an upper bound of 4k CPUs. */
+
+static void bind_to_free_core(void) {
+
+  DIR* d;
+  struct dirent* de;
+  cpu_set_t c;
+  s32 cpu_aff = -1;  
+  u32 cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
+
+
+  u8 cpu_used[4096] = { 0 };
+  u32 i;
+
+  if (cpu_core_count < 2) return;
+
+  if (getenv("AFL_NO_AFFINITY")) {
+
+    WARNF("Not binding to a CPU core (AFL_NO_AFFINITY set).");
+    return;
+
+  }
+
+  d = opendir("/proc");
+
+  if (!d) {
+
+    WARNF("Unable to access /proc - can't scan for free CPU cores.");
+    return;
+
+  }
+
+  ACTF("Checking CPU core loadout...");
+
+  /* Introduce some jitter, in case multiple AFL tasks are doing the same
+     thing at the same time... */
+
+  usleep(R(1000) * 250);
+
+  /* Scan all /proc/<pid>/status entries, checking for Cpus_allowed_list.
+     Flag all processes bound to a specific CPU using cpu_used[]. This will
+     fail for some exotic binding setups, but is likely good enough in almost
+     all real-world use cases. */
+
+  while ((de = readdir(d))) {
+
+    u8* fn;
+    FILE* f;
+    u8 tmp[MAX_LINE];
+    u8 has_vmsize = 0;
+
+    if (!isdigit(de->d_name[0])) continue;
+
+    fn = alloc_printf("/proc/%s/status", de->d_name);
+
+    if (!(f = fopen(fn, "r"))) {
+      ck_free(fn);
+      continue;
+    }
+
+    while (fgets(tmp, MAX_LINE, f)) {
+
+      u32 hval;
+
+      /* Processes without VmSize are probably kernel tasks. */
+
+      if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+
+      if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
+          !strchr(tmp, '-') && !strchr(tmp, ',') &&
+          sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
+          has_vmsize) {
+
+        cpu_used[hval] = 1;
+        break;
+
+      }
+
+    }
+
+    ck_free(fn);
+    fclose(f);
+
+  }
+
+  closedir(d);
+
+  for (i = 0; i < cpu_core_count; i++) if (!cpu_used[i]) break;
+
+  if (i == cpu_core_count) {
+
+    SAYF("\n" cLRD "[-] " cRST
+         "Uh-oh, looks like all %u CPU cores on your system are allocated to\n"
+         "    other instances of afl-fuzz (or similar CPU-locked tasks). Starting\n"
+         "    another fuzzer on this machine is probably a bad plan, but if you are\n"
+         "    absolutely sure, you can set AFL_NO_AFFINITY and try again.\n",
+         cpu_core_count);
+
+    FATAL("No more free CPU cores");
+
+  }
+
+  OKF("Found a free CPU core, binding to #%u.", i);
+
+  cpu_aff = i;
+
+  CPU_ZERO(&c);
+  CPU_SET(i, &c);
+
+  if (sched_setaffinity(0, sizeof(c), &c))
+    PFATAL("sched_setaffinity failed");
+
+}
+#endif
+
 inline s64 req_next(s64 cur_boundary){
-    char sendstr[64];
-    snprintf(sendstr, 63, "NEXT:%lx", cur_boundary); 
+    char sendstr[MAX_PAYLOAD];
+    snprintf(sendstr, MAX_PAYLOAD, "NEXT:0x%lx", cur_boundary); 
 
     proxy_send_msg(sendstr);
     proxy_recv_msg();
     return pt_trace_off_bound;
 }
-
 
 /* this function run in a thread until the whole fuzzing is done */
 static void *pt_parse_worker(void *arg)
@@ -72,19 +195,22 @@ static void *pt_parse_worker(void *arg)
     s64 cursor_pos = -1;
     s64 next;
 
-    while(1){
-    //    if(proxy_cur_state != PROXY_FUZZ_ING) pthread_yield();
-        if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
+#ifdef HAVE_AFFINITY
+    bind_to_free_core();
+#endif
 
-        if(cursor_pos < pt_trace_off_bound){
-            //parse the buffer
-            cursor_pos++;
-        }else{
-          /*  while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
-                pthread_yield();
-            pt_trace_off_bound = next;
-*/
-	   pt_trace_off_bound = cursor_pos + 500;
+    while(1){
+        if(proxy_cur_state == PROXY_FUZZ_ING){
+            if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
+
+            if(cursor_pos < pt_trace_off_bound){
+                //parse the buffer
+                cursor_pos++;
+            }else{
+                while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
+                    pthread_yield();
+                pt_trace_off_bound = next;
+            }
         }
     }
 }
@@ -183,20 +309,20 @@ void proxy_recv_msg(){
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
 
-      char *tmp = strstr(msg, DEM);
-      pt_trace_buf_size = strtol(strstr(tmp+1, DEM) + 1, NULL ,16);
-      strstr(tmp+1, DEM)[0] = '\0';
-      pt_trace_buf = strtol(tmp+1, NULL, 16);
+      char *tmp = strstr(msg, DEM)+1;
+      pt_trace_buf_size = strtol(strstr(tmp, DEM) + 1, NULL ,16);
+      strstr(tmp, DEM)[0] = '\0';
+      pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
       assert((pt_trace_buf > 0 && pt_trace_buf_size > 0)
              &&"invalid trace buffer and size" );
       break;
       
     case PTNEXT:
-     // if(proxy_cur_state != PROXY_FUZZ_ING)
-     //     PFATAL("proxy is not on fuzzing state");
+     if(proxy_cur_state != PROXY_FUZZ_ING)
+         PFATAL("proxy is not on fuzzing state");
 
-      pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16); 
+      /* pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16);  */
       break;
         
 
@@ -286,15 +412,14 @@ static void __afl_proxy_loop(void) {
     /* Wait for target to report child status. Abort if read fails. */
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
     else{
+        /* proxy_send_msg("NEXT:0x0"); */
+        /* proxy_recv_msg(); */
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
       if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
       proxy_cur_state = PROXY_FUZZ_STOP;
     }
-#ifdef debug
-	proxy_send_msg("NEXT:0x0");
-	proxy_recv_msg();	
-#endif
+
     /* we can parse the pt packet and present it to the trace_bits here*/
     __afl_area_ptr[2424] = 1;
     __afl_area_ptr[2433] = 1;

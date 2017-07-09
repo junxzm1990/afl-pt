@@ -1,1 +1,0 @@
-rt/get_clockfreq.o rt/clock_getcpuclockid.o rt/clock_getres.o rt/clock_gettime.o rt/clock_settime.o rt/clock_nanosleep.o

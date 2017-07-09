@@ -1,7 +1,0 @@
-GLIBC_PRIVATE {
-  global:
-    idna_to_ascii_lz;
-    idna_to_unicode_lzlz;
-  local:
-    *;
-};
