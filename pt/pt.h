@@ -49,7 +49,7 @@
 #define TOPAEND 0x1
 
 #define MEGNUM 0x08
-#define MAX_MSG 256
+#define MAX_MSG 512
 
 #define NETLINK_USER 31 
 #define DEM ":"

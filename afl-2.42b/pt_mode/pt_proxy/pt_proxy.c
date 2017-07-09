@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <sys/socket.h>
 #include <linux/netlink.h>
 #include <sys/shm.h>
@@ -8,6 +9,8 @@
 #include <assert.h>
 #include <pthread.h>
 #include <sched.h>
+#include <dirent.h>
+#include <sched.h>
 
 #include "../../config.h"
 #include "../../types.h"
@@ -17,6 +20,9 @@
 
 /* using global data because afl will start one proxy instance per target                 */
 
+#ifndef HAVE_AFFINITY
+#define HAVE_AFFINITY
+#endif
 
 /* NETLINK data structures */
 #define NETLINK_USER 31                                /* self-define netlink number      */
@@ -55,14 +61,6 @@ s64 pt_trace_buf_size = 0;                             /* size of the pt trace b
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
 
 
-inline s64 req_next(s64 cur_boundary){
-    char sendstr[64];
-    snprintf(sendstr, 63, "NEXT:%lx", cur_boundary); 
-
-    proxy_send_msg(sendstr);
-    proxy_recv_msg();
-    return pt_trace_off_bound;
-}
 
 #ifdef HAVE_AFFINITY
 
@@ -182,6 +180,15 @@ static void bind_to_free_core(void) {
 }
 #endif
 
+inline s64 req_next(s64 cur_boundary){
+    char sendstr[MAX_PAYLOAD];
+    snprintf(sendstr, MAX_PAYLOAD, "NEXT:0x%lx", cur_boundary); 
+
+    proxy_send_msg(sendstr);
+    proxy_recv_msg();
+    return pt_trace_off_bound;
+}
+
 /* this function run in a thread until the whole fuzzing is done */
 static void *pt_parse_worker(void *arg)
 {
@@ -193,16 +200,17 @@ static void *pt_parse_worker(void *arg)
 #endif
 
     while(1){
-       if(proxy_cur_state != PROXY_FUZZ_ING) pthread_yield();
-        if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
+        if(proxy_cur_state == PROXY_FUZZ_ING){
+            if(pt_trace_off_bound == pt_trace_buf) cursor_pos = pt_trace_buf;
 
-        if(cursor_pos < pt_trace_off_bound){
-            //parse the buffer
-            cursor_pos++;
-        }else{
-           while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
-                pthread_yield();
-           pt_trace_off_bound = next;
+            if(cursor_pos < pt_trace_off_bound){
+                //parse the buffer
+                cursor_pos++;
+            }else{
+                while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
+                    pthread_yield();
+                pt_trace_off_bound = next;
+            }
         }
     }
 }
@@ -301,10 +309,10 @@ void proxy_recv_msg(){
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
 
-      char *tmp = strstr(msg, DEM);
-      pt_trace_buf_size = strtol(strstr(tmp+1, DEM) + 1, NULL ,16);
-      strstr(tmp+1, DEM)[0] = '\0';
-      pt_trace_buf = strtol(tmp+1, NULL, 16);
+      char *tmp = strstr(msg, DEM)+1;
+      pt_trace_buf_size = strtol(strstr(tmp, DEM) + 1, NULL ,16);
+      strstr(tmp, DEM)[0] = '\0';
+      pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
       assert((pt_trace_buf > 0 && pt_trace_buf_size > 0)
              &&"invalid trace buffer and size" );
@@ -314,7 +322,7 @@ void proxy_recv_msg(){
      if(proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
 
-      pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16); 
+      /* pt_trace_off_bound = strtol(strstr(msg, DEM)+1, NULL, 16);  */
       break;
         
 
@@ -404,6 +412,8 @@ static void __afl_proxy_loop(void) {
     /* Wait for target to report child status. Abort if read fails. */
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
     else{
+        /* proxy_send_msg("NEXT:0x0"); */
+        /* proxy_recv_msg(); */
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
       if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
