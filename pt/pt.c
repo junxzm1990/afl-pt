@@ -56,7 +56,7 @@ static void release_trace_point(void);
 	.end = (_end), \
 }
 
-#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask) (target_thread_t) {\
+#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask, _poa) (target_thread_t) {\
 	.pid = _pid, \
 	.task = _task, \
 	.topa = _topa, \
@@ -64,6 +64,7 @@ static void release_trace_point(void);
 	.pva = _pva, \
 	.offset = _offset,\
 	.outmask = _mask, \
+	.poa = _poa, \
 }
 
 #define RESET_TARGET(tx) ptm.targets[tx].status = TEXIT
@@ -244,6 +245,36 @@ fail:
 	return NULL;
 }
 
+//map the offset of pt writer into address space of proxy
+static u64  setup_offset_vma(target_thread_t *target){
+
+	mm_segment_t fs; 
+	struct vm_area_struct *vma;
+	u64 mapaddr; 
+	u64 ppoo; 	
+
+	//get the physical address of the offset field
+	ppoo = virt_to_phys((void*)(&target->offset));
+
+	//Make sure the offset is in a single page
+	BUG_ON(ppoo >> PAGE_SHIFT != (ppoo+sizeof(u64)) >> PAGE_SHIFT);
+	
+	fs = get_fs();
+	set_fs(get_ds());
+	//Insert a vma into the Proxy address space
+	vma = proxy_special_mapping(ptm.proxy_task->mm, 0, PAGE_SIZE, VM_READ);
+	if(IS_ERR(vma))
+		return 0;
+
+	mapaddr = vma->vm_start; 
+	if(IS_ERR((void*)mapaddr))
+		return 0;
+	set_fs(fs);	
+
+	//map the page containing offset into the proxy address space
+	remap_pfn_range(vma, mapaddr, ppoo >> PAGE_SHIFT, PAGE_SIZE, vma->vm_page_prot);
+	return mapaddr + (ppoo & (~PAGE_MASK)); 
+}
 
 static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 
@@ -282,6 +313,7 @@ static bool setup_target_thread(struct task_struct *target){
 	int tx; 
 	struct vm_area_struct *vma;
 	topa_t *topa;
+	u64 vpoo; 
 	
 	//check if any target can be reused
 	//only need to reset the pid, task, status, offset, and outmask
@@ -304,8 +336,14 @@ static bool setup_target_thread(struct task_struct *target){
 	if(!vma) return false; 
 
 	printk(KERN_INFO "Address of VMA for proxy %lx\n", vma->vm_start);
+	vpoo = setup_offset_vma(&ptm.targets[ptm.target_num]); 	
+
+	if(!vpoo) return false;
+
+	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm.targets[ptm.target_num].offset);
+
 	//need a lock here when multiple target threads are running. 
-	ptm.targets[ptm.target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0); 
+	ptm.targets[ptm.target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo); 
 	ptm.target_num++;
 	return true; 
 }
@@ -378,7 +416,7 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 
 		if(ptm.p_stat == PTARGET){
 			tx = get_target_tx(child->pid);
-			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ);
+			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ, (long unsigned)ptm.targets[tx].poa);
 			printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
 			reply_msg(target_msg, ptm.proxy_pid);
 		}
@@ -555,10 +593,10 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
 	if(ptm.targets[tx].status == TEXIT){
 		if(coff == ptm.targets[tx].offset){
 			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);			
-			printk("Sending next message on exit %s\n", msg_send);
+			printk("Sending next message on exit %s of target %d\n", msg_send, ptm.targets[tx].pid);
 		}else{
 			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);			
-			printk("Sending next message on exit %s\n", msg_send);
+			printk("Sending next message on exit %s of target %d\n", msg_send, ptm.targets[tx].pid);
 		}
 
 		return;
