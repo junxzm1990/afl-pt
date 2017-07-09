@@ -13,8 +13,6 @@
 #include <net/sock.h>
 #include "pt.h"
 
-
-
 #define MSR_IA32_RTIT_CTL		0x00000570
 #define RTIT_CTL_TRACEEN		BIT(0)
 #define RTIT_CTL_OS			BIT(2)
