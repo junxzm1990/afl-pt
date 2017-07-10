@@ -59,7 +59,8 @@ enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state    
 s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
-u8  worker_done = 0;                                   /* set when worker finish reading  */
+s64 *pt_trace_off = 0;                                 /* last off to the buf pt update   */
+volatile u8  worker_done = 0;                          /* set when worker finish reading  */
 
 
 
@@ -200,28 +201,14 @@ static void *pt_parse_worker(void *arg)
 #endif
 
     while(1){
-        if(!worker_done && proxy_cur_state == PROXY_FUZZ_ING){
-            //fuzzing start
-            cursor_pos = pt_trace_off_bound;
-            //we assume the first time request there must be some trace returned
-            //the following while condition handle both situations
-            //   1. first time req, next will be greater than pt_trace_off_bound
-            //   2. future reqs, if worker parse faster than target execution
-            while(next = req_next(pt_trace_off_bound) == pt_trace_off_bound)
-                pthread_yield();
-            // when next becomes 0 again, means pt-module singals no more execution
-            pt_trace_off_bound = next;
-            if (pt_trace_off_bound != 0){
-                //parse new packets
-                //parse(pt_trace_buf, cursor_pos, pt_trace_off_bound);
-                cursor_pos++;
-            }else{
-                //tell proxy to change state: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP
+        if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos == *pt_trace_off){
+            if(!worker_done){
                 worker_done = 1;
-                pthread_yield();
-                //we don't need to use blocking lock here, because when we get to the main
-                // if stmt, worker_done is not clear before the state change to FUZZ_STOP 
+                cursor_pos = 0;
             }
+        }else{
+            //parse_packet return the last postion where the packet decode was successful
+            cursor_pos = parse_packet(pt_trace_buf, cursor_pos, *pt_trace_off-cursor_pos);
         }
     }
 }
@@ -320,12 +307,14 @@ void proxy_recv_msg(){
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
 
-      char *tmp = strstr(msg, DEM)+1;
-      pt_trace_buf_size = strtol(strstr(tmp, DEM) + 1, NULL ,16);
-      strstr(tmp, DEM)[0] = '\0';
+      char *tmp = strstr(msg, DEM)+1;//tmp->addr:size:addr
+      pt_trace_off = (s64 *)strtol(strstr(strstr(tmp,DEM)+1, DEM)+1, NULL, 16);
+      strstr(strstr(tmp, DEM)+1, DEM)[0] = '\0';//tmp->addr:size
+      pt_trace_buf_size = strtol(strstr(tmp, DEM)+1, NULL, 16);
+      strstr(tmp, DEM)[0] = '\0';//tmp->addr
       pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
-      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0)
+      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0 && pt_trace_off > 0)
              &&"invalid trace buffer and size" );
       break;
 
@@ -426,9 +415,9 @@ static void __afl_proxy_loop(void) {
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
         if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
-        while(!worker_done); //blocking here until worker is done
         proxy_cur_state = PROXY_FUZZ_STOP;
         worker_done = 0;
+        while(!worker_done); //blocking here until worker is done
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
