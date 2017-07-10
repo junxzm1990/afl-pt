@@ -59,7 +59,7 @@ enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state    
 s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
-s64 *pt_trace_off = 0;                                 /* last off to the buf pt update   */
+s64 *p_pt_trace_off = 0;                               /* last off to the buf pt update   */
 volatile u8  worker_done = 0;                          /* set when worker finish reading  */
 
 
@@ -195,20 +195,22 @@ static void *pt_parse_worker(void *arg)
 {
     s64 cursor_pos = -1;
     s64 next;
+    u8 not_done = 0;
+    u8 done = 1;
 
 #ifdef HAVE_AFFINITY
     bind_to_free_core();
 #endif
 
     while(1){
-        if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos == *pt_trace_off){
-            if(!worker_done){
-                worker_done = 1;
+        if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos == *p_pt_trace_off){
+            if(!__atomic_compare_exchange(&worker_done, &not_done, &done, 0,__ATOMIC_SEQ_CST ,__ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
                 cursor_pos = 0;
             }
         }else{
             //parse_packet return the last postion where the packet decode was successful
-            cursor_pos = parse_packet(pt_trace_buf, cursor_pos, *pt_trace_off-cursor_pos);
+            /* cursor_pos = parse_packet(pt_trace_buf, cursor_pos, *p_pt_trace_off-cursor_pos); */
+            cursor_pos++;
         }
     }
 }
@@ -308,13 +310,13 @@ void proxy_recv_msg(){
         PFATAL("proxy is not on forksrv state");
 
       char *tmp = strstr(msg, DEM)+1;//tmp->addr:size:addr
-      pt_trace_off = (s64 *)strtol(strstr(strstr(tmp,DEM)+1, DEM)+1, NULL, 16);
+      p_pt_trace_off = (s64 *)strtol(strstr(strstr(tmp,DEM)+1, DEM)+1, NULL, 16);
       strstr(strstr(tmp, DEM)+1, DEM)[0] = '\0';//tmp->addr:size
       pt_trace_buf_size = strtol(strstr(tmp, DEM)+1, NULL, 16);
       strstr(tmp, DEM)[0] = '\0';//tmp->addr
       pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
-      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0 && pt_trace_off > 0)
+      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0 && p_pt_trace_off > 0)
              &&"invalid trace buffer and size" );
       break;
 
@@ -367,6 +369,8 @@ static void __afl_proxy_loop(void) {
 
   static u8 tmp[4];
   s32 child_pid;
+  u8 done = 1;
+  u8 not_done = 0;
 
 
   while (1) {
@@ -416,8 +420,9 @@ static void __afl_proxy_loop(void) {
         if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
         proxy_cur_state = PROXY_FUZZ_STOP;
-        worker_done = 0;
-        while(!worker_done); //blocking here until worker is done
+        __atomic_store(&worker_done, &not_done, __ATOMIC_SEQ_CST);
+        //blocking here until worker is done
+        while(!__atomic_compare_exchange(&worker_done, &done ,&done, 0,__ATOMIC_SEQ_CST ,__ATOMIC_SEQ_CST)); 
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
