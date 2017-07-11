@@ -66,9 +66,9 @@ void record_pt(int tx){
 	offset = pt_topa_offset();
 	mask = pt_topa_mask();	
 
-	ptm.targets[tx].offset = index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE + offset;
+	ptm->targets[tx].offset = index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE + offset;
 
-	ptm.targets[tx].outmask = mask;
+	ptm->targets[tx].outmask = mask;
 }
 
 void restart_pt(int tx){
@@ -76,7 +76,7 @@ void restart_pt(int tx){
 	if(pt_enabled())
 		pt_pause();
 
-	pt_setup_msr(ptm.targets[tx].topa, 0);
+	pt_setup_msr(ptm->targets[tx].topa, 0);
 }
 
 
@@ -85,6 +85,6 @@ void resume_pt(int tx){
 	if(pt_enabled())
 		pt_pause();
 
-	pt_setup_msr(ptm.targets[tx].topa, ptm.targets[tx].outmask);
+	pt_setup_msr(ptm->targets[tx].topa, ptm->targets[tx].outmask);
 }
 

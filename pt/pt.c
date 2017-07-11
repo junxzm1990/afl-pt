@@ -67,7 +67,7 @@ static void release_trace_point(void);
 	.poa = _poa, \
 }
 
-#define RESET_TARGET(tx) ptm.targets[tx].status = TEXIT
+#define RESET_TARGET(tx) ptm->targets[tx].status = TEXIT
 
 pt_cap_t pt_cap = {
 	.has_pt = false,
@@ -88,10 +88,8 @@ netlink_t nlt ={
 };
 
 
-pt_manager_t ptm = {
-	.p_stat = PSLEEP,
-	.target_num = 0,
-};
+pt_manager_t *ptm; 
+
 
 static struct tracepoint *exec_tp = NULL; 
 static struct tracepoint *switch_tp= NULL; 
@@ -100,8 +98,8 @@ static struct tracepoint *exit_tp= NULL;
 
 static int get_target_tx(pid_t pid){
 	int tx; 
-	for(tx = 0; tx < ptm.target_num; tx++){
-		if (ptm.targets[tx].pid == pid)
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if (ptm->targets[tx].pid == pid)
 			return tx; 
 	}
 	return -1; 
@@ -262,7 +260,7 @@ static u64  setup_offset_vma(target_thread_t *target){
 	fs = get_fs();
 	set_fs(get_ds());
 	//Insert a vma into the Proxy address space
-	vma = proxy_special_mapping(ptm.proxy_task->mm, 0, PAGE_SIZE, VM_READ);
+	vma = proxy_special_mapping(ptm->proxy_task->mm, 0, PAGE_SIZE, VM_READ);
 	if(IS_ERR(vma))
 		return 0;
 
@@ -287,7 +285,7 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 	set_fs(get_ds());
 
 	//Insert a vma into the Proxy address space
-	vma = proxy_special_mapping(ptm.proxy_task->mm, 0, VMA_SZ, VM_READ);
+	vma = proxy_special_mapping(ptm->proxy_task->mm, 0, VMA_SZ, VM_READ);
 	if(IS_ERR(vma))
 		return NULL;
 
@@ -317,14 +315,14 @@ static bool setup_target_thread(struct task_struct *target){
 	
 	//check if any target can be reused
 	//only need to reset the pid, task, status, offset, and outmask
-	for(tx = 0; tx < ptm.target_num; tx++){
-		if(ptm.targets[tx].status == TEXIT){
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if(ptm->targets[tx].status == TEXIT){
 			printk(KERN_INFO "Reuse ToPA for target %x\n", target->pid);
-			ptm.targets[tx].pid = target->pid; 
-			ptm.targets[tx].task = target;
-			ptm.targets[tx].status = TSTART;
-			ptm.targets[tx].offset = 0;
-			ptm.targets[tx].outmask = 0;
+			ptm->targets[tx].pid = target->pid; 
+			ptm->targets[tx].task = target;
+			ptm->targets[tx].status = TSTART;
+			ptm->targets[tx].offset = 0;
+			ptm->targets[tx].outmask = 0;
 			return true; 
 		}		
 	}
@@ -336,28 +334,28 @@ static bool setup_target_thread(struct task_struct *target){
 	if(!vma) return false; 
 
 	printk(KERN_INFO "Address of VMA for proxy %lx\n", vma->vm_start);
-	vpoo = setup_offset_vma(&ptm.targets[ptm.target_num]); 	
+	vpoo = setup_offset_vma(&ptm->targets[ptm->target_num]); 	
 
 	if(!vpoo) return false;
 
-	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm.targets[ptm.target_num].offset);
+	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm->targets[ptm->target_num].offset);
 
 	//need a lock here when multiple target threads are running. 
-	ptm.targets[ptm.target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo); 
-	ptm.target_num++;
+	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo); 
+	ptm->target_num++;
 	return true; 
 }
 
 //Check if the forkserver is started by matching the target path
 static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
 
-	if( 0 == strncmp(bprm->filename, ptm.target_path, PATH_MAX)){
-		if(ptm.p_stat != PFS)
+	if( 0 == strncmp(bprm->filename, ptm->target_path, PATH_MAX)){
+		if(ptm->p_stat != PFS)
 			return;
 
 		printk(KERN_INFO "Fork server path %s and pid %d\n", bprm->filename, p->pid);
-		ptm.fserver_pid = p->pid;	
-		ptm.p_stat = PTARGET; 		
+		ptm->fserver_pid = p->pid;	
+		ptm->p_stat = PTARGET; 		
 	}
 	return;
 }
@@ -369,16 +367,16 @@ static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *p
 	if(preempt)
 		preempt_disable();
 
-	for(tx = 0; tx < ptm.target_num; tx++){
-		if(ptm.targets[tx].pid == prev->pid){
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if(ptm->targets[tx].pid == prev->pid){
 			record_pt(tx);
 			break;
 		}
 	}
 
-	for(tx = 0; tx < ptm.target_num; tx++){
+	for(tx = 0; tx < ptm->target_num; tx++){
 
-		if(ptm.targets[tx].pid == next->pid){
+		if(ptm->targets[tx].pid == next->pid){
 			resume_pt(tx);
 		}		
 	}
@@ -399,8 +397,8 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 	int tx;
 
 	//the fork is invoked by the forkserver
-	if(parent->pid == ptm.fserver_pid){
-		if(ptm.p_stat != PTARGET && ptm.p_stat != PFUZZ)
+	if(parent->pid == ptm->fserver_pid){
+		if(ptm->p_stat != PTARGET && ptm->p_stat != PFUZZ)
 			return;			
 
 		//Fork a thread? Does this really happen? 
@@ -408,19 +406,19 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 			return;
 		
 		if(!setup_target_thread(child)){
-			reply_msg("ERROR:TOPA", ptm.proxy_pid);
+			reply_msg("ERROR:TOPA", ptm->proxy_pid);
 			return; 
 		}
 		
 		printk(KERN_INFO "Start Target %d\n", child->pid);
 
-		if(ptm.p_stat == PTARGET){
+		if(ptm->p_stat == PTARGET){
 			tx = get_target_tx(child->pid);
-			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx", (long unsigned)ptm.targets[tx].pva, VMA_SZ, (long unsigned)ptm.targets[tx].poa);
+			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx", (long unsigned)ptm->targets[tx].pva, VMA_SZ, (long unsigned)ptm->targets[tx].poa);
 			printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
-			reply_msg(target_msg, ptm.proxy_pid);
+			reply_msg(target_msg, ptm->proxy_pid);
 		}
-		ptm.p_stat = PFUZZ;
+		ptm->p_stat = PFUZZ;
 	}		
 	return;
 }
@@ -433,26 +431,26 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 	int index;
 	topa_t *topa;
 
-	for(tx = 0; tx < ptm.target_num; tx++){
+	for(tx = 0; tx < ptm->target_num; tx++){
 
 		//exit of a target thread
-		if(ptm.targets[tx].pid == tsk->pid){
+		if(ptm->targets[tx].pid == tsk->pid){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm.targets[tx].offset);
+			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
 			RESET_TARGET(tx);
 		}	
 	}
 
 	//exit of the proxy process	
-	if(tsk->pid == ptm.proxy_pid){
+	if(tsk->pid == ptm->proxy_pid){
 
 		printk(KERN_INFO "Exit of the proxy process\n");
-		ptm.p_stat = PSLEEP;  
+		ptm->p_stat = PSLEEP;  
 	
-		for(tx = 0; tx < ptm.target_num; tx++){
+		for(tx = 0; tx < ptm->target_num; tx++){
 			RESET_TARGET(tx);
-			topa = ptm.targets[tx].topa;
+			topa = ptm->targets[tx].topa;
 
 			//free topa entries
 			for(index = 0; index < PTEN - 1; index++)
@@ -460,10 +458,10 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 			
 			//free topa
 			free_pages((unsigned long)topa, TOPA_T_SIZE);
-			ptm.targets[tx].topa = NULL;
+			ptm->targets[tx].topa = NULL;
 		}
 		//reset target number
-		ptm.target_num = 0;
+		ptm->target_num = 0;
 		release_trace_point();
 
 	}	
@@ -567,36 +565,36 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
         return;
     }
 	
-    for(tx = 0; tx < ptm.target_num; tx++){
-        if(ptm.targets[tx].status == TSTART || 
-           ptm.targets[tx].status == TRUN){
-            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+    for(tx = 0; tx < ptm->target_num; tx++){
+        if(ptm->targets[tx].status == TSTART || 
+           ptm->targets[tx].status == TRUN){
+            snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm->targets[tx].offset);		
             printk("Sending next message on running %s\n", msg_send);
             return;
         }
         //process the interrupt status
-        if(ptm.targets[tx].status == TINT){
-            if(coff == ptm.targets[tx].offset){
+        if(ptm->targets[tx].status == TINT){
+            if(coff == ptm->targets[tx].offset){
                 //continue the target
-                ptm.targets[tx].offset = (u64)0;
-                force_sig_info(SIGCONT, &sgt, ptm.targets[tx].task);
-                ptm.targets[tx].status = TRUN;	
+                ptm->targets[tx].offset = (u64)0;
+                force_sig_info(SIGCONT, &sgt, ptm->targets[tx].task);
+                ptm->targets[tx].status = TRUN;	
                 snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);				
                 printk("Sending next message on interrupt %s\n", msg_send);
             }else{
-                snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);		
+                snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm->targets[tx].offset);		
                 printk("Sending next message on interupt release %s\n", msg_send);
             }
             return;
         }
 		
-	if(ptm.targets[tx].status == TEXIT){
-		if(coff == ptm.targets[tx].offset){
+	if(ptm->targets[tx].status == TEXIT){
+		if(coff == ptm->targets[tx].offset){
 			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)0);			
-			printk("Sending next message on exit %s of target %d\n", msg_send, ptm.targets[tx].pid);
+			printk("Sending next message on exit %s of target %d\n", msg_send, ptm->targets[tx].pid);
 		}else{
-			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm.targets[tx].offset);			
-			printk("Sending next message on exit %s of target %d\n", msg_send, ptm.targets[tx].pid);
+			snprintf(msg_send, MAX_MSG, "NEXT:0x%lx", (unsigned long)ptm->targets[tx].offset);			
+			printk("Sending next message on exit %s of target %d\n", msg_send, ptm->targets[tx].pid);
 		}
 
 		return;
@@ -626,13 +624,13 @@ static void pt_recv_msg(struct sk_buff *skb) {
 
 	switch(msg_type(msg)){
 		case START:
-			if (ptm.p_stat != PSLEEP){
+			if (ptm->p_stat != PSLEEP){
 				reply_msg("ERROR: Alread Started",pid); 				break; 	
 			}
 	
-			ptm.p_stat = PSTART;
-			ptm.proxy_pid = pid;
-			ptm.proxy_task = find_task_by_vpid(pid); 
+			ptm->p_stat = PSTART;
+			ptm->proxy_pid = pid;
+			ptm->proxy_task = find_task_by_vpid(pid); 
 
 			printk(KERN_INFO "Proxy start with PID %d\n", pid);
 			//confirm start
@@ -640,7 +638,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			break;
 		//Target menssage format: "TARGET:/path/to/bin" 
 		case TARGET: 
-			if(ptm.p_stat != PSTART){
+			if(ptm->p_stat != PSTART){
 				reply_msg("ERROR: Cannot attach target", pid);
 				break;
 			}
@@ -650,15 +648,15 @@ static void pt_recv_msg(struct sk_buff *skb) {
 			}
 
 			//Get the target binary path from the message
-			strncpy(ptm.target_path, strstr(msg, DEM)+1, PATH_MAX);
+			strncpy(ptm->target_path, strstr(msg, DEM)+1, PATH_MAX);
 			//set trace point on execv,fork,schedule,exit. 
 			if(!set_trace_point()){
-				ptm.p_stat = UNKNOWN;	
+				ptm->p_stat = UNKNOWN;	
 				reply_msg("ERROR: Cannot register trace point. Sorry", pid);
 				break;
 			}	
 
-			ptm.p_stat = PFS;
+			ptm->p_stat = PFS;
 			reply_msg("TCONFIRM", pid);
 			break;
 
@@ -690,8 +688,8 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 
 	//get the status MSR to distinguish PT PMI
 	status = read_global_status();
-	for(tx = 0; tx < ptm.target_num; tx++){
-		if(ptm.targets[tx].pid == current->pid)
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if(ptm->targets[tx].pid == current->pid)
 		{
 			//the 55th bit is set
 			if(status & BIT_ULL(55)){
@@ -742,6 +740,11 @@ static int __init pt_init(void){
 	}
 	ksyms_func = (ksyms_func_ptr_ty)kallsyms_lookup_name_ptr; 
 
+
+	ptm = kmalloc(sizeof(pt_manager_t), GFP_KERNEL);
+	ptm->p_stat = PSLEEP;
+	ptm->target_num = 0;
+
 	//register the PMI handler	
 	register_pmi_handler();
 	//create a netlink server
@@ -756,6 +759,9 @@ static void __exit pt_exit(void){
 	release_trace_point();
 	//release the netlink	
 	netlink_kernel_release(nlt.nl_sk);
+	
+	kfree((void*)ptm);
+	ptm = NULL;
 }
 
 module_init(pt_init);

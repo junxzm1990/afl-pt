@@ -169,7 +169,7 @@ typedef struct netlink_struct{
 	struct netlink_kernel_cfg cfg;  
 }netlink_t;
 
-extern pt_manager_t ptm;
+extern pt_manager_t *ptm;
 
 extern unsigned long (*ksyms_func)(const char *name);
 
