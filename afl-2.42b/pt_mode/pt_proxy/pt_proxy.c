@@ -60,7 +60,8 @@ s64 pt_trace_buf = 0;                                  /* address of the pt trac
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
 s64 *p_pt_trace_off = 0;                               /* last off to the buf pt update   */
-volatile u8  worker_done = 0;                          /* set when worker finish reading  */
+volatile u8  worker_done,                              /* for syncing worker and proxy    */
+            worker_not_done;
 
 
 
@@ -195,8 +196,6 @@ static void *pt_parse_worker(void *arg)
 {
     s64 cursor_pos = -1;
     s64 next;
-    u8 not_done = 0;
-    u8 done = 1;
 
 #ifdef HAVE_AFFINITY
     bind_to_free_core();
@@ -204,7 +203,9 @@ static void *pt_parse_worker(void *arg)
 
     while(1){
         if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos == *p_pt_trace_off){
-            if(!__atomic_compare_exchange(&worker_done, &not_done, &done, 0,__ATOMIC_SEQ_CST ,__ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
+            //only when worker_done is 0, the atomic return false
+            if(!__atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
+                __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
                 cursor_pos = 0;
             }
         }else{
@@ -369,8 +370,6 @@ static void __afl_proxy_loop(void) {
 
   static u8 tmp[4];
   s32 child_pid;
-  u8 done = 1;
-  u8 not_done = 0;
 
 
   while (1) {
@@ -392,6 +391,8 @@ static void __afl_proxy_loop(void) {
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
     if (proxy_cur_state == PROXY_FORKSRV){
         proxy_recv_msg();
+        __atomic_test_and_set(&worker_done);
+        __atomic_test_and_set(&worker_not_done);
         start_pt_parser();
     }
 
@@ -420,9 +421,10 @@ static void __afl_proxy_loop(void) {
         if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
         proxy_cur_state = PROXY_FUZZ_STOP;
-        __atomic_store(&worker_done, &not_done, __ATOMIC_SEQ_CST);
+        __atomic_clear(&worker_done, __ATOMIC_SEQ_CST);
         //blocking here until worker is done
-        while(!__atomic_compare_exchange(&worker_done, &done ,&done, 0,__ATOMIC_SEQ_CST ,__ATOMIC_SEQ_CST)); 
+        //only when worker_not_done is 0, the atomic return false
+        while(__atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST));
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
