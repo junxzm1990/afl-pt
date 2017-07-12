@@ -199,34 +199,37 @@ static void *pt_parse_worker(void *arg)
 {
     u64 cursor_pos = 0;
     s64 next;
-	int fd;
-	char msg[256];
 
 #ifdef HAVE_AFFINITY
     bind_to_free_core();
 #endif
 
-	fd = open("/tmp/test.log", O_RDWR);
+#ifdef DEBUG
+    int fd;
+    char msg[256];
+    fd = open("/tmp/test.log", O_RDWR);
+#endif
 
     while(1){
         if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos >= *p_pt_trace_off){
             //only when worker_done is 0, the atomic return false
             if(!__atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
                 __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
-		
-		snprintf(msg, 256, "Current offset %lx\n", (unsigned long)(*p_pt_trace_off));
-		write(fd, msg, 256);
+#ifdef DEBUG
+                snprintf(msg, 256, "Current offset %lx\n", (unsigned long)(*p_pt_trace_off));
+                write(fd, msg, 256);
+#endif
                 cursor_pos = 0;
             }
         }else{
             //parse_packet return the last postion where the packet decode was successful
-            /* cursor_pos = parse_packet(pt_trace_buf, cursor_pos, *p_pt_trace_off-cursor_pos); */
-
-		if(cursor_pos < *p_pt_trace_off)
-			 cursor_pos++;
+            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), *p_pt_trace_off-cursor_pos+1);
+            cursor_pos = *p_pt_trace_off;
         }
     }
-	close(fd);
+#ifdef DEBUG
+    close(fd);
+#endif
 }
 
 

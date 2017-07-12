@@ -6,7 +6,7 @@ LDFLAGS		= -lpthread
 
 all: $(OBJS)
 
-../../afl-pt-proxy: pt_proxy.c 
+../../afl-pt-proxy: pt_parser.c pt_proxy.c 
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
