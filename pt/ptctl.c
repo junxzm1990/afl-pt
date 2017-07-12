@@ -50,8 +50,10 @@ static void pt_setup_msr(topa_t *topa, u64 mask)
 	wrmsrl(MSR_IA32_RTIT_STATUS, 0);
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_BASE, virt_to_phys(topa));
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_MASK, mask);
-	wrmsrl(MSR_IA32_RTIT_CTL, RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
-			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR);
+	wrmsrl(MSR_IA32_RTIT_CTL, 
+			(RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
+			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR)
+			& (~(TSC_EN | CYC_EN | MTC_EN)));
 }
 
 void record_pt(int tx){
