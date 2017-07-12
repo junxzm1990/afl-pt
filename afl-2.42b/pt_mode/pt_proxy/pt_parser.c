@@ -4,7 +4,7 @@
 */
 #include "../../types.h"
 
-
+#define DEBUG_PACKET
 
 #ifdef DEBUG_PACKET
 const char* debug_packet_path = "/tmp/packet.log"
