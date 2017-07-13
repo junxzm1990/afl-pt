@@ -491,9 +491,9 @@ static void __afl_proxy_loop(void) {
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
-    __afl_area_ptr[2424] = 1;
-    __afl_area_ptr[2433] = 1;
-    __afl_area_ptr[2429] = 1;
+    /* __afl_area_ptr[2424] = 1; */
+    /* __afl_area_ptr[2433] = 1; */
+    /* __afl_area_ptr[2429] = 1; */
 
     /* Relay wait status to parent, then loop back. */
     if (write(FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
