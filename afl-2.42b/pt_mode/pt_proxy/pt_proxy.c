@@ -247,7 +247,7 @@ static void *pt_parse_worker(void *arg)
     off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-#define DEBUG_PACKET
+/* #define DEBUG_PACKET */
 
 #ifdef DEBUG_PACKET
     packet_fd = open("/tmp/packet.log", O_RDWR);
@@ -276,6 +276,9 @@ static void *pt_parse_worker(void *arg)
     }
 #ifdef DEBUG
     close(off_fd);
+#endif
+#ifdef DEBUG_PACKET
+    close(packet_fd);
 #endif
 }
 
