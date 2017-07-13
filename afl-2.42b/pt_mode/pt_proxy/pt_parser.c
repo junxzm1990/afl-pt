@@ -11,6 +11,7 @@ extern u8 *__afl_area_ptr;
 extern u64 curr_ip;
 extern u64 last_ip;
 extern u32 curr_tnt_prod;
+extern u64* rand_map;
 
 static void
 writeout_packet(s32 fd, const char *type ,unsigned long value){
@@ -19,14 +20,20 @@ writeout_packet(s32 fd, const char *type ,unsigned long value){
     write(fd, buf, strlen((char *)buf));
 }
 
-static u32 inline
-map_8(u8 val){
-    ;
+//look up rand_map and map the 8-bit val to a random number
+static u32
+inline map_8(u8 val){
+    return rand_map[val];
 }
 
-static u32 inline
-map_64(u64 val){
-    ;
+//look up rand_map and map the 64-bit val to a random number
+static u32
+inline map_64(u64 val){
+    u8 i = 0;
+    u32 res = 0;
+    for (;i < 8;++i){
+        res ^= rand_map[(val >> (i<<3)) && 0xFF];
+    }
 }
 
 enum pt_packet_kind {
