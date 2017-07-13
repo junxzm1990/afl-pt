@@ -3,15 +3,19 @@
   with some customization
 */
 #include "../../types.h"
+#include <fcntl.h>
+#include <string.h>
+#include <stdio.h>
 
 #define DEBUG_PACKET
 
 #ifdef DEBUG_PACKET
-const char* debug_packet_path = "/tmp/packet.log"
+const char* debug_packet_path = "/tmp/packet.log";
 static void
-writeout_packet(u32 fd, const char *type ,u64 value){
-    char buf[128];
-    write(fd, snprintf(buf, 127,"TYPE:%s %lx\n", type, value), strlen(buf));
+writeout_packet(u32 fd, const char *type ,unsigned long value){
+    char buf[128]={};
+    snprintf(buf, 127,"TYPE:%s %lx\n", type, value);
+    write(fd, buf, strlen((char *)buf));
 }
 #endif
 
@@ -317,6 +321,7 @@ pt_parse_packet(char *buffer, size_t size){
     bytes_remained = size;
     
 #ifdef DEBUG_PACKET
+    int fd;
     fd = open(debug_packet_path, O_RDWR);
 #endif
 
