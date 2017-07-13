@@ -419,6 +419,8 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 			reply_msg(target_msg, ptm->proxy_pid);
 		}
 		ptm->p_stat = PFUZZ;
+		ptm->run_cnt++;
+
 	}		
 	return;
 }
@@ -460,7 +462,11 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 			free_pages((unsigned long)topa, TOPA_T_SIZE);
 			ptm->targets[tx].topa = NULL;
 		}
+		
+		printk(KERN_INFO "In total %lx runs\n", (unsigned long)ptm->run_cnt);
+
 		//reset target number
+		ptm->run_cnt = 0;
 		ptm->target_num = 0;
 		release_trace_point();
 
@@ -744,6 +750,7 @@ static int __init pt_init(void){
 	ptm = kmalloc(sizeof(pt_manager_t), GFP_KERNEL);
 	ptm->p_stat = PSLEEP;
 	ptm->target_num = 0;
+	ptm->run_cnt = 0;
 
 	//register the PMI handler	
 	register_pmi_handler();

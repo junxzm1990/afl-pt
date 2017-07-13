@@ -162,6 +162,8 @@ typedef struct pt_manager_struct{
 
 	target_thread_t targets[MAXTHREAD]; //array for threads in the fuzzed process
 	int target_num; //how many threads are in running
+	u64 run_cnt; 	
+
 }pt_manager_t;
 
 typedef struct netlink_struct{
