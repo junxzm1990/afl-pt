@@ -49,15 +49,14 @@ static s32 forksrv_pid;                                /* fork server process id
 /* we use this additional AFLPT_# AFLPT_#+1 pair to communicate between proxy and forksrv */
 #define AFLPT_FORKSRV_FD (FORKSRV_FD - 3)
 
-/* proxy-ptm data structures */
-#define PT_START "START"                               /* fork server process id          */
-#define PT_TARGET "TARGET"                             /* fork server process id          */
-#define PT_BUF_NEXT "NEXT"                             /* fork server process id          */
-#define DEM ":"                                        /* fork server process id          */
-#define PT_TARGET_CONFIRM "TCONFIRM"                   /* fork server process id          */
-#define PT_START_CONFIRM "SCONFIRM"                    /* fork server process id          */
-#define PT_TARGET_CONFIRM "TCONFIRM"                   /* fork server process id          */
-#define PT_TOPA_READY "TOPA"                           /* fork server process id          */
+/* ptm-proxy-worker data structures */
+#define PT_START "START"                               /* start msg to pt_module          */
+#define PT_TARGET "TARGET"                             /* target msg to pt_module         */
+#define PT_BUF_NEXT "NEXT"                             /* next msg to get new pt_buf_off  */
+#define DEM ":"                                        /* delimeter for pt messeges       */
+#define PT_TARGET_CONFIRM "TCONFIRM"                   /* confirm msg from pt_module      */
+#define PT_START_CONFIRM "SCONFIRM"                    /* start confirm from pt_module    */
+#define PT_TOPA_READY "TOPA"                           /* topa msg from pt_module         */
 enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
 s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
@@ -65,8 +64,41 @@ s64 pt_trace_off_bound = 0;                            /* boundary of trace buff
 s64 *p_pt_trace_off = 0;                               /* last off to the buf pt update   */
 volatile u8  worker_done,                              /* for syncing worker and proxy    */
             worker_not_done;
+#define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
+#define MAX_64K (1<<16) 
+u64 rand_map[ONE_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
+static u32 rand_cnt;                                   /* Random number counter           */
+static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 
 
+/* Generate a random number (from 0 to limit - 1). This may have slight bias. */
+static inline u32 UR(u32 limit) {
+
+    if (unlikely(!rand_cnt--)) {
+
+        u32 seed[2];
+
+        ck_read(dev_urandom_fd, &seed, sizeof(seed), "/dev/urandom");
+
+        srandom(seed[0]);
+        rand_cnt = (RESEED_RNG / 2) + (seed[1] % RESEED_RNG);
+
+    }
+
+    return random() % limit;
+
+}
+
+/* Populate a new rand_map for fuzzing */
+static inline void
+gen_rand_map(u64 *map, u32 entries, u32 max){
+    int i;
+    if(sizeof(map)/sizeof(u64) < entries)
+        PFATAL("randmap size is too small!");
+    for (i=0; i<entries; ++i){
+        map[i] = UR(max); 
+    }
+}
 
 #ifdef HAVE_AFFINITY
 
@@ -470,6 +502,14 @@ int main(int argc, char *argv[])
   static u8 tmp[4];
   int proxy_st_pipe[2], proxy_ctl_pipe[2];
 
+  /* Generally useful file descriptor. */
+
+  dev_urandom_fd = open("/dev/urandom", O_RDONLY);
+  if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
+
+  gen_rand_map(rand_map, ONE_BYTE_ENTRIES, MAX_64K);
+
+  /* setting up share memory bitmap */
   __afl_map_shm();
 
   char **new_argv = ck_alloc(sizeof(char *) * argc);
@@ -513,6 +553,7 @@ int main(int argc, char *argv[])
     close(proxy_ctl_pipe[1]);
     close(proxy_st_pipe[0]);
     close(proxy_st_pipe[1]);
+    close(dev_urandom_fd);
     netlink_close();
 
     execv(target_path, new_argv);
