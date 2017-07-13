@@ -7,17 +7,13 @@
 #include <string.h>
 #include <stdio.h>
 
-/* #define DEBUG_PACKET */
 
-#ifdef DEBUG_PACKET
-const char* debug_packet_path = "/tmp/packet.log";
 static void
-writeout_packet(u32 fd, const char *type ,unsigned long value){
+writeout_packet(s32 fd, const char *type ,unsigned long value){
     char buf[128]={};
     snprintf(buf, 127,"TYPE:%s %lx\n", type, value);
     write(fd, buf, strlen((char *)buf));
 }
-#endif
 
 
 
@@ -89,6 +85,10 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 
     return ip;
 }
+
+//only when this flag is on
+//   and the input fd > 0, packets will be written to /tmp/packet.log
+#define DEBUG_PACKET
 static inline enum pt_packet_kind
 pt_get_packet(u8 *buffer, u64 size, u64 *len)
 {
@@ -300,9 +300,8 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
     return kind;
 }
 
-#define MAX_TNT_BITS (1 << 12)
 inline void
-pt_parse_packet(char *buffer, size_t size){
+pt_parse_packet(char *buffer, size_t size, int fd){
 
     //since the first packet will always be TIP.PGE, in the parsing process
     // whenever we get a TIP packet, we try calculate the shm index.
@@ -315,15 +314,12 @@ pt_parse_packet(char *buffer, size_t size){
     u64 last_ip = 0;
     u64 packet_len;
     u8 bit_selector;
-    u8 mask;
+    u8 tnt_short;
+    u64 tnt_long;
     enum pt_packet_kind kind;
     packet = buffer;
     bytes_remained = size;
 
-#ifdef DEBUG_PACKET
-    int fd;
-    fd = open(debug_packet_path, O_RDWR);
-#endif
 
 #define NEXT_PACKET()                                               \
     do {                                                            \
@@ -337,17 +333,16 @@ pt_parse_packet(char *buffer, size_t size){
 
         switch (kind) {
         case PT_PACKET_TNTSHORT:
-            mask = (u8)*packet;
-            bit_selector = 1 << ((32 - __builtin_clz(mask)) - 1);
-            do {
-                if (mask & (bit_selector >>= 1)) {
-                    //TNT is 1, record the bit 
-                } else {
-                    //TNT is 0, record the bit 
-                }
-            } while (bit_selector != 2);
+            tnt_short = (u8)*packet;
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "TNTSHORT", mask);
+            writeout_packet(fd, "TNTSHORT", tnt_short);
+#endif
+            break;
+
+        case PT_PACKET_TNTLONG:
+            tnt_long = (u64)*packet;
+#ifdef DEBUG_PACKET
+            writeout_packet(fd, "TNTLONG", tnt_long);
 #endif
             break;
 

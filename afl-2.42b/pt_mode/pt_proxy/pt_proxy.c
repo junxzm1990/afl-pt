@@ -200,15 +200,22 @@ static void *pt_parse_worker(void *arg)
     u64 cursor_pos = 0;
     u64 bound_snapshot = 0;
     s64 next;
+    s32 packet_fd = -1;
+    s32 off_fd = -1;
 
 #ifdef HAVE_AFFINITY
     bind_to_free_core();
 #endif
 
 #ifdef DEBUG
-    int fd;
     char msg[256];
-    fd = open("/tmp/test.log", O_RDWR);
+    off_fd = open("/tmp/test.log", O_RDWR);
+#endif
+
+#define DEBUG_PACKET
+
+#ifdef DEBUG_PACKET
+    packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
 
     while(1){
@@ -219,18 +226,18 @@ static void *pt_parse_worker(void *arg)
                 __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
 #ifdef DEBUG
                 snprintf(msg, 256, "Current offset %lx\n", (unsigned long)bound_snapshot);
-                write(fd, msg, 256);
+                write(off_fd, msg, 256);
 #endif
                 cursor_pos = 0;
             }
         }else{
             //parse_packet return the last postion where the packet decode was successful
-            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos);
+            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd);
             cursor_pos = bound_snapshot;
         }
     }
 #ifdef DEBUG
-    close(fd);
+    close(off_fd);
 #endif
 }
 
