@@ -9,7 +9,7 @@
 
 
 static void
-writeout_packet(s32 fd, const char *type ,unsigned long value){
+writeout_packet(s32 fd, const char *type ,long value){
     char buf[128]={};
     snprintf(buf, 127,"TYPE:%s %lx\n", type, value);
     write(fd, buf, strlen((char *)buf));
@@ -88,7 +88,7 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 
 //only when this flag is on
 //   and the input fd > 0, packets will be written to /tmp/packet.log
-#define DEBUG_PACKET
+/* #define DEBUG_PACKET */
 static inline enum pt_packet_kind
 pt_get_packet(u8 *buffer, u64 size, u64 *len)
 {
@@ -307,7 +307,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
     // whenever we get a TIP packet, we try calculate the shm index.
     // and reset the TNT calc result afterwards
     u8 *packet;
-    u64 bytes_remained;
+    s64 bytes_remained;
 
 
     u64 curr_ip = 0;
@@ -330,6 +330,9 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
     while (bytes_remained > 0) {
         kind = pt_get_packet(packet, bytes_remained, &packet_len);
+#ifdef DEBUG_PACKET
+        writeout_packet(fd, "BYTE remained:", bytes_remained);
+#endif
 
         switch (kind) {
         case PT_PACKET_TNTSHORT:
@@ -435,8 +438,5 @@ pt_parse_packet(char *buffer, size_t size, int fd){
         bytes_remained -= packet_len;
         packet += packet_len;
     }
-#ifdef DEBUG_PACKET
-    close(fd);
-#endif
 }
 
