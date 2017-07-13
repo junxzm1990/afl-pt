@@ -69,6 +69,9 @@ volatile u8  worker_done,                              /* for syncing worker and
 u64 rand_map[ONE_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
+u64 curr_ip = 0;                                       /* current ip used by parse worker */
+u64 last_ip = 0;                                       /* prev ip used by parse worker    */
+u32 curr_tnt_prod = 0;                                 /* tmp tnt product used by worker  */
 
 
 /* Generate a random number (from 0 to limit - 1). This may have slight bias. */
@@ -261,6 +264,9 @@ static void *pt_parse_worker(void *arg)
                 write(off_fd, msg, 256);
 #endif
                 cursor_pos = 0;
+                curr_ip = 0;
+                last_ip = 0;
+                curr_tnt_prod = 0;
             }
         }else{
             //parse_packet return the last postion where the packet decode was successful

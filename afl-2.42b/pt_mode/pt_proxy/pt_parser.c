@@ -7,9 +7,10 @@
 #include <string.h>
 #include <stdio.h>
 
-
-
-
+extern u8 *__afl_area_ptr;
+extern u64 curr_ip;
+extern u64 last_ip;
+extern u32 curr_tnt_prod;
 
 static void
 writeout_packet(s32 fd, const char *type ,unsigned long value){
@@ -18,7 +19,15 @@ writeout_packet(s32 fd, const char *type ,unsigned long value){
     write(fd, buf, strlen((char *)buf));
 }
 
+static u32 inline
+map_8(u8 val){
+    ;
+}
 
+static u32 inline
+map_64(u64 val){
+    ;
+}
 
 enum pt_packet_kind {
     PT_PACKET_ERROR = -1,
@@ -313,22 +322,29 @@ pt_parse_packet(char *buffer, size_t size, int fd){
     u64 bytes_remained;
 
 
-    u64 curr_ip = 0;
-    u64 last_ip = 0;
     u64 packet_len;
-    u8 bit_selector;
-    u8 tnt_short;
     u64 tnt_long;
+    u8 tnt_short;
     enum pt_packet_kind kind;
     packet = buffer;
     bytes_remained = size;
 
+#define UPDATE_TRACEBITS_IDX()                                       \
+    do {                                                             \
+        if(last_ip != 0){                                            \
+            __afl_area_ptr[map_64(curr_ip)                           \
+                ^ map_64(last_ip >> 1)                               \
+                ^ curr_tnt_prod] = 1;                                \
+            curr_tnt_prod = 0;                                       \
+                                                                     \
+        }                                                            \
+    } while (0)
 
-#define NEXT_PACKET()                                               \
-    do {                                                            \
-        bytes_remained -= packet_len;                               \
-        packet += packet_len;                                       \
-        kind = pt_get_packet(packet, bytes_remained, &packet_len);  \
+#define NEXT_PACKET()                                                \
+    do {                                                             \
+        bytes_remained -= packet_len;                                \
+        packet += packet_len;                                        \
+        kind = pt_get_packet(packet, bytes_remained, &packet_len);   \
     } while (0)
 
     while (bytes_remained > 0) {
@@ -337,6 +353,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
         switch (kind) {
         case PT_PACKET_TNTSHORT:
             tnt_short = (u8)*packet;
+            curr_tnt_prod ^= map_8(tnt_short);
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TNTSHORT", tnt_short);
 #endif
@@ -344,6 +361,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
         case PT_PACKET_TNTLONG:
             tnt_long = (u64)*packet;
+            curr_tnt_prod ^= map_64(tnt_long);
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TNTLONG", tnt_long);
 #endif
@@ -351,6 +369,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
         case PT_PACKET_TIP:
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
+            UPDATE_TRACEBITS_IDX();
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TIP", curr_ip);
 #endif
@@ -358,6 +377,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
         case PT_PACKET_TIPPGE:
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
+            UPDATE_TRACEBITS_IDX();
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TIP.PGE", curr_ip);
 #endif
@@ -365,6 +385,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
         case PT_PACKET_TIPPGD:
             pt_get_and_update_ip(packet, packet_len, &last_ip);
+            UPDATE_TRACEBITS_IDX();
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TIP.PGD", curr_ip);
 #endif
@@ -372,6 +393,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
         case PT_PACKET_FUP:
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
+            UPDATE_TRACEBITS_IDX();
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "FUP", curr_ip);
 #endif
@@ -381,8 +403,10 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             last_ip = 0;
             do {
                 NEXT_PACKET();
-                if (kind == PT_PACKET_FUP)
+                if (kind == PT_PACKET_FUP){
                     curr_ip=pt_get_and_update_ip(packet, packet_len, &last_ip);
+                    UPDATE_TRACEBITS_IDX();
+                }
             } while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "PSB", 0);
@@ -426,6 +450,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
                 NEXT_PACKET();
             } while (kind != PT_PACKET_FUP);
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
+            UPDATE_TRACEBITS_IDX();
             break;
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "OVF", 0);
