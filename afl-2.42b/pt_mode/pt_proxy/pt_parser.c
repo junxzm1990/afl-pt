@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define DEBUG_PACKET
+/* #define DEBUG_PACKET */
 
 #ifdef DEBUG_PACKET
 const char* debug_packet_path = "/tmp/packet.log";
@@ -319,7 +319,7 @@ pt_parse_packet(char *buffer, size_t size){
     enum pt_packet_kind kind;
     packet = buffer;
     bytes_remained = size;
-    
+
 #ifdef DEBUG_PACKET
     int fd;
     fd = open(debug_packet_path, O_RDWR);
@@ -440,5 +440,8 @@ pt_parse_packet(char *buffer, size_t size){
         bytes_remained -= packet_len;
         packet += packet_len;
     }
+#ifdef DEBUG_PACKET
+    close(fd);
+#endif
 }
 

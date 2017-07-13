@@ -225,8 +225,8 @@ static void *pt_parse_worker(void *arg)
             }
         }else{
             //parse_packet return the last postion where the packet decode was successful
-            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos+1);
-            cursor_pos = bound_snapshot+1;
+            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos);
+            cursor_pos = bound_snapshot;
         }
     }
 #ifdef DEBUG
