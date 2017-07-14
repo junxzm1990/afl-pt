@@ -328,16 +328,25 @@ static bool setup_target_thread(struct task_struct *target){
 	}
 
 	topa = pt_alloc_topa();
-	if(!topa) return false; 
+	if(!topa) {
+		printk(KERN_INFO "Cannot allocate topa memory\n");
+		return false; 
+	}
 
 	vma = setup_proxy_vma(topa);
-	if(!vma) return false; 
+	if(!vma){ 
+		printk(KERN_INFO "Cannot allocate proxy vma\n");
+		return false; 
+	}	
 
 	printk(KERN_INFO "Address of VMA for proxy %lx\n", vma->vm_start);
 	vpoo = setup_offset_vma(&ptm->targets[ptm->target_num]); 	
 
-	if(!vpoo) return false;
-
+	if(!vpoo){ 
+		printk("Cannot map offset\n");	
+		return false;
+	}
+	
 	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm->targets[ptm->target_num].offset);
 
 	//need a lock here when multiple target threads are running. 
