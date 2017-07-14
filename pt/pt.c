@@ -56,7 +56,7 @@ static void release_trace_point(void);
 	.end = (_end), \
 }
 
-#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask, _poa) (target_thread_t) {\
+#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask, _poa, _estart, _eend) (target_thread_t) {\
 	.pid = _pid, \
 	.task = _task, \
 	.topa = _topa, \
@@ -65,6 +65,8 @@ static void release_trace_point(void);
 	.offset = _offset,\
 	.outmask = _mask, \
 	.poa = _poa, \
+	.addr_range_a = _estart, \
+	.addr_range_b = _eend, \
 }
 
 #define RESET_TARGET(tx) ptm->targets[tx].status = TEXIT
@@ -304,15 +306,46 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 	return vma; 
 }
 
+static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
+
+	#define PMAX 512
+
+	struct mm_struct *mm;
+	struct vm_area_struct *vma;
+	char binpath[PMAX];
+	char *path;
+
+	mm = target->mm;	
+
+	//since the child is not started yet, we do not require semphore here. 
+
+	if (mm != NULL) {
+		vma = mm->mmap;
+		while (vma) {
+			memset(binpath, 0, PMAX);
+			if((vma->vm_flags & VM_EXEC)  &&  vma->vm_file){
+				path = dentry_path_raw(vma->vm_file->f_path.dentry, binpath, PMAX);
+				if(path && strstr(path, ptm->target_path))
+					return vma; 
+			}
+			vma = vma->vm_next;
+		}
+	}
+
+	return NULL;	
+}
+
+
 //A new target thread is started. 
 //Set up the ToPA 
 static bool setup_target_thread(struct task_struct *target){
 
 	int tx; 
-	struct vm_area_struct *vma;
+	struct vm_area_struct *vma, *exevma;
 	topa_t *topa;
 	u64 vpoo; 
-	
+	u64 exestart, exeend; 
+
 	//check if any target can be reused
 	//only need to reset the pid, task, status, offset, and outmask
 	for(tx = 0; tx < ptm->target_num; tx++){
@@ -341,16 +374,30 @@ static bool setup_target_thread(struct task_struct *target){
 
 	printk(KERN_INFO "Address of VMA for proxy %lx\n", vma->vm_start);
 	vpoo = setup_offset_vma(&ptm->targets[ptm->target_num]); 	
-
 	if(!vpoo){ 
 		printk("Cannot map offset\n");	
 		return false;
 	}
-	
+
 	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm->targets[ptm->target_num].offset);
 
-	//need a lock here when multiple target threads are running. 
-	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo); 
+	exestart = 0;
+	exeend = 0;
+
+	//if we are trying to only trace the main executable
+	if(ptm->addr_filter){
+		exevma = find_bintext_vma(target->parent);
+		if(exevma){
+			printk(KERN_INFO "Exe start %lx and end %lx\n", exevma->vm_start, exevma->vm_end);
+			exestart = exevma->vm_start;
+			exeend = exevma->vm_end;
+		}
+	}
+
+	printk(KERN_INFO "Exe start %lx and end %lx\n", ptm->targets[ptm->target_num].addr_range_a, ptm->targets[ptm->target_num].addr_range_b);
+
+	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo, exestart, exeend);
+
 	ptm->target_num++;
 	return true; 
 }
@@ -760,6 +807,7 @@ static int __init pt_init(void){
 	ptm->p_stat = PSLEEP;
 	ptm->target_num = 0;
 	ptm->run_cnt = 0;
+	ptm->addr_filter = true;
 
 	//register the PMI handler	
 	register_pmi_handler();

@@ -23,6 +23,7 @@
 #define ADDR1_SHIFT	36
 #define ADDR0_MASK	(0xfULL << ADDR0_SHIFT)
 #define ADDR1_MASK	(0xfULL << ADDR1_SHIFT)
+#define ADDR0_CFG	((u64)1 << ADDR0_SHIFT)
 
 #define MSR_IA32_RTIT_STATUS		0x00000571
 #define MSR_IA32_CR3_MATCH		0x00000572
@@ -146,6 +147,12 @@ typedef struct target_thread_struct{
 	//proxy offset address	
 	u64 poa; 
 
+	//start address of executable .text
+	u64 addr_range_a; 
+	//end address of executbale .text
+	u64 addr_range_b;
+
+
 }target_thread_t;
 
 typedef struct pt_manager_struct{
@@ -163,7 +170,9 @@ typedef struct pt_manager_struct{
 	target_thread_t targets[MAXTHREAD]; //array for threads in the fuzzed process
 	int target_num; //how many threads are in running
 	u64 run_cnt; 	
-
+	
+	//if filtering based on address is enabled
+	bool addr_filter; 
 }pt_manager_t;
 
 typedef struct netlink_struct{
@@ -186,8 +195,6 @@ struct vm_area_struct *proxy_special_mapping(
 void * proxy_find_symbol(char * name);
 void record_pt(int tx);
 void resume_pt(int tx);
-void restart_pt(int tx);
-
 
 typedef int (*trace_probe_ptr_ty)(struct tracepoint *tp, void *probe, void *data);
 typedef int (*trace_release_ptr_ty)(struct tracepoint *tp, void *probe, void *data); 

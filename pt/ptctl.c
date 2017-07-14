@@ -45,15 +45,40 @@ static void pt_pause(void) {
 		wrmsrl(MSR_IA32_RTIT_CTL, native_read_msr(MSR_IA32_RTIT_CTL) & ~RTIT_CTL_TRACEEN);
 }
 
-static void pt_setup_msr(topa_t *topa, u64 mask)
+static void pt_setup_msr(int tx)
+//topa_t *topa, u64 mask)
 {
+	
+	topa_t *topa; 
+	u64 mask;
+	u64 ctl; 
+	u64 addr_range_a;
+	u64 addr_range_b;
+
+	topa = ptm->targets[tx].topa; 
+	mask = ptm->targets[tx].outmask;	
+
+	addr_range_a = ptm->targets[tx].addr_range_a;
+	addr_range_b = ptm->targets[tx].addr_range_b;
+
 	wrmsrl(MSR_IA32_RTIT_STATUS, 0);
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_BASE, virt_to_phys(topa));
 	wrmsrl(MSR_IA32_RTIT_OUTPUT_MASK, mask);
-	wrmsrl(MSR_IA32_RTIT_CTL, 
-			(RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
+
+	if(ptm->addr_filter && addr_range_a && addr_range_b){
+		
+		ctl = (RTIT_CTL_TRACEEN | RTIT_CTL_TOPA | RTIT_CTL_BRANCH_EN | RTIT_CTL_USR | ADDR0_CFG)
+			& (~(TSC_EN | CYC_EN | MTC_EN));
+			
+	//set up addra and addrb
+		wrmsrl(MSR_IA32_ADDR0_START, addr_range_a); 
+		wrmsrl(MSR_IA32_ADDR0_END, addr_range_b); 
+	}else{
+		ctl = (RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
 			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR)
-			& (~(TSC_EN | CYC_EN | MTC_EN)));
+			& (~(TSC_EN | CYC_EN | MTC_EN | ADDR0_MASK));
+	}
+	wrmsrl(MSR_IA32_RTIT_CTL, ctl);
 }
 
 void record_pt(int tx){
@@ -73,20 +98,11 @@ void record_pt(int tx){
 	ptm->targets[tx].outmask = mask;
 }
 
-void restart_pt(int tx){
-
-	if(pt_enabled())
-		pt_pause();
-
-	pt_setup_msr(ptm->targets[tx].topa, 0);
-}
-
-
 void resume_pt(int tx){
 
 	if(pt_enabled())
 		pt_pause();
 
-	pt_setup_msr(ptm->targets[tx].topa, ptm->targets[tx].outmask);
+	pt_setup_msr(tx);
 }
 

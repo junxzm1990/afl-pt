@@ -38,7 +38,8 @@ inline map_64(u64 val){
     u8 i = 0;
     u32 res = 0;
     for (;i < 4;++i){
-        res ^= rand_map[(val >> (i<<4)) && 0xFFFF];
+	  res ^= rand_map[((u16)val)];	
+	  val = val >> 0x10; 
     }
     return res;
 }
@@ -342,9 +343,8 @@ pt_parse_packet(char *buffer, size_t size, int fd){
     do {                                                             \
         if(last_ip != 0){                                            \
             __afl_area_ptr[                                          \
-                map_64(curr_ip) ^                                    \
-                map_64(last_ip >> 1) ^                               \
-                curr_tnt_prod                                        \
+                map_64(curr_ip)                                     \
+		^ curr_tnt_prod					\
                 ] = 1;                                               \
             curr_tnt_prod = 0;                                       \
                                                                      \
@@ -367,7 +367,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
         switch (kind) {
         case PT_PACKET_TNTSHORT:
             tnt_short = (u8)*packet;
-            curr_tnt_prod ^= map_8(tnt_short);
+            curr_tnt_prod ^= tnt_short; //map_8(tnt_short);
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TNTSHORT", tnt_short);
 #endif
@@ -385,7 +385,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             UPDATE_TRACEBITS_IDX();
-#ifdef DEBUG_PACKET
+#if DEBUG_PACKET
             writeout_packet(fd, "TIP", curr_ip);
 #endif
             break;

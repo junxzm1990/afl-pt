@@ -72,7 +72,7 @@ static u32 rand_cnt;                                   /* Random number counter 
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 u64 curr_ip = 0;                                       /* current ip used by parse worker */
 u64 last_ip = 0;                                       /* prev ip used by parse worker    */
-u32 curr_tnt_prod = 0;                                 /* tmp tnt product used by worker  */
+u16 curr_tnt_prod = 0;                                 /* tmp tnt product used by worker  */
 
 
 /* Generate a random number (from 0 to limit - 1). This may have slight bias. */
@@ -248,7 +248,7 @@ static void *pt_parse_worker(void *arg)
     off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-/* #define DEBUG_PACKET */
+#define DEBUG_PACKET
 
 #ifdef DEBUG_PACKET
     packet_fd = open("/tmp/packet.log", O_RDWR);
