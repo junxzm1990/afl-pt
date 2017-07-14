@@ -26,13 +26,19 @@ inline map_8(u8 val){
     return rand_map[val];
 }
 
+//look up rand_map and map the 16-bit val to a random number
+static u32
+inline map_16(u16 val){
+    return rand_map[val];
+}
+
 //look up rand_map and map the 64-bit val to a random number
 static u32
 inline map_64(u64 val){
     u8 i = 0;
     u32 res = 0;
-    for (;i < 8;++i){
-        res ^= rand_map[(val >> (i<<3)) && 0xFF];
+    for (;i < 4;++i){
+        res ^= rand_map[(val >> (i<<4)) && 0xFFFF];
     }
     return res;
 }
