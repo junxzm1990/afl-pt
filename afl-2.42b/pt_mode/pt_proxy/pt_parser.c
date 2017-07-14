@@ -341,9 +341,11 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 #define UPDATE_TRACEBITS_IDX()                                       \
     do {                                                             \
         if(last_ip != 0){                                            \
-            __afl_area_ptr[map_64(curr_ip)                           \
-                ^ map_64(last_ip >> 1)                               \
-                ^ curr_tnt_prod] = 1;                                \
+            __afl_area_ptr[                                          \
+                map_64(curr_ip) ^                                    \
+                map_64(last_ip >> 1) ^                               \
+                curr_tnt_prod                                        \
+                ] = 1;                                               \
             curr_tnt_prod = 0;                                       \
                                                                      \
         }                                                            \

@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
   dev_urandom_fd = open("/dev/urandom", O_RDONLY);
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
-  gen_rand_map(TWO_BYTE_ENTRIES, MAX_64K);
+  gen_rand_map(TWO_BYTE_ENTRIES, MAP_SIZE);
 
   /* setting up share memory bitmap */
   __afl_map_shm();
