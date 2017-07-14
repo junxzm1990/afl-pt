@@ -11,7 +11,7 @@ extern u8 *__afl_area_ptr;
 extern u64 curr_ip;
 extern u64 last_ip;
 extern u32 curr_tnt_prod;
-extern u64* rand_map;
+extern u64 rand_map[];
 
 static void
 writeout_packet(s32 fd, const char *type ,long value){
@@ -34,6 +34,7 @@ inline map_64(u64 val){
     for (;i < 8;++i){
         res ^= rand_map[(val >> (i<<3)) && 0xFF];
     }
+    return res;
 }
 
 enum pt_packet_kind {
@@ -73,12 +74,10 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
     case 3:
         ip = ((*last_ip) & 0xffffffffffff0000) |
             *(u16 *)(packet+1);
-        *last_ip = ip;
         break;
     case 5:
         ip = ((*last_ip) & 0xffffffff00000000) |
             *(u32 *)(packet+1);
-        *last_ip = ip;
         break;
     case 7:
         if (((*packet) & 0x80) == 0) {
@@ -90,15 +89,12 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
                                *((u16 *)last_ip+3) << 16 |
                                (u32)*(u16 *)(packet+5));
         }
-        *last_ip = ip;
         break;
     case 9:
         ip = *(u64 *)(packet+1);
-        *last_ip = ip;
         break;
     default:
         ip = 0;
-        *last_ip = 0;
         break;
     }
 
@@ -378,6 +374,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             break;
 
         case PT_PACKET_TIP:
+            last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             UPDATE_TRACEBITS_IDX();
 #ifdef DEBUG_PACKET
@@ -386,24 +383,27 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             break;
 
         case PT_PACKET_TIPPGE:
+            last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
-            UPDATE_TRACEBITS_IDX();
+            /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TIP.PGE", curr_ip);
 #endif
             break;
 
         case PT_PACKET_TIPPGD:
+            last_ip = curr_ip;
             pt_get_and_update_ip(packet, packet_len, &last_ip);
-            UPDATE_TRACEBITS_IDX();
+            /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "TIP.PGD", curr_ip);
 #endif
             break;
 
         case PT_PACKET_FUP:
+            last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
-            UPDATE_TRACEBITS_IDX();
+            /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "FUP", curr_ip);
 #endif
@@ -414,8 +414,9 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             do {
                 NEXT_PACKET();
                 if (kind == PT_PACKET_FUP){
+                    last_ip = curr_ip;
                     curr_ip=pt_get_and_update_ip(packet, packet_len, &last_ip);
-                    UPDATE_TRACEBITS_IDX();
+                    /* UPDATE_TRACEBITS_IDX(); */
                 }
             } while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
 #ifdef DEBUG_PACKET
@@ -459,8 +460,9 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             do {
                 NEXT_PACKET();
             } while (kind != PT_PACKET_FUP);
+            last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
-            UPDATE_TRACEBITS_IDX();
+            /* UPDATE_TRACEBITS_IDX(); */
             break;
 #ifdef DEBUG_PACKET
             writeout_packet(fd, "OVF", 0);
