@@ -65,8 +65,9 @@ s64 *p_pt_trace_off = 0;                               /* last off to the buf pt
 volatile u8  worker_done,                              /* for syncing worker and proxy    */
             worker_not_done;
 #define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
+#define TWO_BYTE_ENTRIES (1<<16)                       /* num of keys in the rand_map     */
 #define MAX_64K (1<<16) 
-u64 rand_map[ONE_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
+u64 rand_map[TWO_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 u64 curr_ip = 0;                                       /* current ip used by parse worker */
@@ -94,12 +95,12 @@ static inline u32 UR(u32 limit) {
 
 /* Populate a new rand_map for fuzzing */
 static inline void
-gen_rand_map(u64 *map, u32 entries, u32 max){
+gen_rand_map(u32 entries, u32 max){
     int i;
-    if(sizeof(map)/sizeof(u64) < entries)
+    if(sizeof(rand_map)/sizeof(u64) < entries)
         PFATAL("randmap size is too small!");
     for (i=0; i<entries; ++i){
-        map[i] = UR(max); 
+        rand_map[i] = UR(max); 
     }
 }
 
@@ -516,7 +517,7 @@ int main(int argc, char *argv[])
   dev_urandom_fd = open("/dev/urandom", O_RDONLY);
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
-  gen_rand_map(rand_map, ONE_BYTE_ENTRIES, MAX_64K);
+  gen_rand_map(TWO_BYTE_ENTRIES, MAX_64K);
 
   /* setting up share memory bitmap */
   __afl_map_shm();
