@@ -335,6 +335,12 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 	return NULL;	
 }
 
+static void clear_topa(topa_t *topa){
+	int tx;
+	for(tx = 0; tx < PTEN - 1; tx++)
+		memset(phys_to_virt(topa->entries[tx].base << PAGE_SHIFT), 0, PAGE_SIZE * (1 << TOPA_ENTRY_UNIT_SIZE));
+}
+
 
 //A new target thread is started. 
 //Set up the ToPA 
@@ -356,6 +362,7 @@ static bool setup_target_thread(struct task_struct *target){
 			ptm->targets[tx].status = TSTART;
 			ptm->targets[tx].offset = 0;
 			ptm->targets[tx].outmask = 0;
+			clear_topa(ptm->targets[tx].topa);	
 			return true; 
 		}		
 	}
@@ -394,9 +401,12 @@ static bool setup_target_thread(struct task_struct *target){
 		}
 	}
 
-	printk(KERN_INFO "Exe start %lx and end %lx\n", ptm->targets[ptm->target_num].addr_range_a, ptm->targets[ptm->target_num].addr_range_b);
+	printk(KERN_INFO "Exe start %lx and end %lx\n", (unsigned long)ptm->targets[ptm->target_num].addr_range_a, (unsigned long)ptm->targets[ptm->target_num].addr_range_b);
 
 	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo, exestart, exeend);
+
+	//clear up contents in the topa buffers
+	clear_topa(ptm->targets[ptm->target_num].topa);	
 
 	ptm->target_num++;
 	return true; 
@@ -756,6 +766,7 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 			//the 55th bit is set
 			if(status & BIT_ULL(55)){
 				printk(KERN_INFO "NMI TRIGGERED %llx\n", status);
+				BUG_ON(1);
 				//stop the target thread
 				force_sig_info(SIGSTOP, &sgt, current);
 			}
@@ -807,7 +818,7 @@ static int __init pt_init(void){
 	ptm->p_stat = PSLEEP;
 	ptm->target_num = 0;
 	ptm->run_cnt = 0;
-	ptm->addr_filter = true;
+	ptm->addr_filter = false;
 
 	//register the PMI handler	
 	register_pmi_handler();
