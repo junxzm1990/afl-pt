@@ -5091,6 +5091,10 @@ static u8 fuzz_one(char** argv) {
 
     stage_cur_byte = stage_cur >> 3;
 
+    //for debug ptmode stability
+    common_fuzz_stuff(argv, out_buf, len);
+    continue;
+
     FLIP_BIT(out_buf, stage_cur);
 
     if (common_fuzz_stuff(argv, out_buf, len)) goto abandon_entry;
@@ -8048,6 +8052,7 @@ int main(int argc, char** argv) {
 
     cull_queue();
 
+
     if (!queue_cur) {
 
       queue_cycle++;
@@ -8097,8 +8102,9 @@ int main(int argc, char** argv) {
 
     if (stop_soon) break;
 
-    queue_cur = queue_cur->next;
-    current_entry++;
+    //debug ptmode stability
+    /* queue_cur = queue_cur->next; */
+    /* current_entry++; */
 
   }
 

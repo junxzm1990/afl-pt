@@ -230,47 +230,60 @@ inline s64 req_next(s64 cur_boundary){
     return pt_trace_off_bound;
 }
 
+s32 packet_fd = -1;
+s32 off_fd = -1;
 /* this function run in a thread until the whole fuzzing is done */
 static void *pt_parse_worker(void *arg)
 {
     u64 cursor_pos = 0;
     u64 bound_snapshot = 0;
     s64 next;
-    s32 packet_fd = -1;
-    s32 off_fd = -1;
 
 #ifdef HAVE_AFFINITY
     bind_to_free_core();
 #endif
 
+#define DEBUG
 #ifdef DEBUG
     char msg[256];
     off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-#define DEBUG_PACKET
+/* #define DEBUG_PACKET */
 
 #ifdef DEBUG_PACKET
     packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
+
+    /* while(!pt_trace_buf)pthread_yield(); */
 
     while(1){
         bound_snapshot = *p_pt_trace_off;
         if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos >= bound_snapshot){
             //only when worker_done is 0, the atomic return false
             if(!__atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
-                __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
-#ifdef DEBUG
-                snprintf(msg, 256, "Current offset %lx\n", (unsigned long)bound_snapshot);
-                write(off_fd, msg, 256);
-#endif
+/* #ifdef DEBUG */
+/*                 snprintf(msg, 256, "Current offset %lx\n", (unsigned long)bound_snapshot); */
+/*                 write(off_fd, msg, strlen(msg)); */
+/* #endif */
+                /* write(packet_fd,(void *)pt_trace_buf, bound_snapshot); */
+                /* *p_pt_trace_off = 0; */
+                /* while(write(packet_fd, "\n=======\n", 9)!=9)break; */
+                 /* memset(pt_trace_buf, 0,1<<12);  */
                 cursor_pos = 0;
                 curr_ip = 0;
                 last_ip = 0;
                 curr_tnt_prod = 0;
+                __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
             }
         }else{
-            //parse_packet return the last postion where the packet decode was successful
+            if(bound_snapshot < cursor_pos){
+#ifdef DEBUG
+                snprintf(msg, 256, "Current offset %d:%lx:%lx:%lx:%lx\n", proxy_cur_state, (unsigned long)pt_trace_buf, (unsigned long)cursor_pos,(unsigned long)*p_pt_trace_off, (unsigned long)bound_snapshot);
+                write(off_fd, msg, strlen(msg));
+#endif
+                /* PFATAL("not good");    */
+            }
             pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd);
             cursor_pos = bound_snapshot;
         }

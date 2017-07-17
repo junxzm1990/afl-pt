@@ -68,7 +68,7 @@ enum pt_packet_kind {
     PT_PACKET_MNT,
     PT_PACKET_PAD,
 };
-
+/* extern s32 packet_fd; */
 static inline u64
 pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 {
@@ -111,6 +111,7 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 //only when this flag is on
 //   and the input fd > 0, packets will be written to /tmp/packet.log
 /* #define DEBUG_PACKET */
+/* #define DEBUG */
 static inline enum pt_packet_kind
 pt_get_packet(u8 *buffer, u64 size, u64 *len)
 {
@@ -318,6 +319,7 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
             }
         }
     }
+    /* writeout_packet(packet_fd, "len:", *len); */
 
     return kind;
 }
@@ -360,9 +362,10 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 
     while (bytes_remained > 0) {
         kind = pt_get_packet(packet, bytes_remained, &packet_len);
-#ifdef DEBUG_PACKET
-        writeout_packet(fd, "BYTE remained:", bytes_remained);
-#endif
+/* #ifdef DEBUG_PACKET */
+        /* writeout_packet(fd, "BYTE remained:", bytes_remained); */
+        /* writeout_packet(fd, "packet addr:", packet); */
+/* #endif */
 
         switch (kind) {
         case PT_PACKET_TNTSHORT:
@@ -435,32 +438,32 @@ pt_parse_packet(char *buffer, size_t size, int fd){
 #ifdef DEBUG
         //simply ignore all MODE packets unless later cause us trouble
         case PT_PACKET_MODE:
-            mode_payload = *(packet+1);
-            switch ((mode_payload >> 5)) {
-            case 0: /* MODE.Exec */
-                pt_on_mode(mode_payload, arg);
-                break;
-            case 1: /* MODE.TSX */
-                PFATAL("unwanted pt packet type: MODE.TSX");
-                /* do { */
-                /*     NEXT_PACKET(); */
-                /* } while (kind != PT_PACKET_FUP); */
-                /* curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip); */
+            /* mode_payload = *(packet+1); */
+            /* switch ((mode_payload >> 5)) { */
+            /* case 0: /\* MODE.Exec *\/ */
+            /*     pt_on_mode(mode_payload, arg); */
+            /*     break; */
+            /* case 1: /\* MODE.TSX *\/ */
+            /*     PFATAL("unwanted pt packet type: MODE.TSX"); */
+            /*     /\* do { *\/ */
+            /*     /\*     NEXT_PACKET(); *\/ */
+            /*     /\* } while (kind != PT_PACKET_FUP); *\/ */
+            /*     /\* curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip); *\/ */
 
-                /* switch ((mode_payload & (u8)0x3)) { */
-                /* case 0: */
-                /*     pt_on_xcommit(arg); */
-                /*     break; */
-                /* case 1: */
-                /*     pt_on_xbegin(arg); */
-                /*     break; */
-                /* case 2: */
-                /*     pt_on_xabort(arg); */
-                /*     curr_block = NULL; */
-                /*     break; */
-                default:
-                    break;
-                }
+            /*     /\* switch ((mode_payload & (u8)0x3)) { *\/ */
+            /*     /\* case 0: *\/ */
+            /*     /\*     pt_on_xcommit(arg); *\/ */
+            /*     /\*     break; *\/ */
+            /*     /\* case 1: *\/ */
+            /*     /\*     pt_on_xbegin(arg); *\/ */
+            /*     /\*     break; *\/ */
+            /*     /\* case 2: *\/ */
+            /*     /\*     pt_on_xabort(arg); *\/ */
+            /*     /\*     curr_block = NULL; *\/ */
+            /*     /\*     break; *\/ */
+            /*     default: */
+            /*         break; */
+            /*     } */
             break;
 #endif
 

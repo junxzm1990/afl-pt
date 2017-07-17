@@ -299,7 +299,7 @@ static  struct vm_area_struct* setup_proxy_vma(topa_t *topa){
 	//remap each topa to the address space of proxy
 	for(index = 0; index < PTEN - 1; index++)
 		remap_pfn_range(vma,
-			mapaddr + index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE , 
+			mapaddr + index * (1 << TOPA_ENTRY_UNIT_SIZE) * PAGE_SIZE, 
 			topa->entries[index].base, 
 			(1 << TOPA_ENTRY_UNIT_SIZE ) *PAGE_SIZE, 
 			vma->vm_page_prot);
@@ -337,7 +337,10 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 
 static void clear_topa(topa_t *topa){
 	int tx;
-	for(tx = 0; tx < PTEN - 1; tx++)
+  /* access_remote_vm(,) */
+  /* memset(phys_to_virt(topa->entries[0].base << PAGE_SHIFT), 0 , PAGE_SIZE); */
+  return;
+	for(tx = 0; tx < PTEN - 2; tx++)
 		memset(phys_to_virt(topa->entries[tx].base << PAGE_SHIFT), 0, PAGE_SIZE * (1 << TOPA_ENTRY_UNIT_SIZE));
 }
 
@@ -360,7 +363,7 @@ static bool setup_target_thread(struct task_struct *target){
 			ptm->targets[tx].pid = target->pid; 
 			ptm->targets[tx].task = target;
 			ptm->targets[tx].status = TSTART;
-			ptm->targets[tx].offset = 0;
+			ptm->targets[tx].offset = 1;
 			ptm->targets[tx].outmask = 0;
 			clear_topa(ptm->targets[tx].topa);	
 			return true; 
