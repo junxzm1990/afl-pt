@@ -821,7 +821,7 @@ static int __init pt_init(void){
 	ptm->p_stat = PSLEEP;
 	ptm->target_num = 0;
 	ptm->run_cnt = 0;
-	ptm->addr_filter = false;
+	ptm->addr_filter = true;
 
 	//register the PMI handler	
 	register_pmi_handler();

@@ -284,7 +284,7 @@ static void *pt_parse_worker(void *arg)
 #endif
                 /* PFATAL("not good");    */
             }
-            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd);
+            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
             cursor_pos = bound_snapshot;
         }
     }
@@ -452,6 +452,8 @@ static void __afl_proxy_loop(void) {
   s32 child_pid;
 
 
+  packet_fd = open("/tmp/packet.log", O_RDWR);
+  off_fd = open("/tmp/test.log", O_RDWR);
   while (1) {
 
     u32 was_killed;
@@ -473,7 +475,7 @@ static void __afl_proxy_loop(void) {
         proxy_recv_msg();
         __atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST);
         __atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST);
-        start_pt_parser();
+        /* start_pt_parser(); */
     }
 
 
@@ -490,9 +492,14 @@ static void __afl_proxy_loop(void) {
 
 
 
+
     /* in PROXY_FUZZ_ING state, decode pt buffer and write to trace_bits */
-
-
+    u64 cursor_pos = 0;
+    u64 bound_snapshot = 0;
+    cursor_pos = 0;
+    curr_ip = 0;
+    last_ip = 0;
+    curr_tnt_prod = 0;
 
     /* Wait for target to report child status. Abort if read fails. */
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
@@ -501,13 +508,16 @@ static void __afl_proxy_loop(void) {
         if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
         proxy_cur_state = PROXY_FUZZ_STOP;
-        __atomic_clear(&worker_done, __ATOMIC_SEQ_CST);
+        /* __atomic_clear(&worker_done, __ATOMIC_SEQ_CST); */
         //blocking here until worker is done
         //only when worker_not_done is 0, the atomic return false
-        while(__atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST));
+        /* while(__atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST)); */
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
+    bound_snapshot = *p_pt_trace_off;
+    pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+    cursor_pos = bound_snapshot;
     /* __afl_area_ptr[2424] = 1; */
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */
@@ -516,6 +526,7 @@ static void __afl_proxy_loop(void) {
     if (write(FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
 
   }
+  close(packet_fd);
 
 }
 

@@ -325,7 +325,7 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 }
 
 inline void
-pt_parse_packet(char *buffer, size_t size, int fd){
+pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
 
     //since the first packet will always be TIP.PGE, in the parsing process
     // whenever we get a TIP packet, we try calculate the shm index.
@@ -340,13 +340,14 @@ pt_parse_packet(char *buffer, size_t size, int fd){
     enum pt_packet_kind kind;
     packet = buffer;
     bytes_remained = size;
+    write(rfd, buffer, size);
+    write(rfd, "=======\n",8);
 
 #define UPDATE_TRACEBITS_IDX()                                       \
     do {                                                             \
         if(last_ip != 0){                                            \
             __afl_area_ptr[                                          \
                 map_64(curr_ip)                                     \
-		^ curr_tnt_prod					\
                 ] = 1;                                               \
             curr_tnt_prod = 0;                                       \
                                                                      \
@@ -372,7 +373,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             tnt_short = (u8)*packet;
             curr_tnt_prod ^= tnt_short; //map_8(tnt_short);
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "TNTSHORT", tnt_short);
+            writeout_packet(dfd, "TNTSHORT", tnt_short);
 #endif
             break;
 
@@ -380,7 +381,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             tnt_long = (u64)*packet;
             curr_tnt_prod ^= map_64(tnt_long);
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "TNTLONG", tnt_long);
+            writeout_packet(dfd, "TNTLONG", tnt_long);
 #endif
             break;
 
@@ -388,9 +389,9 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             UPDATE_TRACEBITS_IDX();
-#if DEBUG_PACKET
-            writeout_packet(fd, "TIP", curr_ip);
-#endif
+/* #if DEBUG_PACKET */
+            writeout_packet(dfd, "TIP", curr_ip);
+/* #endif */
             break;
 
         case PT_PACKET_TIPPGE:
@@ -398,7 +399,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "TIP.PGE", curr_ip);
+            writeout_packet(dfd, "TIP.PGE", curr_ip);
 #endif
             break;
 
@@ -407,7 +408,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             pt_get_and_update_ip(packet, packet_len, &last_ip);
             /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "TIP.PGD", curr_ip);
+            writeout_packet(dfd, "TIP.PGD", curr_ip);
 #endif
             break;
 
@@ -416,7 +417,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             /* UPDATE_TRACEBITS_IDX(); */
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "FUP", curr_ip);
+            writeout_packet(dfd, "FUP", curr_ip);
 #endif
             break;
 
@@ -431,7 +432,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
                 }
             } while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "PSB", 0);
+            writeout_packet(dfd, "PSB", 0);
 #endif
             break;
 
@@ -476,7 +477,7 @@ pt_parse_packet(char *buffer, size_t size, int fd){
             /* UPDATE_TRACEBITS_IDX(); */
             break;
 #ifdef DEBUG_PACKET
-            writeout_packet(fd, "OVF", 0);
+            writeout_packet(dfd, "OVF", 0);
 #endif
 
         default:
