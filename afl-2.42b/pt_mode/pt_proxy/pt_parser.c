@@ -323,6 +323,7 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 
     return kind;
 }
+/* #define DEBUG_PACKET */
 
 inline void
 pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
@@ -334,24 +335,43 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
     s64 bytes_remained;
 
 
+    u64 last_tip_ip = 0;
     u64 packet_len;
     u64 tnt_long;
-    u8 tnt_short;
+    u32 bit_selector;
+    u8 tnt_short, tnt_go=0; 
+    u8 curr_tnt_cnt = 0;//whenever counter reach 16, concert it to rand
+    u16 tnt_container = 0;
     enum pt_packet_kind kind;
     packet = buffer;
     bytes_remained = size;
+#ifdef DEBUG_PACKET
     write(rfd, buffer, size);
     write(rfd, "=======\n",8);
+#endif
 
-#define UPDATE_TRACEBITS_IDX()                                       \
-    do {                                                             \
-        if(last_ip != 0){                                            \
-            __afl_area_ptr[                                          \
-                map_64(curr_ip)                                     \
-                ] = 1;                                               \
-            curr_tnt_prod = 0;                                       \
-                                                                     \
-        }                                                            \
+
+#define UPDATE_TNT_PROD(BIT)                                        \
+    do {                                                            \
+        if(tnt_go){                                                 \
+            tnt_container |= (BIT<<curr_tnt_cnt);                   \
+            if(++curr_tnt_cnt % 8 == 0){                           \
+                curr_tnt_prod ^= map_8(tnt_container);             \
+                tnt_container = curr_tnt_cnt = 0;                   \
+            }                                                       \
+        }                                                           \
+    } while (0)
+
+#define UPDATE_TRACEBITS_IDX()                  \
+    do {                                        \
+        __afl_area_ptr[                         \
+            map_64(curr_ip)                     \
+            ^map_64(last_tip_ip)                \
+            ^map_8(curr_tnt_prod)              \
+            ]++;                                \
+        curr_tnt_prod = 0;                      \
+        last_tip_ip=curr_ip;                    \
+                                                \
     } while (0)
 
 #define NEXT_PACKET()                                                \
@@ -371,9 +391,15 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         switch (kind) {
         case PT_PACKET_TNTSHORT:
             tnt_short = (u8)*packet;
-            curr_tnt_prod ^= tnt_short; //map_8(tnt_short);
+            bit_selector = 1 << ((32 - __builtin_clz(tnt_short)) - 1);
+            do {
+                if((tnt_short & (bit_selector >>= 1)))
+                    UPDATE_TNT_PROD(1);
+                else
+                    UPDATE_TNT_PROD(0);
+            } while (bit_selector != 2);
 #ifdef DEBUG_PACKET
-            writeout_packet(dfd, "TNTSHORT", tnt_short);
+            writeout_packet(dfd, "TNTSHORT container", tnt_container);
 #endif
             break;
 
@@ -386,12 +412,16 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
             break;
 
         case PT_PACKET_TIP:
+            tnt_go=1;
             last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
-            UPDATE_TRACEBITS_IDX();
-/* #if DEBUG_PACKET */
+#if DEBUG_PACKET
             writeout_packet(dfd, "TIP", curr_ip);
-/* #endif */
+            writeout_packet(dfd, "LAST TIP", last_tip_ip);
+            writeout_packet(dfd, "TNT container", tnt_container);
+            writeout_packet(dfd, "TNT prod", curr_tnt_prod);
+#endif
+            UPDATE_TRACEBITS_IDX();
             break;
 
         case PT_PACKET_TIPPGE:
@@ -423,6 +453,9 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
 
         case PT_PACKET_PSB:
             last_ip = 0;
+#ifdef DEBUG_PACKET
+            writeout_packet(dfd, "PSB", 0);
+#endif
             do {
                 NEXT_PACKET();
                 if (kind == PT_PACKET_FUP){
@@ -432,7 +465,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
                 }
             } while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
 #ifdef DEBUG_PACKET
-            writeout_packet(dfd, "PSB", 0);
+            writeout_packet(dfd, "PSBEND", 0);
 #endif
             break;
 
@@ -475,10 +508,10 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
             last_ip = curr_ip;
             curr_ip = pt_get_and_update_ip(packet, packet_len, &last_ip);
             /* UPDATE_TRACEBITS_IDX(); */
-            break;
 #ifdef DEBUG_PACKET
             writeout_packet(dfd, "OVF", 0);
 #endif
+            break;
 
         default:
             break;
@@ -487,5 +520,9 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         bytes_remained -= packet_len;
         packet += packet_len;
     }
+#ifdef DEBUG_PACKET
+    write(dfd, "=======\n", 8);
+    writeout_packet(dfd, "final", final_prod);
+#endif
 }
 

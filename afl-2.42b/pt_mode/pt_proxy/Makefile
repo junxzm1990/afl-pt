@@ -1,7 +1,7 @@
 CC  		= gcc
 OBJS 		= ../../afl-pt-proxy 
 LIBS		= 
-CFLAGS	=-O0 ${LIBS} -g
+CFLAGS	=-O3 ${LIBS} -g
 LDFLAGS		= -lpthread
 
 all: $(OBJS)

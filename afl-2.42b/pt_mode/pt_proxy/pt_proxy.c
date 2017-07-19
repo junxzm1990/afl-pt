@@ -243,7 +243,7 @@ static void *pt_parse_worker(void *arg)
     bind_to_free_core();
 #endif
 
-#define DEBUG
+/* #define DEBUG */
 #ifdef DEBUG
     char msg[256];
     off_fd = open("/tmp/test.log", O_RDWR);
@@ -516,8 +516,7 @@ static void __afl_proxy_loop(void) {
 
     /* we can parse the pt packet and present it to the trace_bits here*/
     bound_snapshot = *p_pt_trace_off;
-    pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
-    cursor_pos = bound_snapshot;
+    pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
     /* __afl_area_ptr[2424] = 1; */
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */

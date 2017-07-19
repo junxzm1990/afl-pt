@@ -67,7 +67,7 @@ static void pt_setup_msr(int tx)
 
 	if(ptm->addr_filter && addr_range_a && addr_range_b){
 		
-		ctl = (RTIT_CTL_TRACEEN | RTIT_CTL_TOPA | RTIT_CTL_BRANCH_EN | RTIT_CTL_USR | ADDR0_CFG)// | DIS_RETC)
+		ctl = (RTIT_CTL_TRACEEN | RTIT_CTL_TOPA | RTIT_CTL_BRANCH_EN | RTIT_CTL_USR | ADDR0_CFG| DIS_RETC)
 			& (~(TSC_EN | CYC_EN | MTC_EN));
 			
 	//set up addra and addrb
@@ -75,7 +75,7 @@ static void pt_setup_msr(int tx)
 		wrmsrl(MSR_IA32_ADDR0_END, addr_range_b); 
 	}else{
 		ctl = (RTIT_CTL_TRACEEN | RTIT_CTL_TOPA
-			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR )//| DIS_RETC)
+			| RTIT_CTL_BRANCH_EN | RTIT_CTL_USR | DIS_RETC)
 			& (~(TSC_EN | CYC_EN | MTC_EN | ADDR0_MASK));
 	}
 	wrmsrl(MSR_IA32_RTIT_CTL, ctl);
