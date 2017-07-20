@@ -437,7 +437,8 @@ static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *p
 		preempt_disable();
 
 	for(tx = 0; tx < ptm->target_num; tx++){
-		if(ptm->targets[tx].pid == prev->pid){
+		if(ptm->targets[tx].pid == prev->pid
+       && ptm->targets[tx].status != TEXIT){
 			record_pt(tx);
 			break;
 		}
@@ -445,9 +446,10 @@ static void probe_trace_switch(void *ignore, bool preempt, struct task_struct *p
 
 	for(tx = 0; tx < ptm->target_num; tx++){
 
-		if(ptm->targets[tx].pid == next->pid){
-			resume_pt(tx);
-		}		
+      if(ptm->targets[tx].pid == next->pid
+         && ptm->targets[tx].status != TEXIT){
+          resume_pt(tx);
+      }		
 	}
 
 	if(preempt)

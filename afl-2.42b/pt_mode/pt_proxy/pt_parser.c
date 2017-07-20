@@ -367,7 +367,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         __afl_area_ptr[                         \
             map_64(curr_ip)                     \
             ^map_64(last_tip_ip)                \
-            ^map_8(curr_tnt_prod)              \
+            ^map_16((u8)curr_tnt_prod)            \
             ]++;                                \
         curr_tnt_prod = 0;                      \
         last_tip_ip=curr_ip;                    \
