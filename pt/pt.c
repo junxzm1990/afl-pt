@@ -754,6 +754,11 @@ static void pt_recv_msg(struct sk_buff *skb) {
 //Process PMI interrupt when PT buffer is full
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
+
+
+	//disable pmi handler at first
+	return; 
+
 	int tx; 
 	u64 status;  
 	siginfo_t sgt; 
