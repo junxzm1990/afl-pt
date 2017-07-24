@@ -363,7 +363,7 @@ static bool setup_target_thread(struct task_struct *target){
 			ptm->targets[tx].pid = target->pid; 
 			ptm->targets[tx].task = target;
 			ptm->targets[tx].status = TSTART;
-			ptm->targets[tx].offset = 1;
+			ptm->targets[tx].offset = 0;
 			ptm->targets[tx].outmask = 0;
 			clear_topa(ptm->targets[tx].topa);	
 			return true; 
@@ -507,7 +507,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 	for(tx = 0; tx < ptm->target_num; tx++){
 
 		//exit of a target thread
-		if(ptm->targets[tx].pid == tsk->pid){
+		if(ptm->targets[tx].pid == tsk->pid && ptm->targets[tx].status != TEXIT){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
 			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
@@ -757,7 +757,7 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 
 
 	//disable pmi handler at first
-	return; 
+	return 0; 
 
 	int tx; 
 	u64 status;  
