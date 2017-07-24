@@ -11,9 +11,7 @@
 #include <sched.h>
 #include <dirent.h>
 #include <sched.h>
-
 #include <fcntl.h>
-
 
 #include "../../config.h"
 #include "../../types.h"
@@ -36,6 +34,12 @@ struct sockaddr_nl src_addr,                           /* sock src structure    
 struct msghdr nl_msg;                                  /* contain iovec pointer           */
 struct iovec iov;                                      /* contain nlmsghdr pointer        */
 struct nlmsghdr *nlh = NULL;                           /* contain data payload pointer    */
+
+
+//This is added by Jun
+volatile u64 runcnt;
+volatile u64 parsecnt; 
+//end adding by Jun
 
 
 /* AFL data structures */
@@ -232,67 +236,60 @@ inline s64 req_next(s64 cur_boundary){
 
 s32 packet_fd = -1;
 s32 off_fd = -1;
+
+static int cnt = 0;
+
 /* this function run in a thread until the whole fuzzing is done */
 static void *pt_parse_worker(void *arg)
 {
-    u64 cursor_pos = 0;
-    u64 bound_snapshot = 0;
-    s64 next;
+	u64 cursor_pos = 0;
+	u64 bound_snapshot = 0;
+	s64 next;
 
 #ifdef HAVE_AFFINITY
-    bind_to_free_core();
+	bind_to_free_core();
 #endif
 
-/* #define DEBUG */
+#define DEBUG
 #ifdef DEBUG
-    char msg[256];
-    off_fd = open("/tmp/test.log", O_RDWR);
+	char msg[256];
+	off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-/* #define DEBUG_PACKET */
+	/* #define DEBUG_PACKET */
 
 #ifdef DEBUG_PACKET
-    packet_fd = open("/tmp/packet.log", O_RDWR);
+	packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
 
-    /* while(!pt_trace_buf)pthread_yield(); */
+	/* while(!pt_trace_buf)pthread_yield(); */
 
-    while(1){
-        bound_snapshot = *p_pt_trace_off;
-        if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos >= bound_snapshot){
-            //only when worker_done is 0, the atomic return false
-            if(!__atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST)){ //when proxy is really waiting for us
-/* #ifdef DEBUG */
-/*                 snprintf(msg, 256, "Current offset %lx\n", (unsigned long)bound_snapshot); */
-/*                 write(off_fd, msg, strlen(msg)); */
-/* #endif */
-                /* write(packet_fd,(void *)pt_trace_buf, bound_snapshot); */
-                /* *p_pt_trace_off = 0; */
-                /* while(write(packet_fd, "\n=======\n", 9)!=9)break; */
-                 /* memset(pt_trace_buf, 0,1<<12);  */
-                cursor_pos = 0;
-                curr_ip = 0;
-                last_ip = 0;
-                curr_tnt_prod = 0;
-                __atomic_clear(&worker_not_done, __ATOMIC_SEQ_CST);
-            }
-        }else{
-            if(bound_snapshot < cursor_pos){
+	while(1){
+
+		if(parsecnt == runcnt -1)
+			bound_snapshot = *p_pt_trace_off;
+
+		if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos >= bound_snapshot){
+			while(1){
+				if(__sync_bool_compare_and_swap(&parsecnt, runcnt - 1, runcnt))	
+					break;	
+			}
+			cursor_pos = 0;
+			curr_ip = 0;
+			last_ip = 0;
+			curr_tnt_prod = 0;
+		}else{
+			if(parsecnt == runcnt - 1){ //&& proxy_cur_state == PROXY_FUZZ_STOP){
+				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				cursor_pos = bound_snapshot;
+			}
+		}
+	}
 #ifdef DEBUG
-                snprintf(msg, 256, "Current offset %d:%lx:%lx:%lx:%lx\n", proxy_cur_state, (unsigned long)pt_trace_buf, (unsigned long)cursor_pos,(unsigned long)*p_pt_trace_off, (unsigned long)bound_snapshot);
-                write(off_fd, msg, strlen(msg));
-#endif
-                /* PFATAL("not good");    */
-            }
-            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
-            cursor_pos = bound_snapshot;
-        }
-    }
-#ifdef DEBUG
-    close(off_fd);
+	close(off_fd);
 #endif
 #ifdef DEBUG_PACKET
-    close(packet_fd);
+	close(packet_fd);
 #endif
 }
 
@@ -453,7 +450,7 @@ static void __afl_proxy_loop(void) {
 
 
   packet_fd = open("/tmp/packet.log", O_RDWR);
-  off_fd = open("/tmp/test.log", O_RDWR);
+//  off_fd = open("/tmp/test.log", O_RDWR);
   while (1) {
 
     u32 was_killed;
@@ -473,11 +470,16 @@ static void __afl_proxy_loop(void) {
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
     if (proxy_cur_state == PROXY_FORKSRV){
         proxy_recv_msg();
-        __atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST);
-        __atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST);
-        /* start_pt_parser(); */
-    }
+//        __atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST);
+//        __atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST);
+	
 
+	//added by Jun
+	runcnt = 0;
+	parsecnt = 0;
+        start_pt_parser();
+	//end adding by Jun
+    }
 
     /* Wait for target  by reading from the pipe. Abort if read fails. */
     if (read(proxy_st_fd, &child_pid, 4) != 4) _exit(1);
@@ -486,20 +488,12 @@ static void __afl_proxy_loop(void) {
         if (proxy_cur_state != PROXY_FUZZ_RDY)
             PFATAL("proxy is not on fuzz_ready state");
         proxy_cur_state = PROXY_FUZZ_ING;
+
+	//increase the run count
+	runcnt++;	
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
-
-
-
-
-    /* in PROXY_FUZZ_ING state, decode pt buffer and write to trace_bits */
-    u64 cursor_pos = 0;
-    u64 bound_snapshot = 0;
-    cursor_pos = 0;
-    curr_ip = 0;
-    last_ip = 0;
-    curr_tnt_prod = 0;
 
     /* Wait for target to report child status. Abort if read fails. */
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
@@ -507,16 +501,19 @@ static void __afl_proxy_loop(void) {
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
         if (proxy_cur_state != PROXY_FUZZ_ING)
          PFATAL("proxy is not on fuzzing state");
+
         proxy_cur_state = PROXY_FUZZ_STOP;
-        /* __atomic_clear(&worker_done, __ATOMIC_SEQ_CST); */
-        //blocking here until worker is done
-        //only when worker_not_done is 0, the atomic return false
-        /* while(__atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST)); */
+
+	//wait until the parser start
+	while(1){
+		if(runcnt == parsecnt)
+			break;	
+	}
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
-    bound_snapshot = *p_pt_trace_off;
-    pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
+    //bound_snapshot = *p_pt_trace_off;
+    //pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
     /* __afl_area_ptr[2424] = 1; */
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */
