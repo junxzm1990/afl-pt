@@ -13,6 +13,33 @@ extern u64 last_ip;
 extern u32 curr_tnt_prod;
 extern u64 rand_map[];
 
+
+static const u8 log_map[2097152] = {
+
+    [0 ... 1]           = 0,
+    [2 ... 3]           = 1,
+    [4 ... 7]           = 2,
+    [8 ... 15]          = 3,
+    [16 ... 31]         = 4,
+    [32 ... 63]         = 5,
+    [64 ... 127]        = 6,
+    [128 ... 255]       = 7,
+    [256 ... 511]       = 8,
+    [512 ... 1023]      = 9,
+    [1024 ... 2047]     = 10,
+    [2048 ... 4095]     = 11,
+    [4096 ... 8191]     = 12,
+    [8192 ... 16383]    = 13,
+    [16384 ... 32767]   = 14,
+    [32768 ... 65535]   = 15,
+    [65536 ... 131071]  = 16,
+    [131072 ... 262143] = 17,
+    [262144 ... 524287] = 18,
+    [524288 ... 1048575]= 19,
+    [1048576 ... 2097151] = 20
+
+};
+
 static void
 writeout_packet(s32 fd, const char *type ,long value){
     char buf[128]={};
@@ -340,7 +367,8 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
     u64 tnt_long;
     u32 bit_selector;
     u8 tnt_short, tnt_go=0; 
-    u8 curr_tnt_cnt = 0;//whenever counter reach 16, concert it to rand
+    u32 tnt_counter = 0;
+    u8 curr_tnt_cnt = 0;//whenever counter reach 16, concretize it to rand
     u16 tnt_container = 0;
     enum pt_packet_kind kind;
     packet = buffer;
@@ -356,7 +384,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         if(tnt_go){                                                 \
             tnt_container |= (BIT<<curr_tnt_cnt);                   \
             if(++curr_tnt_cnt % 8 == 0){                           \
-                curr_tnt_prod ^= map_8(tnt_container);             \
+                curr_tnt_prod ^= map_16(tnt_container);             \
                 tnt_container = curr_tnt_cnt = 0;                   \
             }                                                       \
         }                                                           \
@@ -367,10 +395,16 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         __afl_area_ptr[                         \
             map_64(curr_ip)                     \
             ^map_64(last_tip_ip)                \
-            ^map_16((u8)curr_tnt_prod)            \
+            ^map_8(curr_tnt_prod)               \
+            ]++;                                \
+        __afl_area_ptr[                         \
+            map_64(curr_ip)                     \
+            ^map_64(last_tip_ip)                \
+            +log_map[tnt_counter]                \
             ]++;                                \
         curr_tnt_prod = 0;                      \
         last_tip_ip=curr_ip;                    \
+        tnt_counter= 0;                         \
                                                 \
     } while (0)
 
@@ -392,6 +426,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         case PT_PACKET_TNTSHORT:
             tnt_short = (u8)*packet;
             bit_selector = 1 << ((32 - __builtin_clz(tnt_short)) - 1);
+            tnt_counter += ((32 - __builtin_clz(tnt_short)) - 1) - 2;
             do {
                 if((tnt_short & (bit_selector >>= 1)))
                     UPDATE_TNT_PROD(1);
@@ -399,7 +434,8 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
                     UPDATE_TNT_PROD(0);
             } while (bit_selector != 2);
 #ifdef DEBUG_PACKET
-            writeout_packet(dfd, "TNTSHORT container", tnt_container);
+            /* writeout_packet(dfd, "TNTSHORT container", tnt_container); */
+            writeout_packet(dfd, "TNT:", tnt_short);
 #endif
             break;
 
@@ -419,6 +455,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
             writeout_packet(dfd, "TIP", curr_ip);
             writeout_packet(dfd, "LAST TIP", last_tip_ip);
             writeout_packet(dfd, "TNT container", tnt_container);
+            writeout_packet(dfd, "TNT counter", tnt_counter);
             writeout_packet(dfd, "TNT prod", curr_tnt_prod);
 #endif
             UPDATE_TRACEBITS_IDX();
@@ -522,7 +559,6 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
     }
 #ifdef DEBUG_PACKET
     write(dfd, "=======\n", 8);
-    writeout_packet(dfd, "final", final_prod);
 #endif
 }
 
