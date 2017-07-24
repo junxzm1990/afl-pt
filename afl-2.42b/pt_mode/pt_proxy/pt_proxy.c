@@ -36,12 +36,6 @@ struct iovec iov;                                      /* contain nlmsghdr point
 struct nlmsghdr *nlh = NULL;                           /* contain data payload pointer    */
 
 
-//This is added by Jun
-volatile u64 runcnt;
-volatile u64 parsecnt; 
-//end adding by Jun
-
-
 /* AFL data structures */
 u8  __afl_area_initial[MAP_SIZE];                      /* trace_bits map                  */
 u8* __afl_area_ptr = __afl_area_initial;
@@ -74,11 +68,38 @@ volatile u8  worker_done,                              /* for syncing worker and
 u64 rand_map[TWO_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
-u64 curr_ip = 0;                                       /* current ip used by parse worker */
-u64 last_ip = 0;                                       /* prev ip used by parse worker    */
-u16 curr_tnt_prod = 0;                                 /* tmp tnt product used by worker  */
 
+volatile u64 runcnt = 0;                               /* fuzz target run counter         */
+volatile u64 parsecnt = 0;                             /* worker thread parse counter     */
 
+/* decode context, needs to be preserved between any two runs of the parsing function     */
+u64 ctx_curr_ip = 0;                                   /* current ip used by parse worker */
+u64 ctx_last_ip = 0;                                   /* prev ip used by parse worker    */
+u64 ctx_last_tip_ip = 0;                               /* the ip val of last tip packet   */
+u64 ctx_tnt_long = 0;                                  /* used by tnt long packet         */
+u32 ctx_bit_selector = 0;                              /* point to valid tnt bits, > 2    */
+u32 ctx_tnt_counter = 0;                               /* num of tnt seen in curr slice   */
+u16 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used by worker  */
+u16 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
+u8  ctx_tnt_short = 0;
+u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
+u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when reach 8   */
+
+#define RESET_DECODE_CTX()                     \
+  do{                                          \
+    ctx_curr_ip = 0;                           \
+    ctx_last_ip = 0;                           \
+    ctx_last_tip_ip = 0;                       \
+    ctx_tnt_long = 0;                          \
+    ctx_bit_selector = 0;                      \
+    ctx_tnt_counter = 0;                       \
+    ctx_curr_tnt_prod = 0;                     \
+    ctx_tnt_container = 0;                     \
+    ctx_tnt_short = 0;                         \
+    ctx_tnt_go = 0;                            \
+    ctx_curr_tnt_cnt = 0;                      \
+  }while(0)                                    \
+    
 /* Generate a random number (from 0 to limit - 1). This may have slight bias. */
 static inline u32 UR(u32 limit) {
 
@@ -275,9 +296,7 @@ static void *pt_parse_worker(void *arg)
 					break;	
 			}
 			cursor_pos = 0;
-			curr_ip = 0;
-			last_ip = 0;
-			curr_tnt_prod = 0;
+      RESET_DECODE_CTX();
 		}else{
 			if(parsecnt == runcnt - 1){ //&& proxy_cur_state == PROXY_FUZZ_STOP){
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
@@ -469,28 +488,20 @@ static void __afl_proxy_loop(void) {
 
     /* one-time state transition: PROXY_FORKSRV -> PROXY_FUZZ_RDY */
     if (proxy_cur_state == PROXY_FORKSRV){
-        proxy_recv_msg();
-//        __atomic_test_and_set(&worker_done, __ATOMIC_SEQ_CST);
-//        __atomic_test_and_set(&worker_not_done, __ATOMIC_SEQ_CST);
-	
-
-	//added by Jun
-	runcnt = 0;
-	parsecnt = 0;
-        start_pt_parser();
-	//end adding by Jun
+      proxy_recv_msg();
+      start_pt_parser();
     }
 
     /* Wait for target  by reading from the pipe. Abort if read fails. */
     if (read(proxy_st_fd, &child_pid, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_RDY -> PROXY_FUZZ_ING */
-        if (proxy_cur_state != PROXY_FUZZ_RDY)
-            PFATAL("proxy is not on fuzz_ready state");
-        proxy_cur_state = PROXY_FUZZ_ING;
+      if (proxy_cur_state != PROXY_FUZZ_RDY)
+        PFATAL("proxy is not on fuzz_ready state");
+      proxy_cur_state = PROXY_FUZZ_ING;
 
-	//increase the run count
-	runcnt++;	
+      //increase the run count
+      runcnt++;	
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
@@ -499,16 +510,16 @@ static void __afl_proxy_loop(void) {
     if (read(proxy_st_fd, &status, 4) != 4) _exit(1);
     else{
       /* state transition: PROXY_FUZZ_ING -> PROXY_FUZZ_STOP */
-        if (proxy_cur_state != PROXY_FUZZ_ING)
-         PFATAL("proxy is not on fuzzing state");
+      if (proxy_cur_state != PROXY_FUZZ_ING)
+        PFATAL("proxy is not on fuzzing state");
 
-        proxy_cur_state = PROXY_FUZZ_STOP;
+      proxy_cur_state = PROXY_FUZZ_STOP;
 
-	//wait until the parser start
-	while(1){
-		if(runcnt == parsecnt)
-			break;	
-	}
+      //wait until the parser start
+      while(1){
+        if(runcnt == parsecnt)
+          break;	
+      }
     }
 
     /* we can parse the pt packet and present it to the trace_bits here*/
