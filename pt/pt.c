@@ -394,7 +394,8 @@ static bool setup_target_thread(struct task_struct *target){
 
 	vpoc = vpoo + offsetof(target_thread_t, run_cnt) - offsetof(target_thread_t, offset);
 
-	WARN_ON((vpoc & (~PAGE_MASK)) != (vpoo & (~PAGE_MASK)) );
+	printk(KERN_INFO "Address of User Space Address for offset %lx and count %lx\n", (unsigned long) (vpoo & PAGE_MASK), (unsigned long)vpoc);
+
 
 	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm->targets[ptm->target_num].offset);
 
@@ -493,7 +494,7 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		tx = get_target_tx(child->pid);
 
 		if(ptm->p_stat == PTARGET){
-			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx0x%lx", (long unsigned)ptm->targets[tx].pva, VMA_SZ, (long unsigned)ptm->targets[tx].poa, (long unsigned)ptm->targets[tx].pca);
+			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx:0x%lx", (long unsigned)ptm->targets[tx].pva, VMA_SZ, (long unsigned)ptm->targets[tx].poa, (long unsigned)ptm->targets[tx].pca);
 			printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
 			reply_msg(target_msg, ptm->proxy_pid);
 		}
