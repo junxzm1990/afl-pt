@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <sys/socket.h>
 #include <linux/netlink.h>
+#include <linux/limits.h>
 #include <sys/shm.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +21,7 @@
 #include "pt_proxy.h"
 
 /* using global data because afl will start one proxy instance per target                 */
-
+#define HAS_MSR
 #ifndef HAVE_AFFINITY
 #define HAVE_AFFINITY
 #endif
@@ -87,13 +88,14 @@ u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts
 u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when reach 8   */
 
 s32  g_target_cpu = -1;                                /* place holder*/
+s32  msr_fd = -1;
 #ifdef HAS_MSR
    #define MSR_PT_MASK 0x00000561 
    #define PT_UNIT_SIZE (1 << 22)
 u64 inline 
 get_next_pt_off(){
 	uint64_t data; 
-	if (pread(fd, &data, sizeof data, MSR_PT_MASK) != sizeof data) {
+	if (pread(msr_fd, &data, sizeof data, MSR_PT_MASK) != sizeof data) {
 		printf("Fuck Error \n");
 		exit(1);
 	}
@@ -576,9 +578,8 @@ int main(int argc, char *argv[])
   int proxy_st_pipe[2], proxy_ctl_pipe[2];
 
 #ifdef HAS_MSR
-  int msr_fd;
-  char msr_path[MAX_PATH];
-  snprintf(msr_path, MAX_PATH, "/dev/cpu/%d/msr", g_target_cpu);
+  char msr_path[PATH_MAX];
+  snprintf(msr_path, PATH_MAX, "/dev/cpu/%d/msr", g_target_cpu);
   msr_fd = open(msr_path, O_RDONLY); 
   assert(msr_fd > 0);
 #endif
