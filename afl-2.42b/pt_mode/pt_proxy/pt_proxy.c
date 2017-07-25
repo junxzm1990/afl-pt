@@ -55,7 +55,7 @@ static s32 forksrv_pid;                                /* fork server process id
 #define PT_TARGET_CONFIRM "TCONFIRM"                   /* confirm msg from pt_module      */
 #define PT_START_CONFIRM "SCONFIRM"                    /* start confirm from pt_module    */
 #define PT_TOPA_READY "TOPA"                           /* topa msg from pt_module         */
-enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
+volatile enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
 s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
@@ -265,7 +265,6 @@ static void *pt_parse_worker(void *arg)
 {
 	u64 cursor_pos = 0;
 	u64 bound_snapshot = 0;
-	s64 next;
 
 #ifdef HAVE_AFFINITY
 	bind_to_free_core();
@@ -277,30 +276,28 @@ static void *pt_parse_worker(void *arg)
 	off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-	/* #define DEBUG_PACKET */
-
 #ifdef DEBUG_PACKET
 	packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
 
-	/* while(!pt_trace_buf)pthread_yield(); */
-
 	while(1){
-
-		if(parsecnt == runcnt -1)
+		if(parsecnt == runcnt -1){
 			bound_snapshot = *p_pt_trace_off;
+			pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+			cursor_pos = bound_snapshot;
 
-		if(proxy_cur_state == PROXY_FUZZ_STOP && cursor_pos >= bound_snapshot){
-			while(1){
-				if(__sync_bool_compare_and_swap(&parsecnt, runcnt - 1, runcnt))	
-					break;	
-			}
-			cursor_pos = 0;
-      RESET_DECODE_CTX();
-		}else{
-			if(parsecnt == runcnt - 1){ //&& proxy_cur_state == PROXY_FUZZ_STOP){
+			if(proxy_cur_state != PROXY_FUZZ_STOP)
+				continue;
+			else{	
+				bound_snapshot = *p_pt_trace_off;
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				cursor_pos = bound_snapshot;
+
+				if(__sync_bool_compare_and_swap(&parsecnt, runcnt - 1, runcnt))	{	
+					cursor_pos = 0;
+					RESET_DECODE_CTX();
+				}
+
 			}
 		}
 	}

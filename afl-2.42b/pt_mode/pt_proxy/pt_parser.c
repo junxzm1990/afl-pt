@@ -404,7 +404,7 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
             ^map_64(ctx_last_tip_ip)            \
             +log_map[ctx_tnt_counter]           \
             ]++;                                \
-        ctx_curr_tnt_prod = 0;                  \
+       ctx_curr_tnt_prod = 0;                  \
         ctx_last_tip_ip=ctx_curr_ip;            \
         ctx_tnt_counter= 0;                     \
                                                 \
