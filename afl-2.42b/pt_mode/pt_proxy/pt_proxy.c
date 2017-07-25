@@ -69,8 +69,8 @@ u64 rand_map[TWO_BYTE_ENTRIES];                        /* maps u8 val to random 
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 
-volatile u64 runcnt = 0;                               /* fuzz target run counter         */
 volatile u64 parsecnt = 0;                             /* worker thread parse counter     */
+volatile u64 *p_runcnt;                                /* fuzz target run counter         */
 
 /* decode context, needs to be preserved between any two runs of the parsing function     */
 u64 ctx_curr_ip = 0;                                   /* current ip used by parse worker */
@@ -281,7 +281,7 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 	while(1){
-		if(parsecnt == runcnt -1){
+		if(parsecnt == *p_runcnt -1){
 			bound_snapshot = *p_pt_trace_off;
 			pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 			cursor_pos = bound_snapshot;
@@ -293,7 +293,7 @@ static void *pt_parse_worker(void *arg)
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				cursor_pos = bound_snapshot;
 
-				if(__sync_bool_compare_and_swap(&parsecnt, runcnt - 1, runcnt))	{	
+				if(__sync_bool_compare_and_swap(&parsecnt, *p_runcnt - 1, *p_runcnt))	{	
 					cursor_pos = 0;
 					RESET_DECODE_CTX();
 				}
@@ -403,14 +403,16 @@ void proxy_recv_msg(){
       if(proxy_cur_state != PROXY_FORKSRV)
         PFATAL("proxy is not on forksrv state");
 
-      char *tmp = strstr(msg, DEM)+1;//tmp->addr:size:addr
+      char *tmp = strstr(msg, DEM)+1;//tmp->addr:size:addr:runcnt_addr
+      p_runcnt = (u64 *)strtol(strstr(strstr(strstr(tmp, DEM)+1,DEM)+1, DEM)+1, NULL, 16);
+      strstr(strstr(strstr(tmp, DEM)+1,DEM)+1, DEM)[0] = '\0';//tmp->addr:size:addr
       p_pt_trace_off = (s64 *)strtol(strstr(strstr(tmp,DEM)+1, DEM)+1, NULL, 16);
       strstr(strstr(tmp, DEM)+1, DEM)[0] = '\0';//tmp->addr:size
       pt_trace_buf_size = strtol(strstr(tmp, DEM)+1, NULL, 16);
       strstr(tmp, DEM)[0] = '\0';//tmp->addr
       pt_trace_buf = strtol(tmp, NULL, 16);
       proxy_cur_state = PROXY_FUZZ_RDY;
-      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0 && p_pt_trace_off > 0)
+      assert((pt_trace_buf > 0 && pt_trace_buf_size > 0 && p_pt_trace_off > 0 && p_runcnt >0)
              &&"invalid trace buffer and size" );
       break;
 
@@ -497,8 +499,6 @@ static void __afl_proxy_loop(void) {
         PFATAL("proxy is not on fuzz_ready state");
       proxy_cur_state = PROXY_FUZZ_ING;
 
-      //increase the run count
-      runcnt++;	
     }
     /* write to parent about child_pid*/
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
@@ -514,7 +514,7 @@ static void __afl_proxy_loop(void) {
 
       //wait until the parser start
       while(1){
-        if(runcnt == parsecnt)
+        if(*p_runcnt == parsecnt)
           break;	
       }
     }
