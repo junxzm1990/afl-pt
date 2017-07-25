@@ -56,7 +56,7 @@ static void release_trace_point(void);
 	.end = (_end), \
 }
 
-#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask, _poa, _estart, _eend) (target_thread_t) {\
+#define INIT_TARGET(_pid, _task, _topa, _status, _pva, _offset, _mask, _poa, _pca, _estart, _eend, _run_cnt) (target_thread_t) {\
 	.pid = _pid, \
 	.task = _task, \
 	.topa = _topa, \
@@ -65,8 +65,10 @@ static void release_trace_point(void);
 	.offset = _offset,\
 	.outmask = _mask, \
 	.poa = _poa, \
+	.pca = _pca, \
 	.addr_range_a = _estart, \
 	.addr_range_b = _eend, \
+	.run_cnt = _run_cnt,\
 }
 
 #define RESET_TARGET(tx) ptm->targets[tx].status = TEXIT
@@ -352,7 +354,8 @@ static bool setup_target_thread(struct task_struct *target){
 	int tx; 
 	struct vm_area_struct *vma, *exevma;
 	topa_t *topa;
-	u64 vpoo; 
+	u64 vpoo;
+	u64 vpoc; 
 	u64 exestart, exeend; 
 
 	//check if any target can be reused
@@ -389,6 +392,10 @@ static bool setup_target_thread(struct task_struct *target){
 		return false;
 	}
 
+	vpoc = vpoo + offsetof(target_thread_t, run_cnt) - offsetof(target_thread_t, offset);
+
+	WARN_ON((vpoc & (~PAGE_MASK)) != (vpoo & (~PAGE_MASK)) );
+
 	printk(KERN_INFO "Address of VMA for offset %lx and  %lx\n", (unsigned long)vpoo, (unsigned long)&ptm->targets[ptm->target_num].offset);
 
 	exestart = 0;
@@ -406,7 +413,7 @@ static bool setup_target_thread(struct task_struct *target){
 
 	printk(KERN_INFO "Exe start %lx and end %lx\n", (unsigned long)ptm->targets[ptm->target_num].addr_range_a, (unsigned long)ptm->targets[ptm->target_num].addr_range_b);
 
-	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo, exestart, exeend);
+	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo, vpoc, exestart, exeend, 0);
 
 	//clear up contents in the topa buffers
 	clear_topa(ptm->targets[ptm->target_num].topa);	
@@ -483,15 +490,17 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 		
 		printk(KERN_INFO "Start Target %d\n", child->pid);
 
+		tx = get_target_tx(child->pid);
+
 		if(ptm->p_stat == PTARGET){
-			tx = get_target_tx(child->pid);
-			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx", (long unsigned)ptm->targets[tx].pva, VMA_SZ, (long unsigned)ptm->targets[tx].poa);
+			snprintf(target_msg, MAX_MSG, "TOPA:0x%lx:0x%lx:0x%lx0x%lx", (long unsigned)ptm->targets[tx].pva, VMA_SZ, (long unsigned)ptm->targets[tx].poa, (long unsigned)ptm->targets[tx].pca);
 			printk(KERN_INFO "TART_MESSGAE %s\n", target_msg);
 			reply_msg(target_msg, ptm->proxy_pid);
 		}
+
+		ptm->targets[tx].run_cnt++;
 		ptm->p_stat = PFUZZ;
 		ptm->run_cnt++;
-
 	}		
 	return;
 }
@@ -754,7 +763,6 @@ static void pt_recv_msg(struct sk_buff *skb) {
 //Process PMI interrupt when PT buffer is full
 static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
-
 
 	//disable pmi handler at first
 	return 0; 
