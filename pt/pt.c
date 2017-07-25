@@ -99,6 +99,8 @@ static struct tracepoint *exec_tp = NULL;
 static struct tracepoint *switch_tp= NULL; 
 static struct tracepoint *fork_tp= NULL;
 static struct tracepoint *exit_tp= NULL; 
+static struct tracepoint *syscall_tp = NULL; 
+
 
 static int get_target_tx(pid_t pid){
 	int tx; 
@@ -362,7 +364,7 @@ static bool setup_target_thread(struct task_struct *target){
 	//only need to reset the pid, task, status, offset, and outmask
 	for(tx = 0; tx < ptm->target_num; tx++){
 		if(ptm->targets[tx].status == TEXIT){
-			printk(KERN_INFO "Reuse ToPA for target %x\n", target->pid);
+			//printk(KERN_INFO "Reuse ToPA for target %x\n", target->pid);
 			ptm->targets[tx].pid = target->pid; 
 			ptm->targets[tx].task = target;
 			ptm->targets[tx].status = TSTART;
@@ -489,7 +491,7 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 			return; 
 		}
 		
-		printk(KERN_INFO "Start Target %d\n", child->pid);
+	//	printk(KERN_INFO "Start Target %d\n", child->pid);
 
 		tx = get_target_tx(child->pid);
 
@@ -520,7 +522,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		if(ptm->targets[tx].pid == tsk->pid && ptm->targets[tx].status != TEXIT){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
+		//	printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
 			RESET_TARGET(tx);
 		}	
 	}
@@ -555,6 +557,20 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 	return;
 }
 
+static void probe_trace_syscall(void* ignore, struct pt_regs *regs, long id){
+
+	int tx;
+	
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if(ptm->targets[tx].pid == current->pid
+				&& ptm->targets[tx].status != TEXIT){
+			record_pt(tx);
+			resume_pt(tx);
+			break;
+		}
+	}
+}
+
 
 //set up the trace point to handle exec, fork, switch, and exit
 static bool set_trace_point(void){
@@ -577,6 +593,8 @@ static bool set_trace_point(void){
 	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
 	if(!exit_tp) return false; 
 
+	syscall_tp = (struct tracepoint*) ksyms_func("__tracepoint_sys_enter"); 
+
 	trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
 	if(!trace_probe_ptr)
 		return false;
@@ -585,6 +603,7 @@ static bool set_trace_point(void){
 	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
+	trace_probe_ptr(syscall_tp, probe_trace_syscall, NULL); 
 
 	return true;
 }
@@ -617,6 +636,12 @@ static void release_trace_point(void){
 		trace_release_ptr(exit_tp, (void*)probe_trace_exit, NULL);		
 		exit_tp = NULL;
 	}
+
+	if(syscall_tp){
+		trace_release_ptr(syscall_tp,(void*)probe_trace_syscall, NULL);		
+		syscall_tp = NULL;
+	}
+
 
 }
 
