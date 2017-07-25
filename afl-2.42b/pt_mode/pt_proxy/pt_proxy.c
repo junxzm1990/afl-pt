@@ -60,6 +60,7 @@ s64 pt_trace_buf = 0;                                  /* address of the pt trac
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
 s64 *p_pt_trace_off = 0;                               /* last off to the buf pt update   */
+u64 pt_trace_off = 0;				       /* last off to the buf pt update   */
 volatile u8  worker_done,                              /* for syncing worker and proxy    */
             worker_not_done;
 #define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
@@ -85,6 +86,21 @@ u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
 u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when reach 8   */
 
+s32  g_target_cpu = -1;                                /* place holder*/
+#ifdef HAS_MSR
+   #define MSR_PT_MASK 0x00000561 
+   #define PT_UNIT_SIZE (1 << 22)
+u64 inline 
+get_next_pt_off(){
+	uint64_t data; 
+	if (pread(fd, &data, sizeof data, MSR_PT_MASK) != sizeof data) {
+		printf("Fuck Error \n");
+		exit(1);
+	}
+
+	return ((data & 0xffffffff) >> 7) * PT_UNIT_SIZE + data >> 32;
+}
+#endif
 #define RESET_DECODE_CTX()                     \
   do{                                          \
     ctx_curr_ip = 0;                           \
@@ -237,6 +253,7 @@ static void bind_to_free_core(void) {
   OKF("Found a free CPU core, binding to #%u.", i);
 
   cpu_aff = i;
+  g_target_cpu = i;
 
   CPU_ZERO(&c);
   CPU_SET(i, &c);
@@ -282,22 +299,40 @@ static void *pt_parse_worker(void *arg)
 
 	while(1){
 		if(parsecnt == *p_runcnt -1){
+#ifdef HAS_MSR
+			bound_snapshot = get_next_pt_off();
+#else
 			bound_snapshot = *p_pt_trace_off;
-			pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
-			cursor_pos = bound_snapshot;
+#endif
+
+			if(bound_snapshot > cursor_pos){
+				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot);
+				//write(off_fd, msg, strlen(msg));
+				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				cursor_pos = bound_snapshot;
+			}
 
 			if(proxy_cur_state != PROXY_FUZZ_STOP)
 				continue;
 			else{	
+#ifdef HAS_MSR
+				bound_snapshot = get_next_pt_off();
+#else
 				bound_snapshot = *p_pt_trace_off;
-				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
-				cursor_pos = bound_snapshot;
+#endif
+
+				if(bound_snapshot > cursor_pos){
+				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot);
+				//	write(off_fd, msg, strlen(msg));
+					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+					cursor_pos = bound_snapshot;
+				}
 
 				if(__sync_bool_compare_and_swap(&parsecnt, *p_runcnt - 1, *p_runcnt))	{	
 					cursor_pos = 0;
 					RESET_DECODE_CTX();
+				//	write(off_fd, "===============\n", 17);
 				}
-
 			}
 		}
 	}
@@ -522,7 +557,7 @@ static void __afl_proxy_loop(void) {
     /* we can parse the pt packet and present it to the trace_bits here*/
     //bound_snapshot = *p_pt_trace_off;
     //pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
-    /* __afl_area_ptr[2424] = 1; */
+    __afl_area_ptr[2424] = 1; 
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */
 
@@ -539,6 +574,14 @@ int main(int argc, char *argv[])
 
   static u8 tmp[4];
   int proxy_st_pipe[2], proxy_ctl_pipe[2];
+
+#ifdef HAS_MSR
+  int msr_fd;
+  char msr_path[MAX_PATH];
+  snprintf(msr_path, MAX_PATH, "/dev/cpu/%d/msr", g_target_cpu);
+  msr_fd = open(msr_path, O_RDONLY); 
+  assert(msr_fd > 0);
+#endif
 
   /* Generally useful file descriptor. */
 
@@ -615,6 +658,9 @@ int main(int argc, char *argv[])
 
   __afl_proxy_loop();
 
+#ifdef HAS_MSR
+  close(msr_fd);
+#endif
   return 0;
 }
 
