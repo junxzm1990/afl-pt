@@ -21,6 +21,7 @@
 #include "pt_proxy.h"
 
 /* using global data because afl will start one proxy instance per target                 */
+/* #define HAS_MSR */
 #ifndef HAVE_AFFINITY
 #define HAVE_AFFINITY
 #endif
