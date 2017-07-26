@@ -637,6 +637,8 @@ int main(int argc, char *argv[])
     close(proxy_ctl_pipe[1]);
     close(proxy_st_pipe[0]);
     close(proxy_st_pipe[1]);
+    close(FORKSRV_FD);
+    close(FORKSRV_FD + 1);
     close(dev_urandom_fd);
     netlink_close();
 
