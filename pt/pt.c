@@ -566,7 +566,6 @@ static void probe_trace_syscall(void* ignore, struct pt_regs *regs, long id){
 				&& ptm->targets[tx].status != TEXIT){
 			record_pt(tx);
 			resume_pt(tx);
-			break;
 		}
 	}
 }

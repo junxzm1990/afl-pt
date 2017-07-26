@@ -21,7 +21,6 @@
 #include "pt_proxy.h"
 
 /* using global data because afl will start one proxy instance per target                 */
-#define HAS_MSR
 #ifndef HAVE_AFFINITY
 #define HAVE_AFFINITY
 #endif
@@ -56,7 +55,8 @@ static s32 forksrv_pid;                                /* fork server process id
 #define PT_TARGET_CONFIRM "TCONFIRM"                   /* confirm msg from pt_module      */
 #define PT_START_CONFIRM "SCONFIRM"                    /* start confirm from pt_module    */
 #define PT_TOPA_READY "TOPA"                           /* topa msg from pt_module         */
-volatile enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
+volatile
+enum proxy_status proxy_cur_state = PROXY_SLEEP;       /* global proxy state              */
 s64 pt_trace_buf = 0;                                  /* address of the pt trace buffer  */
 s64 pt_trace_buf_size = 0;                             /* size of the pt trace buffer     */
 s64 pt_trace_off_bound = 0;                            /* boundary of trace buffer        */
@@ -89,6 +89,7 @@ u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when 
 
 s32  g_target_cpu = -1;                                /* place holder*/
 s32  msr_fd = -1;
+
 #ifdef HAS_MSR
    #define MSR_PT_MASK 0x00000561 
    #define PT_UNIT_SIZE (1 << 22)
