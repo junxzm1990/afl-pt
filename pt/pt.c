@@ -522,7 +522,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		if(ptm->targets[tx].pid == tsk->pid && ptm->targets[tx].status != TEXIT){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-		//	printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
+			/* printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset); */
 			RESET_TARGET(tx);
 		}	
 	}
@@ -566,7 +566,6 @@ static void probe_trace_syscall(void* ignore, struct pt_regs *regs, long id){
 				&& ptm->targets[tx].status != TEXIT){
 			record_pt(tx);
 			resume_pt(tx);
-			break;
 		}
 	}
 }
