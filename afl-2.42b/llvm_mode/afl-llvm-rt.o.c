@@ -38,7 +38,9 @@
    Basically, we need to make sure that the forkserver is initialized after
    the LLVM-generated runtime initialization pass, not before. */
 
-#define AFLPT_FORKSRV_FD (FORKSRV_FD - 3)
+//#define AFLPT_FORKSRV_FD (FORKSRV_FD - 3)
+#define AFLPT_FORKSRV_FD FORKSRV_FD
+
 #ifdef USE_TRACE_PC
 #  define CONST_PRIO 5
 #else

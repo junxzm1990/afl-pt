@@ -19,6 +19,7 @@
 #include "../../debug.h"
 #include "../../alloc-inl.h"
 #include "pt_proxy.h"
+#include "pt_parser.h"
 
 /* using global data because afl will start one proxy instance per target                 */
 /* #define HAS_MSR */
@@ -82,7 +83,7 @@ u64 ctx_last_tip_ip = 0;                               /* the ip val of last tip
 u64 ctx_tnt_long = 0;                                  /* used by tnt long packet         */
 u32 ctx_bit_selector = 0;                              /* point to valid tnt bits, > 2    */
 u32 ctx_tnt_counter = 0;                               /* num of tnt seen in curr slice   */
-u16 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used by worker  */
+u32 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used by worker  */
 u16 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
 u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
@@ -302,7 +303,7 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 	while(1){
-		if(parsecnt == *p_runcnt -1){
+		if(parsecnt == *p_runcnt -1 ){
 #ifdef HAS_MSR
 			bound_snapshot = get_next_pt_off();
 #else
@@ -310,7 +311,7 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 			if(bound_snapshot > cursor_pos){
-				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot);
+				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot - cursor_pos);
 				//write(off_fd, msg, strlen(msg));
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				cursor_pos = bound_snapshot;
@@ -325,8 +326,8 @@ static void *pt_parse_worker(void *arg)
 				bound_snapshot = *p_pt_trace_off;
 #endif
 
-				if(bound_snapshot > cursor_pos){
-				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot);
+				if(bound_snapshot > cursor_pos ){
+				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
 				//	write(off_fd, msg, strlen(msg));
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 					cursor_pos = bound_snapshot;
@@ -336,6 +337,7 @@ static void *pt_parse_worker(void *arg)
 					cursor_pos = 0;
 					RESET_DECODE_CTX();
 				//	write(off_fd, "===============\n", 17);
+					cnt++;
 				}
 			}
 		}
@@ -561,7 +563,6 @@ static void __afl_proxy_loop(void) {
     /* we can parse the pt packet and present it to the trace_bits here*/
     //bound_snapshot = *p_pt_trace_off;
     //pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
-    __afl_area_ptr[2424] = 1; 
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */
 

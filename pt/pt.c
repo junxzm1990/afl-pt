@@ -37,11 +37,26 @@
 #define MSR_IA32_PERF_GLOBAL_STATUS 0x0000038e
 #define MSR_IA32_PERF_GLOBAL_CTRL 	0x0000038f
 #define MSR_GLOBAL_STATUS_RESET 0x390
-#define TIMER_INTERVAL 25000
+#define TIMER_INTERVAL 25000 // 25 us
+
+#define TIMER_UP 1000000 //1 ms
+#define TIMER_LOW 5000	
+#define TIMER_UNIT 1000
+
+#define PT_OFF_UNIT 0x200
+
+u64 timer_interval=TIMER_INTERVAL;
+
 
 #define read_global_status() native_read_msr(MSR_IA32_PERF_GLOBAL_STATUS)
 #define read_global_status_reset() native_read_msr(MSR_GLOBAL_STATUS_RESET)
 #define echo_pt_int() wrmsrl(MSR_GLOBAL_STATUS_RESET, BIT(55)) 
+
+#define START_TIMER() do{\
+	hrtimer_init(&hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);\
+	hr_timer.function = &pt_hrtimer_callback;\
+	hrtimer_start( &hr_timer, ktime_set(0, TIMER_INTERVAL), HRTIMER_MODE_REL );\
+	} while(0)
 
 //kernel module parameters
 static unsigned long kallsyms_lookup_name_ptr;
@@ -439,21 +454,36 @@ enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
 	int tx;
 	ktime_t ktime;
 	ktime_t currtime;
+	register u64 cur_off;
 
 	preempt_disable();
 
 	for(tx = 0; tx < ptm->target_num; tx++){
 		if(ptm->targets[tx].pid == current->pid
-	       && ptm->targets[tx].status != TEXIT){
+				&& ptm->targets[tx].status != TEXIT){
+
+			cur_off = ptm->targets[tx].offset;
 			record_pt(tx);
-			 resume_pt(tx);
+
+			cur_off = ptm->targets[tx].offset - cur_off;
+			resume_pt(tx);
+
+			if(cur_off > PT_OFF_UNIT){
+				if(timer_interval > TIMER_LOW)
+					timer_interval -= TIMER_UNIT; 
+				else	
+					timer_interval = TIMER_LOW;
+			}
+			else{
+				timer_interval += TIMER_UNIT; 
+			}
 			break;
 		}
 	}
 
 	preempt_enable();
 
-	ktime = ktime_set(0, TIMER_INTERVAL); //measure is ns
+	ktime = ktime_set(0, timer_interval); //measure is ns
 	currtime = ktime_get();
 
 	hrtimer_forward(&hr_timer, currtime, ktime);
@@ -467,14 +497,9 @@ static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, s
 	if( 0 == strncmp(bprm->filename, ptm->target_path, PATH_MAX)){
 		if(ptm->p_stat != PFS)
 			return;
-	
-		ktime_t ktime;
 
-		ktime = ktime_set(0, TIMER_INTERVAL);
-		hrtimer_init(&hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-		hr_timer.function = &pt_hrtimer_callback;
-		hrtimer_start( &hr_timer, ktime, HRTIMER_MODE_REL );
-
+		START_TIMER();
+		
 		printk(KERN_INFO "Fork server path %s and pid %d\n", bprm->filename, p->pid);
 		ptm->fserver_pid = p->pid;	
 		ptm->p_stat = PTARGET; 		
