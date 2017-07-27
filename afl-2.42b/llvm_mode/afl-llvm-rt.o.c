@@ -39,7 +39,7 @@
    the LLVM-generated runtime initialization pass, not before. */
 
 #define AFLPT_FORKSRV_FD (FORKSRV_FD)
-
+/* #define AFLPT_FORKSRV_FD (FORKSRV_FD - 3) */
 #ifdef USE_TRACE_PC
 #  define CONST_PRIO 5
 #else
