@@ -27,12 +27,17 @@
 #include <linux/mman.h>
 #include <asm/apic.h>
 #include <asm/nmi.h>
+#include <linux/timer.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+
 #include "pt.h"
 
 #define MSR_LVT 0x834
 #define MSR_IA32_PERF_GLOBAL_STATUS 0x0000038e
 #define MSR_IA32_PERF_GLOBAL_CTRL 	0x0000038f
 #define MSR_GLOBAL_STATUS_RESET 0x390
+#define TIMER_INTERVAL 25000
 
 #define read_global_status() native_read_msr(MSR_IA32_PERF_GLOBAL_STATUS)
 #define read_global_status_reset() native_read_msr(MSR_GLOBAL_STATUS_RESET)
@@ -425,16 +430,56 @@ static bool setup_target_thread(struct task_struct *target){
 	return true; 
 }
 
+
+
+static struct hrtimer hr_timer;
+ 
+enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
+
+	int tx;
+	ktime_t ktime;
+	ktime_t currtime;
+
+	preempt_disable();
+
+	for(tx = 0; tx < ptm->target_num; tx++){
+		if(ptm->targets[tx].pid == current->pid
+	       && ptm->targets[tx].status != TEXIT){
+			record_pt(tx);
+			 resume_pt(tx);
+			break;
+		}
+	}
+
+	preempt_enable();
+
+	ktime = ktime_set(0, TIMER_INTERVAL); //measure is ns
+	currtime = ktime_get();
+
+	hrtimer_forward(&hr_timer, currtime, ktime);
+	//printk("Call back of the high resolution %d\n", jiffies);
+	return HRTIMER_RESTART;
+}
+
 //Check if the forkserver is started by matching the target path
 static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, struct linux_binprm *bprm){
 
 	if( 0 == strncmp(bprm->filename, ptm->target_path, PATH_MAX)){
 		if(ptm->p_stat != PFS)
 			return;
+	
+		ktime_t ktime;
+
+		ktime = ktime_set(0, TIMER_INTERVAL);
+		hrtimer_init(&hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+		hr_timer.function = &pt_hrtimer_callback;
+		hrtimer_start( &hr_timer, ktime, HRTIMER_MODE_REL );
 
 		printk(KERN_INFO "Fork server path %s and pid %d\n", bprm->filename, p->pid);
 		ptm->fserver_pid = p->pid;	
 		ptm->p_stat = PTARGET; 		
+
+		printk("The CPU ID for fork server is %d\n", smp_processor_id());
 	}
 	return;
 }
@@ -479,6 +524,7 @@ static void probe_trace_fork(void *ignore, struct task_struct *parent, struct ta
 
 	//the fork is invoked by the forkserver
 	if(parent->pid == ptm->fserver_pid){
+
 		if(ptm->p_stat != PTARGET && ptm->p_stat != PFUZZ)
 			return;			
 
@@ -522,7 +568,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		if(ptm->targets[tx].pid == tsk->pid && ptm->targets[tx].status != TEXIT){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-			/* printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset); */
+			//printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
 			RESET_TARGET(tx);
 		}	
 	}
@@ -552,7 +598,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		ptm->run_cnt = 0;
 		ptm->target_num = 0;
 		release_trace_point();
-
+		hrtimer_cancel(&hr_timer);
 	}	
 	return;
 }
@@ -592,7 +638,7 @@ static bool set_trace_point(void){
 	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
 	if(!exit_tp) return false; 
 
-	syscall_tp = (struct tracepoint*) ksyms_func("__tracepoint_sys_enter"); 
+	//syscall_tp = (struct tracepoint*) ksyms_func("__tracepoint_sys_enter"); 
 
 	trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
 	if(!trace_probe_ptr)
@@ -602,7 +648,7 @@ static bool set_trace_point(void){
 	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
-	trace_probe_ptr(syscall_tp, probe_trace_syscall, NULL); 
+	//trace_probe_ptr(syscall_tp, probe_trace_syscall, NULL); 
 
 	return true;
 }
@@ -833,12 +879,12 @@ void unregister_pmi_handler(void){
 }
 
 
+
 //Init pt 
 //1. Check if pt is supported 
 //2. Check capabilities
 //3. Set up hooking point through Linux trace API
 static int __init pt_init(void){
-
 	//query pt_cap
 	query_pt_cap();
 
