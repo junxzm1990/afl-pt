@@ -593,11 +593,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		if(ptm->targets[tx].pid == tsk->pid && ptm->targets[tx].status != TEXIT){
 			//record the offset, as the thread may not have been switched out yet
 			record_pt(tx);
-<<<<<<< HEAD
 			printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
-=======
-			//printk(KERN_INFO "Exit of target thread %x and offset %lx\n", tsk->pid, (unsigned long)ptm->targets[tx].offset);
->>>>>>> a8c79f61a9e0232419dfa8ccecfd7212bbf2f39a
 			RESET_TARGET(tx);
 		}	
 	}
@@ -667,11 +663,7 @@ static bool set_trace_point(void){
 	exit_tp =  (struct tracepoint*) ksyms_func("__tracepoint_sched_process_exit");
 	if(!exit_tp) return false; 
 
-<<<<<<< HEAD
 	/* syscall_tp = (struct tracepoint*) ksyms_func("__tracepoint_sys_enter");  */
-=======
-	//syscall_tp = (struct tracepoint*) ksyms_func("__tracepoint_sys_enter"); 
->>>>>>> a8c79f61a9e0232419dfa8ccecfd7212bbf2f39a
 
 	trace_probe_ptr = (trace_probe_ptr_ty)ksyms_func("tracepoint_probe_register");
 	if(!trace_probe_ptr)
@@ -681,11 +673,7 @@ static bool set_trace_point(void){
 	trace_probe_ptr(fork_tp, probe_trace_fork, NULL);
 	trace_probe_ptr(switch_tp, probe_trace_switch, NULL);
 	trace_probe_ptr(exit_tp, probe_trace_exit, NULL); 
-<<<<<<< HEAD
 	/* trace_probe_ptr(syscall_tp, probe_trace_syscall, NULL);  */
-=======
-	//trace_probe_ptr(syscall_tp, probe_trace_syscall, NULL); 
->>>>>>> a8c79f61a9e0232419dfa8ccecfd7212bbf2f39a
 
 	return true;
 }
@@ -873,12 +861,12 @@ static int pt_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
 
 	//disable pmi handler at first
-	return 0; 
 
 	int tx; 
 	u64 status;  
 	siginfo_t sgt; 
 	int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
+	return 0; 
 
 	//find the symbol for force_sig_info
 	force_sig_info = proxy_find_symbol("force_sig_info");
