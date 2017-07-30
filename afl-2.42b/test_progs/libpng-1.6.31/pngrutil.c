@@ -249,7 +249,7 @@ png_crc_error(png_structrp png_ptr)
 {
    png_byte crc_bytes[4];
    png_uint_32 crc;
-   int need_crc = 1;
+   int need_crc = 0;
 
    if (PNG_CHUNK_ANCILLARY(png_ptr->chunk_name) != 0)
    {
