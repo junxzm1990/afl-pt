@@ -4041,8 +4041,13 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
-       DI(queued_paths));
+  if (pt_mode)
+      SAYF(bSTG bV bSTOP "  total slices : " cRST "%-5s  " bSTG bV "\n",
+           DI(queued_paths));
+  else
+      SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
+           DI(queued_paths));
+
 
   /* Highlight crashes in red if found, denote going over the KEEP_UNIQUE_CRASH
      limit with a '+' appended to the count. */
