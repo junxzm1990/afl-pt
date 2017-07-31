@@ -56,6 +56,8 @@
 #include <sys/ioctl.h>
 #include <sys/file.h>
 
+#define AFL_FIX_ONE_INPUT
+
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined (__OpenBSD__)
 #  include <sys/sysctl.h>
 #endif /* __APPLE__ || __FreeBSD__ || __OpenBSD__ */
@@ -5070,6 +5072,11 @@ static u8 fuzz_one(char** argv) {
 
   doing_det = 1;
 
+#ifdef AFL_FIX_ONE_INPUT
+  //ptmode debug
+  common_fuzz_stuff(argv, out_buf, len);
+  return 1;
+#endif
   /*********************************************
    * SIMPLE BITFLIP (+dictionary construction) *
    *********************************************/
@@ -5187,9 +5194,6 @@ static u8 fuzz_one(char** argv) {
   for (stage_cur = 0; stage_cur < stage_max; stage_cur++) {
 
     stage_cur_byte = stage_cur >> 3;
-    //ptmode debug
-    /* common_fuzz_stuff(argv, out_buf, len); */
-    /* continue; */
 
     FLIP_BIT(out_buf, stage_cur);
     FLIP_BIT(out_buf, stage_cur + 1);
@@ -8107,8 +8111,10 @@ int main(int argc, char** argv) {
     if (stop_soon) break;
 
     //ptmode debug
+#ifndef AFL_FIX_ONE_INPUT
     queue_cur = queue_cur->next;
     current_entry++;
+#endif
 
   }
 
