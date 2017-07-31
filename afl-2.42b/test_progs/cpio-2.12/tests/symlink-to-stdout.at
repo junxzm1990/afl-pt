@@ -1,0 +1,38 @@
+# Process this file with autom4te to create testsuite.  -*- Autotest -*-
+# Copyright (C) 2006-2007, 2010, 2014-2015 Free Software Foundation,
+# Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 USA.
+
+# Description: Cpio versions up to 2.10.91 failed to copy files out
+# of an archive to standard output (with --to-stdout option),
+# if the archive contained a symlink.
+
+AT_SETUP([symlink --to-stdout])
+AT_KEYWORDS([symlink symlink-to-stdout])
+
+AT_DATA([filelist],[file
+symlink
+])
+
+AT_CHECK([
+genfile --file file
+ln -s file symlink || AT_SKIP_TEST
+cpio --quiet -o < filelist > archive || exit
+cpio --quiet --to-stdout -i < archive > output || exit
+cmp file output])
+
+AT_CLEANUP

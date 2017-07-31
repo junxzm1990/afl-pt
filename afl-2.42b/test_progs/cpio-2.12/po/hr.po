@@ -1,0 +1,1653 @@
+# Translation of cpio to Croatian.
+# Copyright (C) 2012 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cpio package.
+# Tomislav Krznar <tomislav.krznar@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU cpio 2.11\n"
+"Report-Msgid-Bugs-To: bug-cpio@gnu.org\n"
+"POT-Creation-Date: 2015-09-12 14:33+0300\n"
+"PO-Revision-Date: 2012-04-24 16:24+0200\n"
+"Last-Translator: Tomislav Krznar <tomislav.krznar@gmail.com>\n"
+"Language-Team: Croatian <lokalizacija@linux.hr>\n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+
+#: gnu/argmatch.c:133
+#, c-format
+msgid "invalid argument %s for %s"
+msgstr "neispravan argument %s za %s"
+
+#: gnu/argmatch.c:134
+#, c-format
+msgid "ambiguous argument %s for %s"
+msgstr "višeznačan argument %s za %s"
+
+#: gnu/argmatch.c:153
+msgid "Valid arguments are:"
+msgstr "Ispravni argumenti su:"
+
+#: gnu/argp-help.c:148
+#, c-format
+msgid "ARGP_HELP_FMT: %s value is less than or equal to %s"
+msgstr "ARGP_HELP_FMT: vrijednost %s je manja ili jednaka %s"
+
+#: gnu/argp-help.c:221
+#, c-format
+msgid "%.*s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: ARGP_HELP_FMT parametar zahtijeva vrijednost"
+
+#: gnu/argp-help.c:227
+#, c-format
+msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+msgstr "%.*s: ARGP_HELP_FMT parametar mora biti pozitivan"
+
+#: gnu/argp-help.c:236
+#, c-format
+msgid "%.*s: Unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Nepoznati ARGP_HELP_FMT parametar"
+
+#: gnu/argp-help.c:248
+#, c-format
+msgid "Garbage in ARGP_HELP_FMT: %s"
+msgstr "Smeće u ARGP_HELP_FMT: %s"
+
+#: gnu/argp-help.c:1248
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Obavezni ili opcionalni argumenti dugačkih opcija također su obavezni ili "
+"opcionalni za odgovarajuće kratke opcije."
+
+#: gnu/argp-help.c:1645
+msgid "Usage:"
+msgstr "Uporaba:"
+
+#: gnu/argp-help.c:1649
+msgid "  or: "
+msgstr "    ili: "
+
+#: gnu/argp-help.c:1661
+msgid " [OPTION...]"
+msgstr " [OPCIJA...]"
+
+#: gnu/argp-help.c:1688
+#, fuzzy, c-format
+msgid "Try '%s --help' or '%s --usage' for more information.\n"
+msgstr "Pokušajte „%s --help” ili „%s --usage” za više informacija.\n"
+
+#: gnu/argp-help.c:1716
+#, c-format
+msgid "Report bugs to %s.\n"
+msgstr "Prijavite greške na %s.\n"
+
+#: gnu/argp-help.c:1935 gnu/error.c:191
+msgid "Unknown system error"
+msgstr "Nepoznata greška sustava"
+
+#: gnu/argp-parse.c:81
+msgid "give this help list"
+msgstr "prikaži ovaj popis pomoći"
+
+#: gnu/argp-parse.c:82
+msgid "give a short usage message"
+msgstr "prikaži kratke upute za uporabu"
+
+#: gnu/argp-parse.c:83 tests/genfile.c:131
+msgid "NAME"
+msgstr "IME"
+
+#: gnu/argp-parse.c:83
+msgid "set the program name"
+msgstr "postavi ime programa"
+
+#: gnu/argp-parse.c:84
+msgid "SECS"
+msgstr "SECS"
+
+#: gnu/argp-parse.c:85
+msgid "hang for SECS seconds (default 3600)"
+msgstr "zaustavi na SECS sekundi (zadano 3600)"
+
+#: gnu/argp-parse.c:142
+msgid "print program version"
+msgstr "ispiši inačicu programa"
+
+#: gnu/argp-parse.c:159
+msgid "(PROGRAM ERROR) No version known!?"
+msgstr "(GREŠKA PROGRAMA) Nema poznate inačice!?"
+
+#: gnu/argp-parse.c:612
+#, c-format
+msgid "%s: Too many arguments\n"
+msgstr "%s: Previše argumenata\n"
+
+#: gnu/argp-parse.c:755
+msgid "(PROGRAM ERROR) Option should have been recognized!?"
+msgstr "(GREŠKA PROGRAMA) Opcije su trebale biti prepoznate!?"
+
+#: gnu/closeout.c:112 src/util.c:93 src/util.c:96 src/util.c:146
+#, c-format
+msgid "write error"
+msgstr "greška pisanja"
+
+#: gnu/getopt.c:575 gnu/getopt.c:604
+#, fuzzy, c-format
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: opcija „%s” je višeznačna\n"
+
+#: gnu/getopt.c:619
+#, c-format
+msgid "%s: option '%s' is ambiguous\n"
+msgstr "%s: opcija „%s” je višeznačna\n"
+
+#: gnu/getopt.c:654 gnu/getopt.c:658
+#, c-format
+msgid "%s: option '--%s' doesn't allow an argument\n"
+msgstr "%s: opcija „--%s” ne dozvoljava argument\n"
+
+#: gnu/getopt.c:667 gnu/getopt.c:672
+#, c-format
+msgid "%s: option '%c%s' doesn't allow an argument\n"
+msgstr "%s: opcija „%c%s” ne dozvoljava argument\n"
+
+#: gnu/getopt.c:715 gnu/getopt.c:734
+#, fuzzy, c-format
+msgid "%s: option '--%s' requires an argument\n"
+msgstr "%s: opcija „%s” zahtijeva argument\n"
+
+#: gnu/getopt.c:772 gnu/getopt.c:775
+#, c-format
+msgid "%s: unrecognized option '--%s'\n"
+msgstr "%s: neprepoznata opcija „--%s”\n"
+
+#: gnu/getopt.c:783 gnu/getopt.c:786
+#, c-format
+msgid "%s: unrecognized option '%c%s'\n"
+msgstr "%s: neprepoznata opcija „%c%s”\n"
+
+#: gnu/getopt.c:835 gnu/getopt.c:838
+#, c-format
+msgid "%s: invalid option -- '%c'\n"
+msgstr "%s: neispravna opcija -- „%c”\n"
+
+#: gnu/getopt.c:891 gnu/getopt.c:908 gnu/getopt.c:1118 gnu/getopt.c:1136
+#, c-format
+msgid "%s: option requires an argument -- '%c'\n"
+msgstr "%s: opcija zahtijeva argument -- „%c”\n"
+
+#: gnu/getopt.c:964 gnu/getopt.c:980
+#, c-format
+msgid "%s: option '-W %s' is ambiguous\n"
+msgstr "%s: opcija „-W %s” je višeznačna\n"
+
+#: gnu/getopt.c:1004 gnu/getopt.c:1022
+#, c-format
+msgid "%s: option '-W %s' doesn't allow an argument\n"
+msgstr "%s: opcija „-W %s” ne dozvoljava argument\n"
+
+#: gnu/getopt.c:1043 gnu/getopt.c:1061
+#, fuzzy, c-format
+msgid "%s: option '-W %s' requires an argument\n"
+msgstr "%s: opcija „%s” zahtijeva argument\n"
+
+#: gnu/obstack.c:338 gnu/obstack.c:340 gnu/xalloc-die.c:34
+msgid "memory exhausted"
+msgstr "memorija iscrpljena"
+
+#: gnu/openat-die.c:38
+#, c-format
+msgid "unable to record current working directory"
+msgstr "ne mogu zapisati trenutni radni direktorij"
+
+#: gnu/openat-die.c:57
+#, c-format
+msgid "failed to return to initial working directory"
+msgstr "nisam se uspio vratiti u početni radni direktorij"
+
+#. TRANSLATORS:
+#. Get translations for open and closing quotation marks.
+#. The message catalog should translate "`" to a left
+#. quotation mark suitable for the locale, and similarly for
+#. "'".  For example, a French Unicode local should translate
+#. these to U+00AB (LEFT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), and U+00BB (RIGHT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), respectively.
+#.
+#. If the catalog has no translation, we will try to
+#. use Unicode U+2018 (LEFT SINGLE QUOTATION MARK) and
+#. Unicode U+2019 (RIGHT SINGLE QUOTATION MARK).  If the
+#. current locale is not Unicode, locale_quoting_style
+#. will quote 'like this', and clocale_quoting_style will
+#. quote "like this".  You should always include translations
+#. for "`" and "'" even if U+2018 and U+2019 are appropriate
+#. for your locale.
+#.
+#. If you don't know what to put here, please see
+#. <http://en.wikipedia.org/wiki/Quotation_marks_in_other_languages>
+#. and use glyphs suitable for your language.
+#: gnu/quotearg.c:312
+msgid "`"
+msgstr "„"
+
+#: gnu/quotearg.c:313
+msgid "'"
+msgstr "”"
+
+#: gnu/version-etc.c:74
+#, c-format
+msgid "Packaged by %s (%s)\n"
+msgstr "Pakirao %s (%s)\n"
+
+#: gnu/version-etc.c:77
+#, c-format
+msgid "Packaged by %s\n"
+msgstr "Pakirao %s\n"
+
+#. TRANSLATORS: Translate "(C)" to the copyright symbol
+#. (C-in-a-circle), if this symbol is available in the user's
+#. locale.  Otherwise, do not translate "(C)"; leave it as-is.
+#: gnu/version-etc.c:84
+msgid "(C)"
+msgstr "(C)"
+
+#: gnu/version-etc.c:86
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>.\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+"\n"
+"Licenca GPLv3+: GNU GPL inačica 3 ili kasnija <http://gnu.org/licenses/gpl."
+"html>.\n"
+"Ovo je slobodan softver: slobodno ga smijete mijenjati i dijeliti.\n"
+"NEMA JAMSTAVA, do krajnje mjere dozvoljene zakonom.\n"
+"\n"
+
+#. TRANSLATORS: %s denotes an author name.
+#: gnu/version-etc.c:102
+#, c-format
+msgid "Written by %s.\n"
+msgstr "Napisao %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: gnu/version-etc.c:106
+#, c-format
+msgid "Written by %s and %s.\n"
+msgstr "Napisali %s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: gnu/version-etc.c:110
+#, c-format
+msgid "Written by %s, %s, and %s.\n"
+msgstr "Napisali %s, %s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:117
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s\n"
+"i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:124
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:131
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s, %s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:139
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s, %s, %s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:147
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s, %s, %s, %s\n"
+"i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:156
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s i %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:167
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s, and others.\n"
+msgstr ""
+"Napisali %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s i ostali.\n"
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying
+#. "Report translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email address).
+#: gnu/version-etc.c:245
+#, c-format
+msgid ""
+"\n"
+"Report bugs to: %s\n"
+msgstr ""
+"\n"
+"Prijavite greške na %s.\n"
+"Prijavite greške prijevoda na <lokalizacija@linux.hr>.\n"
+
+#: gnu/version-etc.c:247
+#, c-format
+msgid "Report %s bugs to: %s\n"
+msgstr "Prijavite greške %s na %s\n"
+
+#: gnu/version-etc.c:251
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "%s početna stranica: <%s>\n"
+
+#: gnu/version-etc.c:253
+#, c-format
+msgid "%s home page: <http://www.gnu.org/software/%s/>\n"
+msgstr "%s početna stranica: <http://www.gnu.org/software/%s/>\n"
+
+#: gnu/version-etc.c:256
+msgid "General help using GNU software: <http://www.gnu.org/gethelp/>\n"
+msgstr ""
+"Općenita pomoć za korištenje GNU softvera: <http://www.gnu.org/gethelp/>\n"
+
+#. TRANSLATORS: %s after `Cannot' is a function name, e.g. `Cannot open'.
+#. Directly translating this to another language will not work, first because
+#. %s itself is not translated.
+#. Translate it as `%s: Function %s failed'.
+#: lib/error.c:60 lib/error.c:73
+#, c-format
+msgid "%s: Cannot %s"
+msgstr "%s: Ne mogu izvršiti %s"
+
+#. TRANSLATORS: %s after `Cannot' is a function name, e.g. `Cannot open'.
+#. Directly translating this to another language will not work, first because
+#. %s itself is not translated.
+#. Translate it as `%s: Function %s failed'.
+#: lib/error.c:86
+#, c-format
+msgid "%s: Warning: Cannot %s"
+msgstr "%s: Upozorenje: Ne mogu izvršiti %s"
+
+#: lib/error.c:95
+#, c-format
+msgid "%s: Cannot change mode to %s"
+msgstr "%s: Ne mogu promijeniti mod u %s"
+
+#: lib/error.c:103
+#, c-format
+msgid "%s: Cannot change ownership to uid %lu, gid %lu"
+msgstr "%s: Ne mogu promijeniti vlasništvo u uid %lu, gid %lu"
+
+#: lib/error.c:129
+#, c-format
+msgid "%s: Cannot hard link to %s"
+msgstr "%s: Ne mogu napraviti čvrstu vezu na %s"
+
+#: lib/error.c:181 lib/error.c:213
+#, c-format
+msgid "%s: Read error at byte %s, while reading %lu byte"
+msgid_plural "%s: Read error at byte %s, while reading %lu bytes"
+msgstr[0] "%s: Greška čitanja na bajtu %s pri čitanju %lu bajta"
+msgstr[1] "%s: Greška čitanja na bajtu %s pri čitanju %lu bajta"
+msgstr[2] "%s: Greška čitanja na bajtu %s pri čitanju %lu bajtova"
+
+#: lib/error.c:194
+#, c-format
+msgid "%s: Warning: Read error at byte %s, while reading %lu byte"
+msgid_plural "%s: Warning: Read error at byte %s, while reading %lu bytes"
+msgstr[0] "%s: Upozorenje: Greška čitanja na bajtu %s pri čitanju %lu bajta"
+msgstr[1] "%s: Upozorenje: Greška čitanja na bajtu %s pri čitanju %lu bajta"
+msgstr[2] "%s: Upozorenje: Greška čitanja na bajtu %s pri čitanju %lu bajtova"
+
+#: lib/error.c:261
+#, c-format
+msgid "%s: Cannot seek to %s"
+msgstr "%s: Ne mogu ići na %s"
+
+#: lib/error.c:277
+#, c-format
+msgid "%s: Warning: Cannot seek to %s"
+msgstr "%s: Upozorenje: Ne mogu ići na %s"
+
+#: lib/error.c:286
+#, c-format
+msgid "%s: Cannot create symlink to %s"
+msgstr "%s: Ne mogu napraviti simboličku vezu na %s"
+
+#: lib/error.c:351
+#, c-format
+msgid "%s: Wrote only %lu of %lu byte"
+msgid_plural "%s: Wrote only %lu of %lu bytes"
+msgstr[0] "%s: Zapisao samo %lu od %lu bajta"
+msgstr[1] "%s: Zapisao samo %lu od %lu bajta"
+msgstr[2] "%s: Zapisao samo %lu od %lu bajtova"
+
+#: lib/names.c:140
+#, c-format
+msgid "Removing leading `%s' from member names"
+msgstr "Uklanjam početni „%s” iz imena elemenata"
+
+#: lib/names.c:141
+#, c-format
+msgid "Removing leading `%s' from hard link targets"
+msgstr "Uklanjam početni „%s” iz odredišta čvrstih veza"
+
+#: lib/names.c:154
+msgid "Substituting `.' for empty member name"
+msgstr "Mijenjam „.” za prazno ime elementa"
+
+#: lib/names.c:155
+msgid "Substituting `.' for empty hard link target"
+msgstr "Mijenjam „.” za prazno odredište čvrste veze"
+
+#: lib/rtapelib.c:299
+#, c-format
+msgid "exec/tcp: Service not available"
+msgstr "exec/tcp: Usluga nije dostupna"
+
+#: lib/rtapelib.c:303
+#, c-format
+msgid "stdin"
+msgstr "standardni ulaz"
+
+#: lib/rtapelib.c:306
+#, c-format
+msgid "stdout"
+msgstr "standardni izlaz"
+
+#: lib/rtapelib.c:429
+#, c-format
+msgid "Cannot connect to %s: resolve failed"
+msgstr "Ne mogu se spojiti na %s: rezolucija nije uspjela"
+
+#: lib/rtapelib.c:502
+#, fuzzy, c-format
+msgid "Cannot redirect files for remote shell"
+msgstr "Ne mogu pokrenuti udaljenu ljusku"
+
+#: lib/rtapelib.c:516
+#, c-format
+msgid "Cannot execute remote shell"
+msgstr "Ne mogu pokrenuti udaljenu ljusku"
+
+#: rmt/rmt.c:432
+msgid "Seek direction out of range"
+msgstr "Smjer traženja izvan granica"
+
+#: rmt/rmt.c:438
+msgid "Invalid seek direction"
+msgstr "Neispravan smjer traženja"
+
+#: rmt/rmt.c:446
+msgid "Invalid seek offset"
+msgstr "Neispravan pomak traženja"
+
+#: rmt/rmt.c:452
+msgid "Seek offset out of range"
+msgstr "Pomak traženja izvan granica"
+
+#: rmt/rmt.c:493 rmt/rmt.c:544 rmt/rmt.c:608
+msgid "Invalid byte count"
+msgstr "Neispravan broj bajtova"
+
+#: rmt/rmt.c:499 rmt/rmt.c:550 rmt/rmt.c:614 rmt/rmt.c:625
+msgid "Byte count out of range"
+msgstr "Broj bajtova izvan granica"
+
+#: rmt/rmt.c:558
+msgid "Premature eof"
+msgstr "Preuranjen kraj datoteke (eof)"
+
+#: rmt/rmt.c:601
+msgid "Invalid operation code"
+msgstr "Neispravan operacijski kod"
+
+#: rmt/rmt.c:636 rmt/rmt.c:680
+msgid "Operation not supported"
+msgstr "Operacija nije podržana"
+
+#: rmt/rmt.c:664
+msgid "Unexpected arguments"
+msgstr "Neočekivani argumenti"
+
+#: rmt/rmt.c:689
+msgid "Manipulate a tape drive, accepting commands from a remote process"
+msgstr "Upravlja pogonom vrpce, prihvaćajući naredbe udaljenog procesa"
+
+#: rmt/rmt.c:696 src/main.c:130 tests/genfile.c:167
+msgid "NUMBER"
+msgstr "BROJ"
+
+#: rmt/rmt.c:697
+msgid "set debug level"
+msgstr "postavi razinu debugiranja"
+
+#: rmt/rmt.c:698 src/main.c:167 src/main.c:173 tests/genfile.c:133
+#: tests/genfile.c:181 tests/genfile.c:185 tests/genfile.c:188
+#: tests/genfile.c:194
+msgid "FILE"
+msgstr "DATOTEKA"
+
+#: rmt/rmt.c:699
+msgid "set debug output file name"
+msgstr "postavi ime datoteke izlaza za debugiranje"
+
+#: rmt/rmt.c:715 rmt/rmt.c:783
+#, c-format
+msgid "cannot open %s"
+msgstr "ne mogu otvoriti %s"
+
+#: rmt/rmt.c:780 tests/genfile.c:953 tests/genfile.c:970
+#, c-format
+msgid "too many arguments"
+msgstr "previše argumenata"
+
+#: rmt/rmt.c:822
+msgid "Garbage command"
+msgstr "Naredba smeća"
+
+#: src/copyin.c:45
+#, c-format
+msgid "warning: skipped %ld byte of junk"
+msgid_plural "warning: skipped %ld bytes of junk"
+msgstr[0] "upozorenje: preskočen %ld bajt smeća"
+msgstr[1] "upozorenje: preskočena %ld bajta smeća"
+msgstr[2] "upozorenje: preskočeno %ld bajtova smeća"
+
+#: src/copyin.c:66
+#, c-format
+msgid "rename %s -> "
+msgstr "preimenuj %s -> "
+
+#: src/copyin.c:95 src/copyout.c:552
+#, c-format
+msgid "%s: file name too long"
+msgstr "%s: predugačko ime datoteke"
+
+#: src/copyin.c:135
+#, c-format
+msgid "%s: stored filename length is out of range"
+msgstr ""
+
+#: src/copyin.c:196 src/copyin.c:543 src/copyin.c:558 src/copyin.c:1453
+#, fuzzy, c-format
+msgid "%s: checksum error (0x%x, should be 0x%x)"
+msgstr "%s: greška kontrolne sume (0x%lx, treba biti 0x%lx)"
+
+#: src/copyin.c:223 src/copypass.c:146
+#, c-format
+msgid "%s not created: newer or same age version exists"
+msgstr "%s nije napravljen: postoji jednako stara ili novija inačica"
+
+#: src/copyin.c:233 src/copypass.c:154
+#, c-format
+msgid "cannot remove current %s"
+msgstr "ne mogu ukloniti trenutni %s"
+
+#: src/copyin.c:294 src/copyin.c:491 src/copyin.c:606 src/copypass.c:402
+#, c-format
+msgid "cannot link %s to %s"
+msgstr "ne mogu povezati %s na %s"
+
+#: src/copyin.c:524
+#, c-format
+msgid "cannot swap halfwords of %s: odd number of halfwords"
+msgstr "ne mogu zamijeniti poluriječi %s: neparan broj poluriječi"
+
+#: src/copyin.c:532
+#, c-format
+msgid "cannot swap bytes of %s: odd number of bytes"
+msgstr "ne mogu zamijeniti bajtove %s: neparan broj bajtova"
+
+#: src/copyin.c:682
+#, c-format
+msgid "%s: Cannot symlink to %s"
+msgstr "%s: Ne mogu napraviti simboličku vezu na %s"
+
+#: src/copyin.c:736 src/copyout.c:842 src/copypass.c:325
+#, c-format
+msgid "%s: unknown file type"
+msgstr "%s: nepoznata vrsta datoteke"
+
+#: src/copyin.c:921 src/copyin.c:928
+#, c-format
+msgid "Malformed number %.*s"
+msgstr "Izobličen broj %.*s"
+
+#: src/copyin.c:938
+#, c-format
+msgid "Archive value %.*s is out of range"
+msgstr "Vrijednost arhive %.*s je izvan granica"
+
+#: src/copyin.c:973
+#, c-format
+msgid "premature end of archive"
+msgstr "preuranjen kraj arhive"
+
+#: src/copyin.c:1193
+#, c-format
+msgid "warning: archive header has reverse byte-order"
+msgstr "upozorenje: zaglavlje arhive ima obrnuti redoslijed bajtova"
+
+#: src/copyin.c:1340
+#, c-format
+msgid "standard input is closed"
+msgstr "standardni ulaz je zatvoren"
+
+#: src/copyin.c:1508 src/copyout.c:885 src/copypass.c:343
+#, c-format
+msgid "%lu block\n"
+msgid_plural "%lu blocks\n"
+msgstr[0] "%lu blok\n"
+msgstr[1] "%lu bloka\n"
+msgstr[2] "%lu blokova\n"
+
+#: src/copyout.c:51 src/copyout.c:60
+#, c-format
+msgid "cannot read checksum for %s"
+msgstr "ne mogu čitati kontrolnu sumu za %s"
+
+#: src/copyout.c:290
+#, c-format
+msgid "%s: field width not sufficient for storing %s"
+msgstr "%s: širina polja nije dovoljna za spremanje %s"
+
+#: src/copyout.c:298
+#, c-format
+msgid "%s: truncating %s"
+msgstr "%s: skraćujem %s"
+
+#: src/copyout.c:333 src/copyout.c:396 src/copyout.c:470
+msgid "inode number"
+msgstr "broj indeksnih čvorova (inode)"
+
+#: src/copyout.c:336 src/copyout.c:399 src/copyout.c:474
+msgid "file mode"
+msgstr "mod datoteke"
+
+#: src/copyout.c:339 src/copyout.c:401 src/copyout.c:478
+msgid "uid"
+msgstr "uid"
+
+#: src/copyout.c:342 src/copyout.c:403 src/copyout.c:482
+msgid "gid"
+msgstr "gid"
+
+#: src/copyout.c:345 src/copyout.c:406 src/copyout.c:486
+msgid "number of links"
+msgstr "broj veza"
+
+#: src/copyout.c:348 src/copyout.c:411
+msgid "modification time"
+msgstr "vrijeme uređivanja"
+
+#: src/copyout.c:351 src/copyout.c:418 src/copyout.c:505
+msgid "file size"
+msgstr "veličina datoteke"
+
+#: src/copyout.c:355
+msgid "device major number"
+msgstr "glavni broj uređaja"
+
+#: src/copyout.c:359
+msgid "device minor number"
+msgstr "sporedni broj uređaja"
+
+#: src/copyout.c:363
+msgid "rdev major"
+msgstr "rdev glavni"
+
+#: src/copyout.c:367
+msgid "rdev minor"
+msgstr "rdev sporedni"
+
+#: src/copyout.c:371 src/copyout.c:414 src/copyout.c:495
+msgid "name size"
+msgstr "veličina imena"
+
+#: src/copyout.c:393
+msgid "device number"
+msgstr "broj uređaja"
+
+#: src/copyout.c:408
+msgid "rdev"
+msgstr "rdev"
+
+#: src/copyout.c:466
+#, c-format
+msgid "%s: truncating inode number"
+msgstr "%s: skraćujem broj indeksnih čvorova (inode)"
+
+#: src/copyout.c:609
+#, c-format
+msgid "standard output is closed"
+msgstr "standardni izlaz je zatvoren"
+
+#: src/copyout.c:632 src/copypass.c:103
+#, c-format
+msgid "blank line ignored"
+msgstr "zanemaren prazan redak"
+
+#: src/copyout.c:767
+#, c-format
+msgid "%s not dumped: not a regular file"
+msgstr "%s nije izbačen: nije obična datoteka"
+
+#: src/copyout.c:818
+#, c-format
+msgid "%s: symbolic link too long"
+msgstr "%s: simbolička veza predugačka"
+
+#: src/copypass.c:397
+#, c-format
+msgid "%s linked to %s"
+msgstr "%s povezan na %s"
+
+#: src/main.c:77
+msgid ""
+"GNU `cpio' copies files to and from archives\n"
+"\n"
+"Examples:\n"
+"  # Copy files named in name-list to the archive\n"
+"  cpio -o < name-list [> archive]\n"
+"  # Extract files from the archive\n"
+"  cpio -i [< archive]\n"
+"  # Copy files named in name-list to destination-directory\n"
+"  cpio -p destination-directory < name-list\n"
+msgstr ""
+"GNU „cpio” kopira datoteke u i iz arhiva\n"
+"\n"
+"Primjeri:\n"
+"  # Kopiraj datoteke iz popisa-datoteka u arhivu\n"
+"  cpio -o < popis-datoteka [> arhiva]\n"
+"  # Otpakiraj datoteke iz arhive\n"
+"  cpio -i [< arhiva]\n"
+"  # Kopiraj datoteke iz popisa-datoteka u odredišni-direktorij\n"
+"  cpio -p odredišni-direktorij < popis-datoteka\n"
+
+#: src/main.c:93
+#, c-format
+msgid "%s is meaningless with %s"
+msgstr "%s je beznačajan uz %s"
+
+#: src/main.c:99
+msgid "Main operation mode:"
+msgstr "Glavni način operacije:"
+
+#: src/main.c:101
+msgid "Create the archive (run in copy-out mode)"
+msgstr "Napravi arhivu (radi u načinu copy-out)"
+
+#: src/main.c:103
+msgid "Extract files from an archive (run in copy-in mode)"
+msgstr "Otpakiraj datoteke iz arhive (radi u načinu copy-in)"
+
+#: src/main.c:105
+msgid "Run in copy-pass mode"
+msgstr "Pokreni u copy-pass načinu"
+
+#: src/main.c:107
+msgid "Print a table of contents of the input"
+msgstr "Ispiši sadržaj ulaza"
+
+#: src/main.c:113
+msgid "Operation modifiers valid in any mode:"
+msgstr "Modifikatori operacija ispravni u svakom načinu:"
+
+#: src/main.c:115
+msgid "DIR"
+msgstr ""
+
+#: src/main.c:116
+msgid "Change to directory DIR"
+msgstr ""
+
+#: src/main.c:119
+msgid "Archive file is local, even if its name contains colons"
+msgstr "Datoteka arhive je lokalna, čak i ako ime sadrži dvotočke"
+
+#: src/main.c:120 tests/genfile.c:154
+msgid "FORMAT"
+msgstr "OBLIK"
+
+#: src/main.c:121
+msgid "Use given archive FORMAT"
+msgstr "Koristi zadani OBLIK arhive"
+
+#: src/main.c:123
+msgid "Set the I/O block size to 5120 bytes"
+msgstr "Postavi veličinu U/I bloka na 5120 bajtova"
+
+#: src/main.c:124
+msgid "BLOCK-SIZE"
+msgstr "VELIČINA-BLOKA"
+
+#: src/main.c:125
+msgid "Set the I/O block size to BLOCK-SIZE * 512 bytes"
+msgstr "Postavi veličinu U/I bloka na VELIČINA-BLOKA * 512 bajtova"
+
+#: src/main.c:127
+msgid "Use the old portable (ASCII) archive format"
+msgstr "Koristi stari prenosivi (ASCII) oblik arhive"
+
+#: src/main.c:129
+msgid "Print a \".\" for each file processed"
+msgstr "Ispiši „.” za svaku obrađenu datoteku"
+
+#: src/main.c:131
+msgid "Set the I/O block size to the given NUMBER of bytes"
+msgstr "Postavi veličinu U/I bloka na navedeni BROJ bajtova"
+
+#: src/main.c:133
+msgid "Do not print the number of blocks copied"
+msgstr "Ne ispisuj broj kopiranih blokova"
+
+#: src/main.c:135
+msgid "Verbosely list the files processed"
+msgstr "Opširno ispiši obrađene datoteke"
+
+#: src/main.c:138
+msgid "Enable debugging info"
+msgstr "Omogući informacije za debugiranje"
+
+#: src/main.c:140
+msgid "FLAG"
+msgstr "ZASTAVICA"
+
+#: src/main.c:141
+msgid ""
+"Control warning display. Currently FLAG is one of 'none', 'truncate', 'all'. "
+"Multiple options accumulate."
+msgstr ""
+"Upravljaj prikazom upozorenja. Trenutno je ZASTAVICA jedna od „none”, "
+"„truncate”, „all”. Višestruke opcije se nadopunjuju."
+
+#: src/main.c:142
+msgid "[USER][:.][GROUP]"
+msgstr "[KORISNIK][:.][GRUPA]"
+
+#: src/main.c:143
+msgid ""
+"Set the ownership of all files created to the specified USER and/or GROUP"
+msgstr ""
+"Postavi vlasništvo svih napravljenih datoteka na navedenog KORISNIKA ili "
+"GRUPU"
+
+#: src/main.c:148
+#, fuzzy
+msgid "Operation modifiers valid in copy-in and copy-out modes"
+msgstr "Modifikatori operacija ispravni u načinima copy-in i copy-out:"
+
+#: src/main.c:149 src/main.c:184 src/main.c:194
+msgid "[[USER@]HOST:]FILE-NAME"
+msgstr "[[KORISNIK@]RAČUNALO:]IME-DATOTEKE"
+
+#: src/main.c:150
+msgid ""
+"Use this FILE-NAME instead of standard input or output. Optional USER and "
+"HOST specify the user and host names in case of a remote archive"
+msgstr ""
+"Koristi ovo IME-DATOTEKE umjesto standardnog ulaza ili izlaza. Opcionalni "
+"KORISNIK i RAČUNALO označavaju imena korisnika i računala u slučaju udaljene "
+"arhive"
+
+#: src/main.c:151 tests/genfile.c:170
+msgid "STRING"
+msgstr "NIZ"
+
+#: src/main.c:152
+msgid "Print STRING when the end of a volume of the backup media is reached"
+msgstr "Ispiši NIZ kad je dosegnut kraj medija za sigurnosno kopiranje"
+
+#: src/main.c:154 src/mt.c:182 tests/genfile.c:191
+msgid "COMMAND"
+msgstr "NAREDBA"
+
+#: src/main.c:155
+#, fuzzy
+msgid "Use COMMAND instead of rsh"
+msgstr "Koristi udaljenu NAREDBU umjesto rsh"
+
+#: src/main.c:161
+msgid "Operation modifiers valid only in copy-in mode:"
+msgstr "Modifikatori operacija ispravni samo u načinu copy-in:"
+
+#: src/main.c:163
+msgid "Only copy files that do not match any of the given patterns"
+msgstr "Kopiraj samo datoteke koje ne odgovaraju nijednom navedenom uzorku"
+
+#: src/main.c:165
+msgid "In the verbose table of contents listing, show numeric UID and GID"
+msgstr "U opširnom ispisu sadržaja prikaži numerički UID i GID"
+
+#: src/main.c:168
+msgid ""
+"Read additional patterns specifying filenames to extract or list from FILE"
+msgstr ""
+"Čitaj dodatne uzorke koji navode datoteke za ekstrakciju ili ispis iz "
+"DATOTEKE"
+
+#: src/main.c:170
+msgid ""
+"When reading a CRC format archive, only verify the CRC's of each file in the "
+"archive, don't actually extract the files"
+msgstr ""
+"Pri čitanju arhive CRC oblika samo provjeri CRC svake datoteke u arhivi, bez "
+"otpakiranja datoteka"
+
+#: src/main.c:172
+msgid "Interactively rename files"
+msgstr "Interaktivno preimenuj datoteke"
+
+#: src/main.c:176
+msgid ""
+"Swap both halfwords of words and bytes of halfwords in the data. Equivalent "
+"to -sS"
+msgstr ""
+"Zamijeni obje poluriječi riječi i bajtove poluriječi u podacima. Isto kao -sS"
+
+#: src/main.c:178
+msgid "Swap the bytes of each halfword in the files"
+msgstr "Zamijeni bajtove svake poluriječi u datotekama"
+
+#: src/main.c:180
+msgid "Swap the halfwords of each word (4 bytes) in the files"
+msgstr "Zamijeni poluriječi svake riječi (4 bajta) u datotekama"
+
+#: src/main.c:183
+msgid "Extract files to standard output"
+msgstr "Otpakiraj datoteke na standardni izlaz"
+
+#: src/main.c:185
+msgid ""
+"Archive filename to use instead of standard input. Optional USER and HOST "
+"specify the user and host names in case of a remote archive"
+msgstr ""
+"Ime datoteke arhive za korištenje umjesto standardnog izlaza. Opcionalni "
+"KORISNIK i RAČUNALO označavaju imena korisnika i računala u slučaju udaljene "
+"arhive"
+
+#: src/main.c:191
+msgid "Operation modifiers valid only in copy-out mode:"
+msgstr "Modifikatori operacija ispravni samo u načinu copy-out:"
+
+#: src/main.c:193
+msgid "Append to an existing archive."
+msgstr "Dodaj u postojeću arhivu."
+
+#: src/main.c:195
+msgid ""
+"Archive filename to use instead of standard output. Optional USER and HOST "
+"specify the user and host names in case of a remote archive"
+msgstr ""
+"Ime datoteke arhive za korištenje umjesto standardnog izlaza. Opcionalni "
+"KORISNIK i RAČUNALO označavaju imena korisnika i računala u slučaju udaljene "
+"arhive"
+
+#: src/main.c:197
+#, fuzzy
+msgid "Renumber inodes"
+msgstr "broj veza"
+
+#: src/main.c:199
+#, fuzzy
+msgid "Don't store device numbers"
+msgstr "broj uređaja"
+
+#: src/main.c:201
+msgid "Create device-independent (reproducible) archives"
+msgstr ""
+
+#: src/main.c:208
+msgid "Operation modifiers valid only in copy-pass mode:"
+msgstr "Modifikatori operacija ispravni samo u načinu copy-pass:"
+
+#: src/main.c:210
+msgid "Link files instead of copying them, when  possible"
+msgstr "Poveži datoteke umjesto njihovog kopiranja gdje je moguće"
+
+#: src/main.c:217
+msgid "Operation modifiers valid in copy-in and copy-out modes:"
+msgstr "Modifikatori operacija ispravni u načinima copy-in i copy-out:"
+
+#: src/main.c:219
+msgid "Do not strip file system prefix components from the file names"
+msgstr "Ne uklanjaj prefiksne komponente datotečnog sustava iz imena datoteka"
+
+#: src/main.c:222
+msgid "Create all files relative to the current directory"
+msgstr "Napravi sve datoteke relativno u odnosu na trenutni direktorij"
+
+#: src/main.c:227
+msgid "Operation modifiers valid in copy-out and copy-pass modes:"
+msgstr "Modifikatori operacija ispravni u načinima copy-out i copy-pass:"
+
+#: src/main.c:229
+#, fuzzy
+msgid ""
+"Filenames in the list are delimited by null characters instead of newlines"
+msgstr ""
+"Popis datoteka je završen praznim (null) znakom umjesto znakom novog retka"
+
+#: src/main.c:231
+msgid ""
+"Dereference  symbolic  links  (copy  the files that they point to instead of "
+"copying the links)."
+msgstr ""
+"Dereferenciraj simboličke veze (kopiraj datoteke na koje pokazuju umjesto "
+"kopiranja veza)."
+
+#: src/main.c:233
+msgid "Reset the access times of files after reading them"
+msgstr "Vrati na početnu vrijednost vremena pristupa datotekama nakon čitanja"
+
+#: src/main.c:239
+msgid "Operation modifiers valid in copy-in and copy-pass modes:"
+msgstr "Modifikatori operacija ispravni u načinima copy-in i copy-pass:"
+
+#: src/main.c:241
+msgid "Retain previous file modification times when creating files"
+msgstr "Zadrži prethodna vremena uređivanja kod stvaranja datoteka"
+
+#: src/main.c:243
+msgid "Create leading directories where needed"
+msgstr "Napravi vodeće direktorije gdje je potrebno"
+
+#: src/main.c:245
+msgid "Do not change the ownership of the files"
+msgstr "Ne mijenjaj vlasništvo datoteka"
+
+#: src/main.c:247
+msgid "Replace all files unconditionally"
+msgstr "Bezuvjetno zamijeni sve datoteke"
+
+#: src/main.c:249
+msgid "Write files with large blocks of zeros as sparse files"
+msgstr "Zapiši datoteke s velikim blokovima nula kao raštrkane datoteke"
+
+#: src/main.c:325 src/main.c:342
+msgid "invalid block size"
+msgstr "neispravna veličina bloka"
+
+#: src/main.c:331 src/main.c:367
+msgid "Archive format multiply defined"
+msgstr "Oblik arhive definiran više puta"
+
+#: src/main.c:385
+#, c-format
+msgid ""
+"invalid archive format `%s'; valid formats are:\n"
+"crc newc odc bin ustar tar (all-caps also recognized)"
+msgstr ""
+"neispravan oblik arhive „%s”; ispravni oblici su:\n"
+"crc newc odc bin ustar tar (prepoznaje i sva velika slova)"
+
+#: src/main.c:392 src/main.c:437 src/main.c:451
+msgid "Mode already defined"
+msgstr "Mod je već definiran"
+
+#: src/main.c:431
+msgid "--no-preserve-owner cannot be used with --owner"
+msgstr "--no-preserve-owner se ne može koristiti uz --owner"
+
+#: src/main.c:486
+msgid "--owner cannot be used with --no-preserve-owner"
+msgstr "--owner se ne može koristiti uz --no-preserve-owner"
+
+#: src/main.c:533
+#, c-format
+msgid "Invalid value for --warning option: %s"
+msgstr "Neispravna vrijednost opcije --warning: %s"
+
+#: src/main.c:563
+msgid "[destination-directory]"
+msgstr "[odredišni-direktorij]"
+
+#: src/main.c:601
+#, c-format
+msgid ""
+"You must specify one of -oipt options.\n"
+"Try `%s --help' or `%s --usage' for more information.\n"
+msgstr ""
+"Morate navesti jednu od opcija -oipt.\n"
+"Pokušajte „%s --help” ili „%s --usage” za više informacija.\n"
+
+#: src/main.c:632
+msgid "Both -I and -F are used in copy-in mode"
+msgstr "Koriste se opcije -I i -F u copy-in načinu"
+
+#: src/main.c:644 src/main.c:684
+msgid "Too many arguments"
+msgstr "Previše argumenata"
+
+#: src/main.c:663
+msgid ""
+"--append is used but no archive file name is given (use -F or -O options)"
+msgstr ""
+"koristi se --append, ali nije navedena arhiva (koristite opciju -F ili -O)"
+
+#: src/main.c:670
+msgid "Both -O and -F are used in copy-out mode"
+msgstr "Koriste se opcije -O i -F u copy-out načinu"
+
+#: src/main.c:686
+msgid "Not enough arguments"
+msgstr "Nema dovoljno argumenata"
+
+#: src/main.c:690
+msgid "Archive format is not specified in copy-pass mode (use --format option)"
+msgstr ""
+"Nije naveden oblik arhive u copy-pass načinu (koristite opciju --format)"
+
+#: src/main.c:716
+#, c-format
+msgid "-F can be used only with --create or --extract"
+msgstr "-F se može koristiti samo uz --create ili --extract"
+
+#: src/main.c:719
+#, c-format
+msgid "Cannot open %s"
+msgstr "Ne mogu otvoriti %s"
+
+#: src/main.c:791
+#, c-format
+msgid "error closing archive"
+msgstr "greška zatvaranja arhive"
+
+#: src/makepath.c:97 src/makepath.c:156
+#, c-format
+msgid "cannot make directory `%s'"
+msgstr "ne mogu napraviti direktorij „%s”"
+
+#: src/makepath.c:132 src/makepath.c:182
+#, c-format
+msgid "`%s' exists but is not a directory"
+msgstr "„%s” postoji, ali nije direktorij"
+
+#: src/mt.c:166
+msgid "control magnetic tape drive operation"
+msgstr "upravlja radom pogona magnetske vrpce"
+
+#: src/mt.c:180
+msgid "DEVICE"
+msgstr "UREĐAJ"
+
+#: src/mt.c:181
+msgid "use device as the file name of the tape drive to operate on"
+msgstr "koristi uređaj kao ime datoteke pogona vrpce na kojem se radi"
+
+#: src/mt.c:183
+msgid "use remote COMMAND instead of rsh"
+msgstr "koristi udaljenu NAREDBU umjesto rsh"
+
+#: src/mt.c:204
+msgid "operation"
+msgstr "operacija"
+
+#: src/mt.c:212
+#, c-format
+msgid "invalid count value"
+msgstr "neispravna vrijednost brojača"
+
+#: src/mt.c:231
+#, c-format
+msgid "no tape device specified"
+msgstr "nije naveden uređaj vrpce"
+
+#: src/mt.c:254
+msgid "operation [count]"
+msgstr "operacija [broj]"
+
+#: src/mt.c:271
+#, c-format
+msgid "%s is not a character special file"
+msgstr "%s nije znakovna posebna datoteka"
+
+#: src/mt.c:282 src/mt.c:291
+#, c-format
+msgid "%s: rmtioctl failed"
+msgstr "%s: rmtioctl nije uspio"
+
+#: src/mt.c:344
+#, c-format
+msgid "%s: rmtopen failed"
+msgstr "%s: rmtopen nije uspio"
+
+#: src/mt.c:357
+#, c-format
+msgid "%s: rmtclose failed"
+msgstr "%s: rmtclose nije uspio"
+
+#: src/tar.c:309
+#, c-format
+msgid "invalid header: checksum error"
+msgstr "neispravno zaglavlje: greška kontrolne sume"
+
+#: src/userspec.c:122
+msgid "invalid user"
+msgstr "neispravan korisnik"
+
+#: src/userspec.c:128
+msgid "cannot get the login group of a numeric UID"
+msgstr "ne mogu dobiti prijavnu grupu numeričkog UID-a"
+
+#: src/userspec.c:175
+msgid "invalid group"
+msgstr "neispravna grupa"
+
+#: src/util.c:148
+#, c-format
+msgid "write error: partial write"
+msgstr ""
+
+#: src/util.c:210 src/util.c:376
+#, c-format
+msgid "read error"
+msgstr "greška čitanja"
+
+#: src/util.c:212
+#, c-format
+msgid "premature end of file"
+msgstr "preuranjen kraj datoteke"
+
+#: src/util.c:495 src/util.c:545
+#, c-format
+msgid "File %s shrunk by %s byte, padding with zeros"
+msgid_plural "File %s shrunk by %s bytes, padding with zeros"
+msgstr[0] "Datoteka %s smanjena za %s bajt, nadopunjavam nulama"
+msgstr[1] "Datoteka %s smanjena za %s bajta, nadopunjavam nulama"
+msgstr[2] "Datoteka %s smanjena za %s bajtova, nadopunjavam nulama"
+
+#: src/util.c:501 src/util.c:551
+#, c-format
+msgid "Read error at byte %lld in file %s, padding with zeros"
+msgstr "Greška čitanja na bajtu %lld u datoteci %s, nadopunjavam nulama"
+
+#: src/util.c:586
+#, c-format
+msgid "File %s grew, %<PRIuMAX> new byte not copied"
+msgid_plural "File %s grew, %<PRIuMAX> new bytes not copied"
+msgstr[0] "Datoteka %s se povećala, %<PRIuMAX> novi bajt nije kopiran"
+msgstr[1] "Datoteka %s se povećala, %<PRIuMAX> nova bajta nisu kopirana"
+msgstr[2] "Datoteka %s se povećala, %<PRIuMAX> novih bajtova nije kopirano"
+
+#: src/util.c:592
+#, c-format
+msgid "File %s was modified while being copied"
+msgstr "Datoteka %s se promijenila za vrijeme kopiranja"
+
+#: src/util.c:620
+#, c-format
+msgid "virtual memory exhausted"
+msgstr "virtualna memorija iscrpljena"
+
+#: src/util.c:626
+#, c-format
+msgid "Creating intermediate directory `%s'"
+msgstr "Stvaram posredni direktorij „%s”"
+
+#: src/util.c:663 src/util.c:669
+#, c-format
+msgid "cannot seek on output"
+msgstr "ne mogu tražiti na izlazu"
+
+#: src/util.c:888
+#, c-format
+msgid "Found end of tape.  Load next tape and press RETURN. "
+msgstr "Pronađen kraj vrpce. Učitajte sljedeću vrpcu i pritisnite RETURN. "
+
+#: src/util.c:890
+#, c-format
+msgid "Found end of tape.  To continue, type device/file name when ready.\n"
+msgstr "Pronađen kraj vrpce. Za nastavak, upišite ime uređaja/vrpce.\n"
+
+#: src/util.c:913
+#, c-format
+msgid "To continue, type device/file name when ready.\n"
+msgstr "Za nastavak upišite ime uređaja/datoteke.\n"
+
+#: src/util.c:938
+#, c-format
+msgid "internal error: tape descriptor changed from %d to %d"
+msgstr "interna greška: opisnik vrpce se promijenio iz %d u %d"
+
+#: src/util.c:1644
+#, c-format
+msgid "%s is not a directory"
+msgstr "%s nije direktorij"
+
+#: src/util.c:1664
+#, fuzzy, c-format
+msgid "Creating directory `%s'"
+msgstr "Stvaram posredni direktorij „%s”"
+
+#: src/util.c:1671
+#, fuzzy, c-format
+msgid "cannot change to directory `%s'"
+msgstr "ne mogu napraviti direktorij „%s”"
+
+#: tests/genfile.c:112
+msgid ""
+"genfile manipulates data files for GNU paxutils test suite.\n"
+"OPTIONS are:\n"
+msgstr ""
+"genfile rukuje podatkovnim datotekama GNU paxutils skupa testova.\n"
+"OPCIJE su:\n"
+
+#: tests/genfile.c:128
+msgid "File creation options:"
+msgstr "Opcije stvaranja datoteka:"
+
+#: tests/genfile.c:129 tests/genfile.c:140
+msgid "SIZE"
+msgstr "VELIČINA"
+
+#: tests/genfile.c:130
+msgid "Create file of the given SIZE"
+msgstr "Napravi datoteku navedene VELIČINE"
+
+#: tests/genfile.c:132
+msgid "Write to file NAME, instead of standard output"
+msgstr "Piši u datoteku IME umjesto na standardni izlaz"
+
+#: tests/genfile.c:134
+msgid "Read file names from FILE"
+msgstr "Čitaj imena datoteka iz DATOTEKE"
+
+#: tests/genfile.c:136
+msgid "-T reads null-terminated names"
+msgstr "-T čita imena završena praznim (null) znakom"
+
+#: tests/genfile.c:137
+msgid "PATTERN"
+msgstr "UZORAK"
+
+#: tests/genfile.c:138
+msgid "Fill the file with the given PATTERN. PATTERN is 'default' or 'zeros'"
+msgstr "Popuni datoteku navedenim UZORKOM. UZORAK je „default” ili „zeros”"
+
+#: tests/genfile.c:141
+msgid "Size of a block for sparse file"
+msgstr "Veličina bloka za raštrkanu datoteku"
+
+#: tests/genfile.c:143
+msgid "Generate sparse file. Rest of the command line gives the file map."
+msgstr ""
+"Stvori raštrkanu datoteku. Ostatak naredbenog retka zadaje mapu datoteke."
+
+#: tests/genfile.c:145
+msgid "OFFSET"
+msgstr "POMAK"
+
+#: tests/genfile.c:146
+msgid "Seek to the given offset before writing data"
+msgstr "Idi na zadani pomak prije pisanja podataka"
+
+#: tests/genfile.c:152
+msgid "File statistics options:"
+msgstr "Opcije statistike datoteka:"
+
+#: tests/genfile.c:155
+msgid "Print contents of struct stat for each given file. Default FORMAT is: "
+msgstr ""
+"Ispiši sadržaj statistike strukture za svaku navedenu datoteku. Uobičajeni "
+"OBLIK je: "
+
+#: tests/genfile.c:162
+msgid "Synchronous execution options:"
+msgstr "Opcije sinkronog izvršavanja:"
+
+#: tests/genfile.c:164
+msgid "OPTION"
+msgstr "OPCIJA"
+
+#: tests/genfile.c:165
+msgid ""
+"Execute ARGS. Useful with --checkpoint and one of --cut, --append, --touch, "
+"--unlink"
+msgstr ""
+"Izvrši ARGUMENTE. Korisno uz --checkpoint i jednu od opcija --cut, --append, "
+"--touch, --unlink"
+
+#: tests/genfile.c:168
+msgid "Perform given action (see below) upon reaching checkpoint NUMBER"
+msgstr ""
+"Izvrši zadane radnje (pogledajte dolje) pri dostizanju kontrolne točke BROJ"
+
+#: tests/genfile.c:171
+msgid "Set date for next --touch option"
+msgstr "Postavi datum za sljedeću opciju --touch"
+
+#: tests/genfile.c:174
+msgid "Display executed checkpoints and exit status of COMMAND"
+msgstr "Prikaži izvršene kontrolne točke i izlazno stanje NAREDBE"
+
+#: tests/genfile.c:179
+msgid ""
+"Synchronous execution actions. These are executed when checkpoint number "
+"given by --checkpoint option is reached."
+msgstr ""
+"Radnje sinkronog izvršavanja. One se izvršavaju kad se dostigne broj "
+"kontrolne točke zadan opcijom --checkpoint."
+
+#: tests/genfile.c:182
+msgid ""
+"Truncate FILE to the size specified by previous --length option (or 0, if it "
+"is not given)"
+msgstr ""
+"Skrati DATOTEKU na veličinu zadanu prethodnom opcijom --length (ili 0 ako "
+"nije zadano)"
+
+#: tests/genfile.c:186
+msgid "Append SIZE bytes to FILE. SIZE is given by previous --length option."
+msgstr ""
+"Dodaj VELIČINA bajtova u DATOTEKU. VELIČINA je zadana prethodnom opcijom --"
+"length."
+
+#: tests/genfile.c:189
+msgid "Update the access and modification times of FILE"
+msgstr "Ažuriraj vrijeme pristupa i uređivanja DATOTEKE"
+
+#: tests/genfile.c:192
+msgid "Execute COMMAND"
+msgstr "Izvrši NAREDBU"
+
+#: tests/genfile.c:195
+msgid "Unlink FILE"
+msgstr "Ukloni vezu DATOTEKE"
+
+#: tests/genfile.c:245
+#, c-format
+msgid "Invalid size: %s"
+msgstr "Neispravna veličina: %s"
+
+#: tests/genfile.c:250
+#, c-format
+msgid "Number out of allowed range: %s"
+msgstr "Broj izvan dozvoljenih granica: %s"
+
+#: tests/genfile.c:253
+#, c-format
+msgid "Negative size: %s"
+msgstr "Negativna veličina: %s"
+
+#: tests/genfile.c:266 tests/genfile.c:630
+#, c-format
+msgid "stat(%s) failed"
+msgstr "stat(%s) nije uspio"
+
+#: tests/genfile.c:269
+#, c-format
+msgid "requested file length %lu, actual %lu"
+msgstr "tražena duljina datoteke %lu, stvarna %lu"
+
+#: tests/genfile.c:273
+#, c-format
+msgid "created file is not sparse"
+msgstr "stvorena datoteka nije raštrkana"
+
+#: tests/genfile.c:362
+#, c-format
+msgid "Error parsing number near `%s'"
+msgstr "Greška analize broja kod „%s”"
+
+#: tests/genfile.c:368
+#, c-format
+msgid "Unknown date format"
+msgstr "Nepoznat oblik datuma"
+
+#: tests/genfile.c:392
+msgid "[ARGS...]"
+msgstr "[ARGUMENTI...]"
+
+#: tests/genfile.c:429 tests/genfile.c:469 tests/genfile.c:571
+#: tests/genfile.c:734 tests/genfile.c:748
+#, c-format
+msgid "cannot open `%s'"
+msgstr "ne mogu otvoriti „%s”"
+
+#: tests/genfile.c:435
+msgid "cannot seek"
+msgstr "ne mogu tražiti"
+
+#: tests/genfile.c:452
+#, c-format
+msgid "file name contains null character"
+msgstr "ime datoteke sadrži prazan (null) znak"
+
+#: tests/genfile.c:566
+#, c-format
+msgid "cannot generate sparse files on standard output, use --file option"
+msgstr ""
+"ne mogu stvoriti raštrkane datoteke na standardnom izlazu, koristite opciju "
+"--file"
+
+#: tests/genfile.c:657
+#, c-format
+msgid "incorrect mask (near `%s')"
+msgstr "netočna maska (kod „%s”)"
+
+#: tests/genfile.c:663 tests/genfile.c:696
+#, c-format
+msgid "Unknown field `%s'"
+msgstr "Nepoznato polje „%s”"
+
+#: tests/genfile.c:723
+#, c-format
+msgid "cannot set time on `%s'"
+msgstr "ne mogu postaviti vrijeme na „%s”"
+
+#: tests/genfile.c:753
+#, fuzzy, c-format
+msgid "cannot truncate `%s'"
+msgstr "ne mogu ukloniti vezu „%s”"
+
+#: tests/genfile.c:762
+#, fuzzy, c-format
+msgid "command failed: %s"
+msgstr "Naredba nije uspjela sa stanjem %d\n"
+
+#: tests/genfile.c:767
+#, c-format
+msgid "cannot unlink `%s'"
+msgstr "ne mogu ukloniti vezu „%s”"
+
+#: tests/genfile.c:894
+#, c-format
+msgid "Command exited successfully\n"
+msgstr "Izlaz naredbe uspješan\n"
+
+#: tests/genfile.c:896
+#, c-format
+msgid "Command failed with status %d\n"
+msgstr "Naredba nije uspjela sa stanjem %d\n"
+
+#: tests/genfile.c:900
+#, c-format
+msgid "Command terminated on signal %d\n"
+msgstr "Naredba završena signalom %d\n"
+
+#: tests/genfile.c:902
+#, c-format
+msgid "Command stopped on signal %d\n"
+msgstr "Naredba zaustavljena signalom %d\n"
+
+#: tests/genfile.c:905
+#, c-format
+msgid "Command dumped core\n"
+msgstr "Naredba je izbacila jezgru\n"
+
+#: tests/genfile.c:908
+#, c-format
+msgid "Command terminated\n"
+msgstr "Naredba završena\n"
+
+#: tests/genfile.c:940
+#, c-format
+msgid "--stat requires file names"
+msgstr "--stat zahtijeva imena datoteka"

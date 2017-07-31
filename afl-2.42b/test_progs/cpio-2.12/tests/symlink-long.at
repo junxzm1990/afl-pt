@@ -1,0 +1,46 @@
+# Process this file with autom4te to create testsuite.  -*- Autotest -*-
+# Copyright (C) 2014-2015 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 USA.
+
+# Cpio v2.11.90 changed the way symlink name is read from archive.
+# References:
+# http://lists.gnu.org/archive/html/bug-cpio/2014-11/msg00007.html
+
+AT_SETUP([symlink-long])
+AT_KEYWORDS([symlink-long copyout])
+
+AT_CHECK([
+
+# len(dirname) > READBUFSIZE
+dirname=
+for i in {1..52}; do
+    dirname="xxxxxxxxx/$dirname"
+    mkdir "$dirname"
+done
+ln -s "$dirname" x || AT_SKIP_TEST
+
+echo x | cpio -o > ar
+list=`cpio -tv < ar | sed 's|.*-> ||'`
+test "$list" = "$dirname" && echo success || echo fail
+],
+[0],
+[success
+],[2 blocks
+2 blocks
+])
+
+AT_CLEANUP

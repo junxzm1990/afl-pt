@@ -1,0 +1,1661 @@
+# Mensajes en español para GNU cpio.
+# Copyright (C) 1996, 2005, 2014 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cpio package.
+# Enrique Melero <justine@iprolink.ch>, 1996.
+# Santiago Vila <sanvila@unex.es>, 1996, 2005, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU cpio 2.11\n"
+"Report-Msgid-Bugs-To: bug-cpio@gnu.org\n"
+"POT-Creation-Date: 2015-09-12 14:33+0300\n"
+"PO-Revision-Date: 2014-07-21 09:00+0200\n"
+"Last-Translator: Santiago Vila Doncel <sanvila@unex.es>\n"
+"Language-Team: Spanish <es@tp.org.es>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gnu/argmatch.c:133
+#, c-format
+msgid "invalid argument %s for %s"
+msgstr "argumento %s inválido para %s"
+
+#: gnu/argmatch.c:134
+#, c-format
+msgid "ambiguous argument %s for %s"
+msgstr "argumento %s ambiguo para %s"
+
+#: gnu/argmatch.c:153
+msgid "Valid arguments are:"
+msgstr "Los argumentos válidos son:"
+
+#: gnu/argp-help.c:148
+#, c-format
+msgid "ARGP_HELP_FMT: %s value is less than or equal to %s"
+msgstr "ARGP_HELP_FMT: el valor %s es menor o igual que %s"
+
+#: gnu/argp-help.c:221
+#, c-format
+msgid "%.*s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: El argumento ARGP_HELP_FMT requiere un valor"
+
+#: gnu/argp-help.c:227
+#, c-format
+msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+msgstr "%.*s: el parámetro ARGP_HELP_FMT debe ser positivo"
+
+#: gnu/argp-help.c:236
+#, c-format
+msgid "%.*s: Unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Parámetro ARGP_HELP_FMT desconocido"
+
+#: gnu/argp-help.c:248
+#, c-format
+msgid "Garbage in ARGP_HELP_FMT: %s"
+msgstr "Inconsistencias en ARGP_HELP_FMT: %s"
+
+#: gnu/argp-help.c:1248
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Los argumentos obligatorios u opcionales para las opciones largas son\n"
+"también obligatorios u opcionales para las opciones cortas correspondientes."
+
+#: gnu/argp-help.c:1645
+msgid "Usage:"
+msgstr "Modo de empleo:"
+
+#: gnu/argp-help.c:1649
+msgid "  or: "
+msgstr " o: "
+
+#: gnu/argp-help.c:1661
+msgid " [OPTION...]"
+msgstr " [OPCIÓN...]"
+
+#: gnu/argp-help.c:1688
+#, fuzzy, c-format
+msgid "Try '%s --help' or '%s --usage' for more information.\n"
+msgstr "Pruebe `%s --help' o `%s --usage' para más información.\n"
+
+#: gnu/argp-help.c:1716
+#, c-format
+msgid "Report bugs to %s.\n"
+msgstr "Comunicar errores a %s.\n"
+
+#: gnu/argp-help.c:1935 gnu/error.c:191
+msgid "Unknown system error"
+msgstr "Error del sistema desconocido"
+
+#: gnu/argp-parse.c:81
+msgid "give this help list"
+msgstr "da esta lista de ayuda"
+
+#: gnu/argp-parse.c:82
+msgid "give a short usage message"
+msgstr "muestra un mensaje corto de uso"
+
+#: gnu/argp-parse.c:83 tests/genfile.c:131
+msgid "NAME"
+msgstr "NOMBRE"
+
+#: gnu/argp-parse.c:83
+msgid "set the program name"
+msgstr "establece el nombre del programa"
+
+#: gnu/argp-parse.c:84
+msgid "SECS"
+msgstr "SEG"
+
+#: gnu/argp-parse.c:85
+msgid "hang for SECS seconds (default 3600)"
+msgstr "cuelga durante SEG segundos (por omisión 3600)"
+
+#: gnu/argp-parse.c:142
+msgid "print program version"
+msgstr "muestra la versión del programa"
+
+#: gnu/argp-parse.c:159
+msgid "(PROGRAM ERROR) No version known!?"
+msgstr "(ERROR DEL PROGRAMA) ¿¡No se conoce ninguna versión!?"
+
+#: gnu/argp-parse.c:612
+#, c-format
+msgid "%s: Too many arguments\n"
+msgstr "%s: Demasiados argumentos\n"
+
+#: gnu/argp-parse.c:755
+msgid "(PROGRAM ERROR) Option should have been recognized!?"
+msgstr "(ERROR DEL PROGRAMA) ¿¡No se debería haber reconocido la opción!?"
+
+#: gnu/closeout.c:112 src/util.c:93 src/util.c:96 src/util.c:146
+#, c-format
+msgid "write error"
+msgstr "error de escritura"
+
+#: gnu/getopt.c:575 gnu/getopt.c:604
+#, fuzzy, c-format
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: la opción '%s' es ambigua\n"
+
+#: gnu/getopt.c:619
+#, c-format
+msgid "%s: option '%s' is ambiguous\n"
+msgstr "%s: la opción '%s' es ambigua\n"
+
+#: gnu/getopt.c:654 gnu/getopt.c:658
+#, c-format
+msgid "%s: option '--%s' doesn't allow an argument\n"
+msgstr "%s: la opción '--%s' no admite ningún argumento\n"
+
+#: gnu/getopt.c:667 gnu/getopt.c:672
+#, c-format
+msgid "%s: option '%c%s' doesn't allow an argument\n"
+msgstr "%s: la opción '%c%s' no admite ningún argumento\n"
+
+#: gnu/getopt.c:715 gnu/getopt.c:734
+#, fuzzy, c-format
+msgid "%s: option '--%s' requires an argument\n"
+msgstr "%s: la opción '%s' necesita un argumento\n"
+
+#: gnu/getopt.c:772 gnu/getopt.c:775
+#, c-format
+msgid "%s: unrecognized option '--%s'\n"
+msgstr "%s: opción no reconocida '--%s'\n"
+
+#: gnu/getopt.c:783 gnu/getopt.c:786
+#, c-format
+msgid "%s: unrecognized option '%c%s'\n"
+msgstr "%s: opción no reconocida '%c%s'\n"
+
+#: gnu/getopt.c:835 gnu/getopt.c:838
+#, c-format
+msgid "%s: invalid option -- '%c'\n"
+msgstr "%s: opción inválida -- '%c'\n"
+
+#: gnu/getopt.c:891 gnu/getopt.c:908 gnu/getopt.c:1118 gnu/getopt.c:1136
+#, c-format
+msgid "%s: option requires an argument -- '%c'\n"
+msgstr "%s: la opción necesita un argumento -- '%c'\n"
+
+#: gnu/getopt.c:964 gnu/getopt.c:980
+#, c-format
+msgid "%s: option '-W %s' is ambiguous\n"
+msgstr "%s: la opción '-W %s' es ambigua\n"
+
+#: gnu/getopt.c:1004 gnu/getopt.c:1022
+#, c-format
+msgid "%s: option '-W %s' doesn't allow an argument\n"
+msgstr "%s: la opción '-W %s' no admite ningún argumento\n"
+
+#: gnu/getopt.c:1043 gnu/getopt.c:1061
+#, fuzzy, c-format
+msgid "%s: option '-W %s' requires an argument\n"
+msgstr "%s: la opción '%s' necesita un argumento\n"
+
+#: gnu/obstack.c:338 gnu/obstack.c:340 gnu/xalloc-die.c:34
+msgid "memory exhausted"
+msgstr "memoria agotada"
+
+#: gnu/openat-die.c:38
+#, c-format
+msgid "unable to record current working directory"
+msgstr "no se puede registrar el directorio de trabajo actual"
+
+#: gnu/openat-die.c:57
+#, c-format
+msgid "failed to return to initial working directory"
+msgstr "no se puede volver al directorio de trabajo inicial"
+
+# Vamos a probar con el símbolo de cita tradicional en español,
+# a ver qué tal queda la cosa.
+#. TRANSLATORS:
+#. Get translations for open and closing quotation marks.
+#. The message catalog should translate "`" to a left
+#. quotation mark suitable for the locale, and similarly for
+#. "'".  For example, a French Unicode local should translate
+#. these to U+00AB (LEFT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), and U+00BB (RIGHT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), respectively.
+#.
+#. If the catalog has no translation, we will try to
+#. use Unicode U+2018 (LEFT SINGLE QUOTATION MARK) and
+#. Unicode U+2019 (RIGHT SINGLE QUOTATION MARK).  If the
+#. current locale is not Unicode, locale_quoting_style
+#. will quote 'like this', and clocale_quoting_style will
+#. quote "like this".  You should always include translations
+#. for "`" and "'" even if U+2018 and U+2019 are appropriate
+#. for your locale.
+#.
+#. If you don't know what to put here, please see
+#. <http://en.wikipedia.org/wiki/Quotation_marks_in_other_languages>
+#. and use glyphs suitable for your language.
+#: gnu/quotearg.c:312
+msgid "`"
+msgstr "«"
+
+#: gnu/quotearg.c:313
+msgid "'"
+msgstr "»"
+
+#: gnu/version-etc.c:74
+#, c-format
+msgid "Packaged by %s (%s)\n"
+msgstr "Empaquetado por %s (%s)\n"
+
+#: gnu/version-etc.c:77
+#, c-format
+msgid "Packaged by %s\n"
+msgstr "Empaquetado por %s\n"
+
+#. TRANSLATORS: Translate "(C)" to the copyright symbol
+#. (C-in-a-circle), if this symbol is available in the user's
+#. locale.  Otherwise, do not translate "(C)"; leave it as-is.
+#: gnu/version-etc.c:84
+msgid "(C)"
+msgstr "©"
+
+#: gnu/version-etc.c:86
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>.\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+"\n"
+"Licencia GPLv3+: GPL de GNU versión 3 o posterior\n"
+"<http://gnu.org/licenses/gpl.html>.\n"
+"Esto es software libre: usted es libre de cambiarlo y redistribuirlo.\n"
+"No hay NINGUNA GARANTÍA, hasta donde permite la ley.\n"
+"\n"
+
+#. TRANSLATORS: %s denotes an author name.
+#: gnu/version-etc.c:102
+#, c-format
+msgid "Written by %s.\n"
+msgstr "Escrito por %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: gnu/version-etc.c:106
+#, c-format
+msgid "Written by %s and %s.\n"
+msgstr "Escrito por %s y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: gnu/version-etc.c:110
+#, c-format
+msgid "Written by %s, %s, and %s.\n"
+msgstr "Escrito por %s, %s, y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:117
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:124
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:131
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, %s, y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:139
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, %s, %s, y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:147
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:156
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, y %s.\n"
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: gnu/version-etc.c:167
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s, and others.\n"
+msgstr ""
+"Escrito por %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s, y otros.\n"
+
+# "We could, for instance, begin with cleaning up our language by no
+# longer calling a bug a bug but by calling it an error." 
+#
+# Edsger W. Dijkstra, "On the cruelty of really teaching computing science"
+#
+# http://www.cs.utexas.edu/users/EWD/transcriptions/EWD10xx/EWD1036.html
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying
+#. "Report translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email address).
+#: gnu/version-etc.c:245
+#, c-format
+msgid ""
+"\n"
+"Report bugs to: %s\n"
+msgstr ""
+"\n"
+"Comunicar errores a: %s\n"
+
+#: gnu/version-etc.c:247
+#, c-format
+msgid "Report %s bugs to: %s\n"
+msgstr "Comunicar errores en %s a: %s\n"
+
+#: gnu/version-etc.c:251
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "Página inicial de %s: <%s>\n"
+
+#: gnu/version-etc.c:253
+#, c-format
+msgid "%s home page: <http://www.gnu.org/software/%s/>\n"
+msgstr "Página inicial de %s: <http://www.gnu.org/software/%s/>\n"
+
+#: gnu/version-etc.c:256
+msgid "General help using GNU software: <http://www.gnu.org/gethelp/>\n"
+msgstr ""
+"Ayuda general sobre el uso de software de GNU: <http://www.gnu.org/gethelp/"
+">\n"
+
+#. TRANSLATORS: %s after `Cannot' is a function name, e.g. `Cannot open'.
+#. Directly translating this to another language will not work, first because
+#. %s itself is not translated.
+#. Translate it as `%s: Function %s failed'.
+#: lib/error.c:60 lib/error.c:73
+#, c-format
+msgid "%s: Cannot %s"
+msgstr "%s: No se puede efectuar %s"
+
+#. TRANSLATORS: %s after `Cannot' is a function name, e.g. `Cannot open'.
+#. Directly translating this to another language will not work, first because
+#. %s itself is not translated.
+#. Translate it as `%s: Function %s failed'.
+#: lib/error.c:86
+#, c-format
+msgid "%s: Warning: Cannot %s"
+msgstr "%s: Atención: No se puede efectuar %s"
+
+#: lib/error.c:95
+#, c-format
+msgid "%s: Cannot change mode to %s"
+msgstr "%s: No se puede cambiar el modo a %s"
+
+#: lib/error.c:103
+#, c-format
+msgid "%s: Cannot change ownership to uid %lu, gid %lu"
+msgstr "%s: No se puede cambiar el propietario a uid %lu, gid %lu"
+
+#: lib/error.c:129
+#, c-format
+msgid "%s: Cannot hard link to %s"
+msgstr "%s: No se puede crear un enlace duro a %s"
+
+#: lib/error.c:181 lib/error.c:213
+#, c-format
+msgid "%s: Read error at byte %s, while reading %lu byte"
+msgid_plural "%s: Read error at byte %s, while reading %lu bytes"
+msgstr[0] "%s: Error de lectura en el byte %s, al leer %lu byte"
+msgstr[1] "%s: Error de lectura en el byte %s, al leer %lu bytes"
+
+#: lib/error.c:194
+#, c-format
+msgid "%s: Warning: Read error at byte %s, while reading %lu byte"
+msgid_plural "%s: Warning: Read error at byte %s, while reading %lu bytes"
+msgstr[0] "%s: Atención: Error de lectura en el byte %s, al leer %lu byte"
+msgstr[1] "%s: Atención: Error de lectura en el byte %s, al leer %lu bytes"
+
+#: lib/error.c:261
+#, c-format
+msgid "%s: Cannot seek to %s"
+msgstr "%s: No se puede efectuar seek hasta %s"
+
+#: lib/error.c:277
+#, c-format
+msgid "%s: Warning: Cannot seek to %s"
+msgstr "%s: Atención: No se puede efectuar seek hasta %s"
+
+#: lib/error.c:286
+#, c-format
+msgid "%s: Cannot create symlink to %s"
+msgstr "%s: No se puede crear un enlace simbólico a %s"
+
+#: lib/error.c:351
+#, c-format
+msgid "%s: Wrote only %lu of %lu byte"
+msgid_plural "%s: Wrote only %lu of %lu bytes"
+msgstr[0] "%s: Se escribió solamente %lu of %lu byte"
+msgstr[1] "%s: Se escribieron solamente %lu de %lu bytes"
+
+#: lib/names.c:140
+#, c-format
+msgid "Removing leading `%s' from member names"
+msgstr "Se borra la `%s' inicial de los nombres de los miembros"
+
+#: lib/names.c:141
+#, c-format
+msgid "Removing leading `%s' from hard link targets"
+msgstr ""
+
+#: lib/names.c:154
+msgid "Substituting `.' for empty member name"
+msgstr ""
+
+#: lib/names.c:155
+msgid "Substituting `.' for empty hard link target"
+msgstr ""
+
+#: lib/rtapelib.c:299
+#, c-format
+msgid "exec/tcp: Service not available"
+msgstr "exec/tcp: Servicio no disponible"
+
+#: lib/rtapelib.c:303
+#, c-format
+msgid "stdin"
+msgstr "entrada estándar"
+
+#: lib/rtapelib.c:306
+#, c-format
+msgid "stdout"
+msgstr "salida estándar"
+
+#: lib/rtapelib.c:429
+#, c-format
+msgid "Cannot connect to %s: resolve failed"
+msgstr "No se puede conectar a %s: fallo en la resolución"
+
+#: lib/rtapelib.c:502
+#, fuzzy, c-format
+msgid "Cannot redirect files for remote shell"
+msgstr "No se puede ejecutar el shell remoto"
+
+#: lib/rtapelib.c:516
+#, c-format
+msgid "Cannot execute remote shell"
+msgstr "No se puede ejecutar el shell remoto"
+
+#: rmt/rmt.c:432
+msgid "Seek direction out of range"
+msgstr ""
+
+#: rmt/rmt.c:438
+msgid "Invalid seek direction"
+msgstr "Dirección de desplazamiento inválida"
+
+#: rmt/rmt.c:446
+msgid "Invalid seek offset"
+msgstr "Desplazamiento inválido"
+
+#: rmt/rmt.c:452
+msgid "Seek offset out of range"
+msgstr ""
+
+#: rmt/rmt.c:493 rmt/rmt.c:544 rmt/rmt.c:608
+msgid "Invalid byte count"
+msgstr "Conteo de bytes inválido"
+
+#: rmt/rmt.c:499 rmt/rmt.c:550 rmt/rmt.c:614 rmt/rmt.c:625
+msgid "Byte count out of range"
+msgstr ""
+
+#: rmt/rmt.c:558
+msgid "Premature eof"
+msgstr "Fin prematuro del fichero"
+
+#: rmt/rmt.c:601
+msgid "Invalid operation code"
+msgstr "Código de operación inválido"
+
+#: rmt/rmt.c:636 rmt/rmt.c:680
+msgid "Operation not supported"
+msgstr "La operación no está soportada"
+
+#: rmt/rmt.c:664
+msgid "Unexpected arguments"
+msgstr "Argumentos inesperados"
+
+#: rmt/rmt.c:689
+msgid "Manipulate a tape drive, accepting commands from a remote process"
+msgstr "Maneja una unidad de cinta, aceptando órdenes de un proceso remoto"
+
+#: rmt/rmt.c:696 src/main.c:130 tests/genfile.c:167
+msgid "NUMBER"
+msgstr "NÚMERO"
+
+#: rmt/rmt.c:697
+msgid "set debug level"
+msgstr "establece el nivel de depuración"
+
+#: rmt/rmt.c:698 src/main.c:167 src/main.c:173 tests/genfile.c:133
+#: tests/genfile.c:181 tests/genfile.c:185 tests/genfile.c:188
+#: tests/genfile.c:194
+msgid "FILE"
+msgstr "FICHERO"
+
+#: rmt/rmt.c:699
+msgid "set debug output file name"
+msgstr "establece el nombre del fichero de salida de depuración"
+
+#: rmt/rmt.c:715 rmt/rmt.c:783
+#, c-format
+msgid "cannot open %s"
+msgstr "no se puede abrir %s"
+
+#: rmt/rmt.c:780 tests/genfile.c:953 tests/genfile.c:970
+#, c-format
+msgid "too many arguments"
+msgstr "demasiados argumentos"
+
+#: rmt/rmt.c:822
+msgid "Garbage command"
+msgstr "Orden incomprensible"
+
+#: src/copyin.c:45
+#, c-format
+msgid "warning: skipped %ld byte of junk"
+msgid_plural "warning: skipped %ld bytes of junk"
+msgstr[0] "atención: se saltan %ld byte de basura"
+msgstr[1] "atención: se saltan %ld bytes de basura"
+
+#: src/copyin.c:66
+#, c-format
+msgid "rename %s -> "
+msgstr "se renombra %s -> "
+
+#: src/copyin.c:95 src/copyout.c:552
+#, c-format
+msgid "%s: file name too long"
+msgstr "%s: nombre de fichero demasiado largo"
+
+#: src/copyin.c:135
+#, c-format
+msgid "%s: stored filename length is out of range"
+msgstr ""
+
+#: src/copyin.c:196 src/copyin.c:543 src/copyin.c:558 src/copyin.c:1453
+#, fuzzy, c-format
+msgid "%s: checksum error (0x%x, should be 0x%x)"
+msgstr "%s error en la suma de comprobación (0x%lx, debería ser 0x%lx)"
+
+#: src/copyin.c:223 src/copypass.c:146
+#, c-format
+msgid "%s not created: newer or same age version exists"
+msgstr "%s no se ha creado: existe una versión con fecha igual o posterior"
+
+#: src/copyin.c:233 src/copypass.c:154
+#, c-format
+msgid "cannot remove current %s"
+msgstr "no se puede borrar el actual %s"
+
+#: src/copyin.c:294 src/copyin.c:491 src/copyin.c:606 src/copypass.c:402
+#, c-format
+msgid "cannot link %s to %s"
+msgstr "no se puede crear un enlace de %s a %s"
+
+#: src/copyin.c:524
+#, c-format
+msgid "cannot swap halfwords of %s: odd number of halfwords"
+msgstr ""
+"no se pueden intercambiar las medias palabras de %s: número impar de medias "
+"palabras"
+
+#: src/copyin.c:532
+#, c-format
+msgid "cannot swap bytes of %s: odd number of bytes"
+msgstr "no se pueden intercambiar los bytes de %s: número impar de bytes"
+
+#: src/copyin.c:682
+#, c-format
+msgid "%s: Cannot symlink to %s"
+msgstr "%s: No se puede crear un enlace simbólico a %s"
+
+#: src/copyin.c:736 src/copyout.c:842 src/copypass.c:325
+#, c-format
+msgid "%s: unknown file type"
+msgstr "%s: tipo de archivo desconocido"
+
+#: src/copyin.c:921 src/copyin.c:928
+#, c-format
+msgid "Malformed number %.*s"
+msgstr "Número incorrecto %.*s"
+
+#: src/copyin.c:938
+#, c-format
+msgid "Archive value %.*s is out of range"
+msgstr "El valor del archivo %.*s está fuera de rango"
+
+#: src/copyin.c:973
+#, c-format
+msgid "premature end of archive"
+msgstr "fin prematuro del archivo"
+
+#: src/copyin.c:1193
+#, c-format
+msgid "warning: archive header has reverse byte-order"
+msgstr "atención: la cabecera del archivo tiene los bytes en orden inverso"
+
+#: src/copyin.c:1340
+#, c-format
+msgid "standard input is closed"
+msgstr "la entrada estándar está cerrada"
+
+#: src/copyin.c:1508 src/copyout.c:885 src/copypass.c:343
+#, c-format
+msgid "%lu block\n"
+msgid_plural "%lu blocks\n"
+msgstr[0] "%lu bloque\n"
+msgstr[1] "%lu bloques\n"
+
+#: src/copyout.c:51 src/copyout.c:60
+#, c-format
+msgid "cannot read checksum for %s"
+msgstr "no se puede leer la suma de comprobación de %s"
+
+#: src/copyout.c:290
+#, c-format
+msgid "%s: field width not sufficient for storing %s"
+msgstr "%s: anchura de campo insuficiente para almacenar %s"
+
+#: src/copyout.c:298
+#, c-format
+msgid "%s: truncating %s"
+msgstr "%s: se trunca %s"
+
+#: src/copyout.c:333 src/copyout.c:396 src/copyout.c:470
+msgid "inode number"
+msgstr "número de nodo-i"
+
+#: src/copyout.c:336 src/copyout.c:399 src/copyout.c:474
+msgid "file mode"
+msgstr "modo del fichero"
+
+#: src/copyout.c:339 src/copyout.c:401 src/copyout.c:478
+msgid "uid"
+msgstr "uid"
+
+#: src/copyout.c:342 src/copyout.c:403 src/copyout.c:482
+msgid "gid"
+msgstr "gid"
+
+#: src/copyout.c:345 src/copyout.c:406 src/copyout.c:486
+msgid "number of links"
+msgstr "número de enlaces"
+
+#: src/copyout.c:348 src/copyout.c:411
+msgid "modification time"
+msgstr "fecha de modificación"
+
+#: src/copyout.c:351 src/copyout.c:418 src/copyout.c:505
+msgid "file size"
+msgstr "tamaño del fichero"
+
+#: src/copyout.c:355
+msgid "device major number"
+msgstr "número de dispositivo principal"
+
+#: src/copyout.c:359
+msgid "device minor number"
+msgstr "número de dispositivo secundario"
+
+#: src/copyout.c:363
+msgid "rdev major"
+msgstr "rdev principal"
+
+#: src/copyout.c:367
+msgid "rdev minor"
+msgstr "rdev secundario"
+
+#: src/copyout.c:371 src/copyout.c:414 src/copyout.c:495
+msgid "name size"
+msgstr "tamaño del nombre"
+
+#: src/copyout.c:393
+msgid "device number"
+msgstr "número de dispositivo"
+
+#: src/copyout.c:408
+msgid "rdev"
+msgstr "rdev"
+
+#: src/copyout.c:466
+#, c-format
+msgid "%s: truncating inode number"
+msgstr "%s: se trunca el número de nodo-i"
+
+#: src/copyout.c:609
+#, c-format
+msgid "standard output is closed"
+msgstr "la salida estándar está cerrada"
+
+#: src/copyout.c:632 src/copypass.c:103
+#, c-format
+msgid "blank line ignored"
+msgstr "línea en blanco descartada"
+
+#: src/copyout.c:767
+#, c-format
+msgid "%s not dumped: not a regular file"
+msgstr "%s no se ha volcado: no es un fichero regular"
+
+#: src/copyout.c:818
+#, c-format
+msgid "%s: symbolic link too long"
+msgstr "%s: enlace simbólico demasiado largo"
+
+#: src/copypass.c:397
+#, c-format
+msgid "%s linked to %s"
+msgstr "%s es un enlace a %s"
+
+#: src/main.c:77
+msgid ""
+"GNU `cpio' copies files to and from archives\n"
+"\n"
+"Examples:\n"
+"  # Copy files named in name-list to the archive\n"
+"  cpio -o < name-list [> archive]\n"
+"  # Extract files from the archive\n"
+"  cpio -i [< archive]\n"
+"  # Copy files named in name-list to destination-directory\n"
+"  cpio -p destination-directory < name-list\n"
+msgstr ""
+"GNU `cpio' copia ficheros a y desde archivos\n"
+"\n"
+"Ejemplos:\n"
+"  # Copia ficheros en lista-de-nombres al archivo\n"
+"  cpio -s < lista-de-nombres [> archivo]\n"
+"  # Extrae ficheros del archivo\n"
+"  cpio -i [< archivo]\n"
+"  # Copia ficheros en lista-de-nombres a directorio-destino\n"
+"  cpio -p directorio-destino < lista-de-nombres\n"
+
+#: src/main.c:93
+#, c-format
+msgid "%s is meaningless with %s"
+msgstr "%s no tiene sentido con %s"
+
+#: src/main.c:99
+msgid "Main operation mode:"
+msgstr "Modo de operación principal:"
+
+#: src/main.c:101
+msgid "Create the archive (run in copy-out mode)"
+msgstr "Crea el archivo (ejecutado en modo copy-out)"
+
+#: src/main.c:103
+msgid "Extract files from an archive (run in copy-in mode)"
+msgstr "Extrae ficheros de un archivo (ejecutado en modo copy-in)"
+
+#: src/main.c:105
+msgid "Run in copy-pass mode"
+msgstr "Opera en modo copy-pass"
+
+#: src/main.c:107
+msgid "Print a table of contents of the input"
+msgstr "Muestra una tabla del contenido de la entrada"
+
+#: src/main.c:113
+msgid "Operation modifiers valid in any mode:"
+msgstr "Modificadores de operación válidos en cualquier modo:"
+
+#: src/main.c:115
+msgid "DIR"
+msgstr ""
+
+#: src/main.c:116
+msgid "Change to directory DIR"
+msgstr ""
+
+#: src/main.c:119
+msgid "Archive file is local, even if its name contains colons"
+msgstr "El archivo es local, incluso si el nombre contiene dos puntos"
+
+#: src/main.c:120 tests/genfile.c:154
+msgid "FORMAT"
+msgstr "FORMATO"
+
+#: src/main.c:121
+msgid "Use given archive FORMAT"
+msgstr "Utiliza el FORMATO de archivo dado"
+
+#: src/main.c:123
+msgid "Set the I/O block size to 5120 bytes"
+msgstr "Establece el tamaño de bloque de E/S a 5120 bytes"
+
+#: src/main.c:124
+msgid "BLOCK-SIZE"
+msgstr "TAMAÑO-DE-BLOQUE"
+
+#: src/main.c:125
+msgid "Set the I/O block size to BLOCK-SIZE * 512 bytes"
+msgstr "Establece el tamaño de bloque de E/S a BLOCK-SIZE * 512 bytes"
+
+#: src/main.c:127
+msgid "Use the old portable (ASCII) archive format"
+msgstr "Utiliza el antiguo formato de archivo transportable (ASCII)"
+
+#: src/main.c:129
+msgid "Print a \".\" for each file processed"
+msgstr "Muestra un \".\" por cada fichero procesado"
+
+#: src/main.c:131
+msgid "Set the I/O block size to the given NUMBER of bytes"
+msgstr "Establece el tamaño de bloque de E/S al NÚMERO dado de bytes"
+
+#: src/main.c:133
+msgid "Do not print the number of blocks copied"
+msgstr "No muestra el número de bloques copiados"
+
+#: src/main.c:135
+msgid "Verbosely list the files processed"
+msgstr "Muestra los ficheros procesados con detalle"
+
+#: src/main.c:138
+msgid "Enable debugging info"
+msgstr "Activa la información de depuración"
+
+#: src/main.c:140
+msgid "FLAG"
+msgstr "OPCIÓN"
+
+#: src/main.c:141
+msgid ""
+"Control warning display. Currently FLAG is one of 'none', 'truncate', 'all'. "
+"Multiple options accumulate."
+msgstr ""
+"Controla la visualización de los avisos. Actualmente OPCIÓN puede ser "
+"'none', 'truncate', 'all'. Si se dan varias opciones, se acumulan."
+
+#: src/main.c:142
+msgid "[USER][:.][GROUP]"
+msgstr "[USUARIO][:.][GRUPO]"
+
+#: src/main.c:143
+msgid ""
+"Set the ownership of all files created to the specified USER and/or GROUP"
+msgstr ""
+"Establece el propietario de todos los ficheros creados al USUARIO y/o GRUPO "
+"especificados"
+
+#: src/main.c:148
+#, fuzzy
+msgid "Operation modifiers valid in copy-in and copy-out modes"
+msgstr "Modificadores de operación válidos en los modos copy-in y copy-out:"
+
+#: src/main.c:149 src/main.c:184 src/main.c:194
+msgid "[[USER@]HOST:]FILE-NAME"
+msgstr "[[USUARIO@]MÁQUINA:]NOMBRE-DE-FICHERO"
+
+#: src/main.c:150
+msgid ""
+"Use this FILE-NAME instead of standard input or output. Optional USER and "
+"HOST specify the user and host names in case of a remote archive"
+msgstr ""
+"Utiliza este NOMBRE-DE-FICHERO en lugar de la entrada o la salida estándar. "
+"Los USUARIO y MÁQUINA opcionales especifican en usuario y nombre de máquina "
+"en el caso de un archivo remoto"
+
+#: src/main.c:151 tests/genfile.c:170
+msgid "STRING"
+msgstr "CADENA"
+
+#: src/main.c:152
+msgid "Print STRING when the end of a volume of the backup media is reached"
+msgstr ""
+"Muestra CADENA cuando se alcanza el final de un volumen en el medio de "
+"respaldo"
+
+#: src/main.c:154 src/mt.c:182 tests/genfile.c:191
+msgid "COMMAND"
+msgstr "ORDEN"
+
+#: src/main.c:155
+#, fuzzy
+msgid "Use COMMAND instead of rsh"
+msgstr "Utiliza la ORDEN remota en lugar de rsh"
+
+#: src/main.c:161
+msgid "Operation modifiers valid only in copy-in mode:"
+msgstr "Modificadores de operación válidos solamente en modo copy-in"
+
+#: src/main.c:163
+msgid "Only copy files that do not match any of the given patterns"
+msgstr ""
+"Solo copia los ficheros que no encajan en ninguno de los patrones dados"
+
+#: src/main.c:165
+msgid "In the verbose table of contents listing, show numeric UID and GID"
+msgstr ""
+"En el modo detallado de lista de contenido, muestra el UID y el GID numéricos"
+
+#: src/main.c:168
+msgid ""
+"Read additional patterns specifying filenames to extract or list from FILE"
+msgstr ""
+"Lee patrones adicionales que especifican los ficheros que se extraen o "
+"listan de FICHERO"
+
+#: src/main.c:170
+msgid ""
+"When reading a CRC format archive, only verify the CRC's of each file in the "
+"archive, don't actually extract the files"
+msgstr ""
+"Cuando se lee un archivo en formato CRC, solamente verifica los CRC's de "
+"cada fichero en el archivo, sin extraer realmente los ficheros"
+
+#: src/main.c:172
+msgid "Interactively rename files"
+msgstr "Renombra ficheros interactivamente"
+
+#: src/main.c:176
+msgid ""
+"Swap both halfwords of words and bytes of halfwords in the data. Equivalent "
+"to -sS"
+msgstr ""
+"Intercambia tanto las medias palabras de las palabras como los bytes de las "
+"medias palabras de los datos. Equivalente a -sS"
+
+#: src/main.c:178
+msgid "Swap the bytes of each halfword in the files"
+msgstr "Intercambia los bytes de cada media palabra de los ficheros"
+
+#: src/main.c:180
+msgid "Swap the halfwords of each word (4 bytes) in the files"
+msgstr ""
+"Intercambia las medias palabras de cada palabra (4 bytes) de los ficheros"
+
+#: src/main.c:183
+msgid "Extract files to standard output"
+msgstr "Extrae los ficheros a la salida estándar"
+
+#: src/main.c:185
+msgid ""
+"Archive filename to use instead of standard input. Optional USER and HOST "
+"specify the user and host names in case of a remote archive"
+msgstr ""
+"Nombre del archivo que se usará en lugar de la entrada estándar. Los USUARIO "
+"y MÁQUINA opcionales especifican el usuario y el nombre de la máquina en "
+"caso de un archivo remoto"
+
+#: src/main.c:191
+msgid "Operation modifiers valid only in copy-out mode:"
+msgstr "Modificadores de operación válidos solamente en modo copy-out:"
+
+#: src/main.c:193
+msgid "Append to an existing archive."
+msgstr "Añade a un archivo que ya exista."
+
+#: src/main.c:195
+msgid ""
+"Archive filename to use instead of standard output. Optional USER and HOST "
+"specify the user and host names in case of a remote archive"
+msgstr ""
+"Nombre del archivo que se usará en lugar de la salida estándar. Los USUARIO "
+"y MÁQUINA opcionales especifican el usuario y nombre de máquina en caso de "
+"un archivo remoto"
+
+#: src/main.c:197
+#, fuzzy
+msgid "Renumber inodes"
+msgstr "número de enlaces"
+
+#: src/main.c:199
+#, fuzzy
+msgid "Don't store device numbers"
+msgstr "número de dispositivo"
+
+#: src/main.c:201
+msgid "Create device-independent (reproducible) archives"
+msgstr ""
+
+#: src/main.c:208
+msgid "Operation modifiers valid only in copy-pass mode:"
+msgstr "Modificadores de operación válidos solamente en modo copy-pass:"
+
+#: src/main.c:210
+msgid "Link files instead of copying them, when  possible"
+msgstr "Enlaza los ficheros en lugar de copiarlos, cuando sea posible"
+
+#: src/main.c:217
+msgid "Operation modifiers valid in copy-in and copy-out modes:"
+msgstr "Modificadores de operación válidos en los modos copy-in y copy-out:"
+
+#: src/main.c:219
+msgid "Do not strip file system prefix components from the file names"
+msgstr ""
+
+#: src/main.c:222
+msgid "Create all files relative to the current directory"
+msgstr "Crea todos los ficheros relativos al directorio actual"
+
+#: src/main.c:227
+msgid "Operation modifiers valid in copy-out and copy-pass modes:"
+msgstr "Modificadores de operación válidos en los modos copy-out y copy-pass:"
+
+#: src/main.c:229
+#, fuzzy
+msgid ""
+"Filenames in the list are delimited by null characters instead of newlines"
+msgstr ""
+"Una lista de nombres de ficheros se termina mediante un carácter nulo en "
+"lugar de un carácter de nueva línea"
+
+# FIXME: No me acaba de gustar "desreferenciar"
+#: src/main.c:231
+msgid ""
+"Dereference  symbolic  links  (copy  the files that they point to instead of "
+"copying the links)."
+msgstr ""
+"Desreferencia los enlaces simbólicos (copia los ficheros a los que apuntan "
+"en lugar de copiar los enlaces)."
+
+#: src/main.c:233
+msgid "Reset the access times of files after reading them"
+msgstr "Actualiza la fecha de acceso de los ficheros después de leerlos"
+
+#: src/main.c:239
+msgid "Operation modifiers valid in copy-in and copy-pass modes:"
+msgstr "Modificadores de operación válidos en los modos copy-in y copy-pass:"
+
+#: src/main.c:241
+msgid "Retain previous file modification times when creating files"
+msgstr ""
+"Mantiene las fechas de modificación previas de los ficheros cuando se crean"
+
+#: src/main.c:243
+msgid "Create leading directories where needed"
+msgstr "Crea los directorios iniciales cuando sea necesario"
+
+#: src/main.c:245
+msgid "Do not change the ownership of the files"
+msgstr "No cambia el propietario de los ficheros"
+
+#: src/main.c:247
+msgid "Replace all files unconditionally"
+msgstr "Reemplaza todos los ficheros incondicionalmente"
+
+#: src/main.c:249
+msgid "Write files with large blocks of zeros as sparse files"
+msgstr "Escribe ficheros con grandes bloques de ceros como ficheros dispersos"
+
+#: src/main.c:325 src/main.c:342
+msgid "invalid block size"
+msgstr "el tamaño del bloque no es válido"
+
+#: src/main.c:331 src/main.c:367
+msgid "Archive format multiply defined"
+msgstr "Se ha definido varias veces el formato de archivo"
+
+#: src/main.c:385
+#, c-format
+msgid ""
+"invalid archive format `%s'; valid formats are:\n"
+"crc newc odc bin ustar tar (all-caps also recognized)"
+msgstr ""
+"formato de archivo `%s' inválido, los formatos válidos son:\n"
+"crc newc odc bin ustar tar (también puede ser todo en mayúsculas)"
+
+#: src/main.c:392 src/main.c:437 src/main.c:451
+msgid "Mode already defined"
+msgstr "Modo ya definido"
+
+#: src/main.c:431
+msgid "--no-preserve-owner cannot be used with --owner"
+msgstr "No se puede usar --no-preserve-owner con --owner"
+
+#: src/main.c:486
+msgid "--owner cannot be used with --no-preserve-owner"
+msgstr "No se puede usar --owner con --no-preserve-owner"
+
+#: src/main.c:533
+#, c-format
+msgid "Invalid value for --warning option: %s"
+msgstr "Valor inválido para la opción --warning: %s"
+
+#: src/main.c:563
+msgid "[destination-directory]"
+msgstr "[directorio-destino]"
+
+#: src/main.c:601
+#, c-format
+msgid ""
+"You must specify one of -oipt options.\n"
+"Try `%s --help' or `%s --usage' for more information.\n"
+msgstr ""
+"Debe especificar una de las opciones -oipt.\n"
+"Pruebe `%s --help' o `%s --usage' para más información.\n"
+
+#: src/main.c:632
+msgid "Both -I and -F are used in copy-in mode"
+msgstr "Se está usando tanto -I como -F en modo copy-in"
+
+#: src/main.c:644 src/main.c:684
+msgid "Too many arguments"
+msgstr "Demasiados argumentos"
+
+#: src/main.c:663
+msgid ""
+"--append is used but no archive file name is given (use -F or -O options)"
+msgstr ""
+"Se usa --append pero no se ha dado el nombre del fichero (utilice las "
+"opciones -F o -O)"
+
+#: src/main.c:670
+msgid "Both -O and -F are used in copy-out mode"
+msgstr "Se está usando tanto -O como -F en modo copy-out"
+
+#: src/main.c:686
+msgid "Not enough arguments"
+msgstr "No hay suficientes argumentos"
+
+#: src/main.c:690
+msgid "Archive format is not specified in copy-pass mode (use --format option)"
+msgstr ""
+"No se especifica el formato de archivo en modo copy-pass (utilice la opción "
+"--format)"
+
+#: src/main.c:716
+#, c-format
+msgid "-F can be used only with --create or --extract"
+msgstr "-F sólo se puede usar con --create o con --extract"
+
+#: src/main.c:719
+#, c-format
+msgid "Cannot open %s"
+msgstr "No se puede abrir %s"
+
+#: src/main.c:791
+#, c-format
+msgid "error closing archive"
+msgstr "error al cerrar el archivo"
+
+#: src/makepath.c:97 src/makepath.c:156
+#, c-format
+msgid "cannot make directory `%s'"
+msgstr "no se puede crear el directorio `%s'"
+
+#: src/makepath.c:132 src/makepath.c:182
+#, c-format
+msgid "`%s' exists but is not a directory"
+msgstr "`%s' existe pero no es un directorio"
+
+#: src/mt.c:166
+msgid "control magnetic tape drive operation"
+msgstr ""
+
+#: src/mt.c:180
+msgid "DEVICE"
+msgstr "DISPOSITIVO"
+
+#: src/mt.c:181
+msgid "use device as the file name of the tape drive to operate on"
+msgstr ""
+
+#: src/mt.c:183
+msgid "use remote COMMAND instead of rsh"
+msgstr "utiliza la ORDEN remota en lugar de rsh"
+
+#: src/mt.c:204
+msgid "operation"
+msgstr "operación"
+
+#: src/mt.c:212
+#, c-format
+msgid "invalid count value"
+msgstr "valor de cuenta inválido"
+
+#: src/mt.c:231
+#, c-format
+msgid "no tape device specified"
+msgstr "no se ha especificado ningún dispositivo de cinta"
+
+#: src/mt.c:254
+msgid "operation [count]"
+msgstr ""
+
+#: src/mt.c:271
+#, c-format
+msgid "%s is not a character special file"
+msgstr "%s no es un fichero especial de caracteres"
+
+#: src/mt.c:282 src/mt.c:291
+#, c-format
+msgid "%s: rmtioctl failed"
+msgstr "%s: rmtioctl falló"
+
+#: src/mt.c:344
+#, c-format
+msgid "%s: rmtopen failed"
+msgstr "%s: rmtopen falló"
+
+#: src/mt.c:357
+#, c-format
+msgid "%s: rmtclose failed"
+msgstr "%s: rmtclose falló"
+
+#: src/tar.c:309
+#, c-format
+msgid "invalid header: checksum error"
+msgstr "la cabecera es inválida: error en la suma de comprobación"
+
+#: src/userspec.c:122
+msgid "invalid user"
+msgstr "usuario inválido"
+
+#: src/userspec.c:128
+msgid "cannot get the login group of a numeric UID"
+msgstr "no se puede obtener el grupo de login de un UID numérico"
+
+#: src/userspec.c:175
+msgid "invalid group"
+msgstr "grupo inválido"
+
+#: src/util.c:148
+#, c-format
+msgid "write error: partial write"
+msgstr ""
+
+#: src/util.c:210 src/util.c:376
+#, c-format
+msgid "read error"
+msgstr "error de lectura"
+
+#: src/util.c:212
+#, c-format
+msgid "premature end of file"
+msgstr "fin prematuro del fichero"
+
+#: src/util.c:495 src/util.c:545
+#, c-format
+msgid "File %s shrunk by %s byte, padding with zeros"
+msgid_plural "File %s shrunk by %s bytes, padding with zeros"
+msgstr[0] "El fichero %s ha sido reducido en %s byte, se rellena con ceros"
+msgstr[1] "El fichero %s ha sido reducido en %s bytes, se rellena con ceros"
+
+#: src/util.c:501 src/util.c:551
+#, c-format
+msgid "Read error at byte %lld in file %s, padding with zeros"
+msgstr "Error de lectura en el byte %lld del fichero %s, se rellena con ceros"
+
+#: src/util.c:586
+#, c-format
+msgid "File %s grew, %<PRIuMAX> new byte not copied"
+msgid_plural "File %s grew, %<PRIuMAX> new bytes not copied"
+msgstr[0] "El fichero %s ha crecido, no se ha copiado %<PRIuMAX> byte nuevo"
+msgstr[1] "El fichero %s ha crecido, no se han copiado %<PRIuMAX> bytes nuevos"
+
+#: src/util.c:592
+#, c-format
+msgid "File %s was modified while being copied"
+msgstr "El fichero %s ha sido modificado mientras se copiaba"
+
+#: src/util.c:620
+#, c-format
+msgid "virtual memory exhausted"
+msgstr "memoria agotada"
+
+#: src/util.c:626
+#, c-format
+msgid "Creating intermediate directory `%s'"
+msgstr "Se crea el directorio intermedio `%s'"
+
+#: src/util.c:663 src/util.c:669
+#, c-format
+msgid "cannot seek on output"
+msgstr "no puede posicionarse (seek) en la salida"
+
+#: src/util.c:888
+#, c-format
+msgid "Found end of tape.  Load next tape and press RETURN. "
+msgstr ""
+"Se ha encontrado el final de la cinta.\n"
+"Cargue la siguiente cinta y pulse INTRO."
+
+#: src/util.c:890
+#, c-format
+msgid "Found end of tape.  To continue, type device/file name when ready.\n"
+msgstr ""
+"Se ha encontrado el final de la cinta. Para continuar,\n"
+"introduzca el nombre del dispositivo/fichero cuando esté listo.\n"
+
+#: src/util.c:913
+#, c-format
+msgid "To continue, type device/file name when ready.\n"
+msgstr ""
+"Para continuar, introduzca el nombre del dispositivo/fichero cuando esté "
+"listo.\n"
+
+#: src/util.c:938
+#, c-format
+msgid "internal error: tape descriptor changed from %d to %d"
+msgstr "error interno: el descriptor de la cinta ha sido modificado de %d a %d"
+
+#: src/util.c:1644
+#, c-format
+msgid "%s is not a directory"
+msgstr "%s no es un directorio"
+
+#: src/util.c:1664
+#, fuzzy, c-format
+msgid "Creating directory `%s'"
+msgstr "Se crea el directorio intermedio `%s'"
+
+#: src/util.c:1671
+#, fuzzy, c-format
+msgid "cannot change to directory `%s'"
+msgstr "no se puede crear el directorio `%s'"
+
+#: tests/genfile.c:112
+msgid ""
+"genfile manipulates data files for GNU paxutils test suite.\n"
+"OPTIONS are:\n"
+msgstr ""
+
+#: tests/genfile.c:128
+msgid "File creation options:"
+msgstr "Opciones de creación de ficheros:"
+
+#: tests/genfile.c:129 tests/genfile.c:140
+msgid "SIZE"
+msgstr "TAMAÑO"
+
+#: tests/genfile.c:130
+msgid "Create file of the given SIZE"
+msgstr "Crea un fichero del TAMAÑO dado"
+
+#: tests/genfile.c:132
+msgid "Write to file NAME, instead of standard output"
+msgstr "Escribe al fichero NOMBRE, en lugar de a la salida estándar"
+
+#: tests/genfile.c:134
+msgid "Read file names from FILE"
+msgstr "Lee los nombres de ficheros de FICHERO"
+
+#: tests/genfile.c:136
+msgid "-T reads null-terminated names"
+msgstr "-T lee nombres terminados en NUL"
+
+#: tests/genfile.c:137
+msgid "PATTERN"
+msgstr "PATRÓN"
+
+#: tests/genfile.c:138
+msgid "Fill the file with the given PATTERN. PATTERN is 'default' or 'zeros'"
+msgstr "Rellena el fichero con el PATRÓN dado. PATRÓN es 'default' o 'zeros'"
+
+#: tests/genfile.c:141
+msgid "Size of a block for sparse file"
+msgstr "Tamaño de un bloque para un fichero disperso"
+
+#: tests/genfile.c:143
+msgid "Generate sparse file. Rest of the command line gives the file map."
+msgstr ""
+
+#: tests/genfile.c:145
+msgid "OFFSET"
+msgstr ""
+
+#: tests/genfile.c:146
+msgid "Seek to the given offset before writing data"
+msgstr ""
+
+#: tests/genfile.c:152
+msgid "File statistics options:"
+msgstr "Opciones de estadísticas de ficheros:"
+
+#: tests/genfile.c:155
+msgid "Print contents of struct stat for each given file. Default FORMAT is: "
+msgstr ""
+"Muestra el contenido del struct start para cada fichero dado. El FORMATO "
+"predeterminado es: "
+
+#: tests/genfile.c:162
+msgid "Synchronous execution options:"
+msgstr "Opciones de ejecución síncrona:"
+
+#: tests/genfile.c:164
+msgid "OPTION"
+msgstr "OPCIÓN"
+
+#: tests/genfile.c:165
+msgid ""
+"Execute ARGS. Useful with --checkpoint and one of --cut, --append, --touch, "
+"--unlink"
+msgstr ""
+"Ejecuta ARGS. Útil con --checkpoint y una de las opciones --cut, --append, --"
+"touch, --unlink"
+
+#: tests/genfile.c:168
+msgid "Perform given action (see below) upon reaching checkpoint NUMBER"
+msgstr ""
+
+#: tests/genfile.c:171
+msgid "Set date for next --touch option"
+msgstr "Establece la fecha para la siguiente opción --touch"
+
+#: tests/genfile.c:174
+msgid "Display executed checkpoints and exit status of COMMAND"
+msgstr ""
+
+#: tests/genfile.c:179
+msgid ""
+"Synchronous execution actions. These are executed when checkpoint number "
+"given by --checkpoint option is reached."
+msgstr ""
+
+#: tests/genfile.c:182
+msgid ""
+"Truncate FILE to the size specified by previous --length option (or 0, if it "
+"is not given)"
+msgstr ""
+
+#: tests/genfile.c:186
+msgid "Append SIZE bytes to FILE. SIZE is given by previous --length option."
+msgstr ""
+
+#: tests/genfile.c:189
+msgid "Update the access and modification times of FILE"
+msgstr ""
+
+#: tests/genfile.c:192
+msgid "Execute COMMAND"
+msgstr "Ejecuta ORDEN"
+
+#: tests/genfile.c:195
+msgid "Unlink FILE"
+msgstr "Desenlaza FICHERO"
+
+#: tests/genfile.c:245
+#, c-format
+msgid "Invalid size: %s"
+msgstr "Tamaño inválido: %s"
+
+#: tests/genfile.c:250
+#, c-format
+msgid "Number out of allowed range: %s"
+msgstr "Número fuera del rango permitido: %s"
+
+#: tests/genfile.c:253
+#, c-format
+msgid "Negative size: %s"
+msgstr "Tamaño negativo: %s"
+
+#: tests/genfile.c:266 tests/genfile.c:630
+#, c-format
+msgid "stat(%s) failed"
+msgstr ""
+
+#: tests/genfile.c:269
+#, c-format
+msgid "requested file length %lu, actual %lu"
+msgstr ""
+
+#: tests/genfile.c:273
+#, c-format
+msgid "created file is not sparse"
+msgstr ""
+
+#: tests/genfile.c:362
+#, c-format
+msgid "Error parsing number near `%s'"
+msgstr ""
+
+#: tests/genfile.c:368
+#, c-format
+msgid "Unknown date format"
+msgstr "Formato de fecha desconocido"
+
+#: tests/genfile.c:392
+msgid "[ARGS...]"
+msgstr "[ARGS...]"
+
+#: tests/genfile.c:429 tests/genfile.c:469 tests/genfile.c:571
+#: tests/genfile.c:734 tests/genfile.c:748
+#, c-format
+msgid "cannot open `%s'"
+msgstr "no se puede abrir %s"
+
+#: tests/genfile.c:435
+msgid "cannot seek"
+msgstr "no se puede efectuar `seek'"
+
+#: tests/genfile.c:452
+#, c-format
+msgid "file name contains null character"
+msgstr "el nombre del fichero contiene el carácter NUL"
+
+#: tests/genfile.c:566
+#, c-format
+msgid "cannot generate sparse files on standard output, use --file option"
+msgstr ""
+
+#: tests/genfile.c:657
+#, c-format
+msgid "incorrect mask (near `%s')"
+msgstr ""
+
+#: tests/genfile.c:663 tests/genfile.c:696
+#, c-format
+msgid "Unknown field `%s'"
+msgstr "Campo `%s' desconocido"
+
+#: tests/genfile.c:723
+#, c-format
+msgid "cannot set time on `%s'"
+msgstr "no se puede establecer la fecha/hora sobre `%s'"
+
+#: tests/genfile.c:753
+#, fuzzy, c-format
+msgid "cannot truncate `%s'"
+msgstr "no se puede desenlazar `%s'"
+
+#: tests/genfile.c:762
+#, fuzzy, c-format
+msgid "command failed: %s"
+msgstr "La orden falló con el estado %d\n"
+
+#: tests/genfile.c:767
+#, c-format
+msgid "cannot unlink `%s'"
+msgstr "no se puede desenlazar `%s'"
+
+#: tests/genfile.c:894
+#, c-format
+msgid "Command exited successfully\n"
+msgstr "La orden terminó con éxito\n"
+
+#: tests/genfile.c:896
+#, c-format
+msgid "Command failed with status %d\n"
+msgstr "La orden falló con el estado %d\n"
+
+#: tests/genfile.c:900
+#, c-format
+msgid "Command terminated on signal %d\n"
+msgstr "La orden terminó con la señal %d\n"
+
+#: tests/genfile.c:902
+#, c-format
+msgid "Command stopped on signal %d\n"
+msgstr "La orden se detuvo con la señal %d\n"
+
+#: tests/genfile.c:905
+#, c-format
+msgid "Command dumped core\n"
+msgstr "La orden volcó un `core'\n"
+
+#: tests/genfile.c:908
+#, c-format
+msgid "Command terminated\n"
+msgstr "La orden terminó\n"
+
+#: tests/genfile.c:940
+#, c-format
+msgid "--stat requires file names"
+msgstr "--stat necesita nombres de ficheros"

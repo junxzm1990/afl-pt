@@ -334,6 +334,7 @@ static void *pt_parse_worker(void *arg)
 				}
 
 				if(__sync_bool_compare_and_swap(&parsecnt, *p_runcnt - 1, *p_runcnt))	{	
+          cnt++;
 					cursor_pos = 0;
 					RESET_DECODE_CTX();
 				//	write(off_fd, "===============\n", 17);
@@ -563,6 +564,7 @@ static void __afl_proxy_loop(void) {
     /* we can parse the pt packet and present it to the trace_bits here*/
     //bound_snapshot = *p_pt_trace_off;
     //pt_parse_packet((char*)(pt_trace_buf), bound_snapshot, packet_fd, off_fd);
+    /* __afl_area_ptr[2424] = 1;  */
     /* __afl_area_ptr[2433] = 1; */
     /* __afl_area_ptr[2429] = 1; */
 
