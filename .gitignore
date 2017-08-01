@@ -3,7 +3,6 @@
 *.so
 *.out
 *.dt
-afl-2.42b/afl-*
 *.files
 *.ko
 *.cmd
