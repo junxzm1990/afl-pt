@@ -498,7 +498,6 @@ static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, s
 		if(ptm->p_stat != PFS)
 			return;
 
-		START_TIMER();
 		
 		printk(KERN_INFO "Fork server path %s and pid %d\n", bprm->filename, p->pid);
 		ptm->fserver_pid = p->pid;	
@@ -623,7 +622,7 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		ptm->run_cnt = 0;
 		ptm->target_num = 0;
 		release_trace_point();
-		hrtimer_cancel(&hr_timer);
+		hrtimer_try_to_cancel(&hr_timer);
 	}	
 	return;
 }
@@ -921,6 +920,9 @@ static int __init pt_init(void){
 		printk(KERN_INFO "The CPU has insufficient PT\n");
 		return ENODEV;  	
 	}
+
+	START_TIMER();
+
 	//next step: enable PT?  
 	if(!kallsyms_lookup_name_ptr){
 		printk(KERN_INFO "Please specify the address to kallsyms_lookup_name\n");
@@ -942,6 +944,8 @@ static int __init pt_init(void){
 }
 
 static void __exit pt_exit(void){
+
+	hrtimer_try_to_cancel(&hr_timer);
 
 	unregister_pmi_handler();
 
