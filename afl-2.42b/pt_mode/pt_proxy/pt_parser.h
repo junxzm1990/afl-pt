@@ -397,7 +397,6 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         __afl_area_ptr[                         \
             map_64(ctx_curr_ip)                 \
             ^map_64(ctx_last_tip_ip)            \
-            ^map_8(ctx_curr_tnt_prod)           \
             ]++;                                \
         __afl_area_ptr[                         \
             map_64(ctx_curr_ip)                 \
@@ -409,6 +408,8 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
         ctx_tnt_counter= 0;                     \
                                                 \
     } while (0)
+
+    // ^map_8(ctx_curr_tnt_prod)           \
 
 #define NEXT_PACKET()                                                \
     do {                                                             \
@@ -428,12 +429,12 @@ pt_parse_packet(char *buffer, size_t size, int rfd, int dfd){
             ctx_tnt_short = (u8)*packet;
             ctx_bit_selector = 1 << ((32 - __builtin_clz(ctx_tnt_short)) - 1);
             ctx_tnt_counter += ((32 - __builtin_clz(ctx_tnt_short)) - 1) - 2;
-            do {
-                if((ctx_tnt_short & (ctx_bit_selector >>= 1)))
-                    UPDATE_TNT_PROD(1);
-                else
-                    UPDATE_TNT_PROD(0);
-            } while (ctx_bit_selector != 2);
+            // do {
+            //     if((ctx_tnt_short & (ctx_bit_selector >>= 1)))
+            //         UPDATE_TNT_PROD(1);
+            //     else
+            //         UPDATE_TNT_PROD(0);
+            // } while (ctx_bit_selector != 2);
 #ifdef DEBUG_PACKET
             /* writeout_packet(dfd, "TNTSHORT container", ctx_tnt_container); */
             writeout_packet(dfd, "TNT:", ctx_tnt_short);

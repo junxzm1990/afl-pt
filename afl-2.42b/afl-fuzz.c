@@ -4044,7 +4044,7 @@ static void show_stats(void) {
   }
 
   if (pt_mode)
-      SAYF(bSTG bV bSTOP "  total slices : " cRST "%-5s  " bSTG bV "\n",
+      SAYF(bSTG bV bSTOP "  total slices : " cRST "%-4s  " bSTG bV "\n",
            DI(queued_paths));
   else
       SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
