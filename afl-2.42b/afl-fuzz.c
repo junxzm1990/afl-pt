@@ -56,7 +56,7 @@
 #include <sys/ioctl.h>
 #include <sys/file.h>
 
-#define AFL_FIX_ONE_INPUT
+/* #define AFL_FIX_ONE_INPUT */
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined (__OpenBSD__)
 #  include <sys/sysctl.h>
