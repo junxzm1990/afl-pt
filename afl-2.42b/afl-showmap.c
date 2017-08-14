@@ -66,6 +66,9 @@ static u8  quiet_mode,                /* Hide non-essential messages?      */
            cmin_mode,                 /* Generate output in afl-cmin mode? */
            binary_mode;               /* Write output as a binary map      */
 
+static s32 fsrv_ctl_fd,               /* Fork server control pipe (write)  */
+           fsrv_st_fd;                /* Fork server status pipe (read)    */
+
 static volatile u8
            stop_soon,                 /* Ctrl-C pressed?                   */
            child_timed_out,           /* Child timed out?                  */
@@ -235,6 +238,91 @@ static void handle_timeout(int sig) {
 
 }
 
+static void init_forkserver(char** argv) {
+
+  static struct itimerval it;
+  int st_pipe[2], ctl_pipe[2];
+  int status;
+  s32 rlen;
+  s32 forksrv_pid;
+
+  ACTF("Spinning up the fork server...");
+
+  if (pipe(st_pipe) || pipe(ctl_pipe)) PFATAL("pipe() failed");
+
+  forksrv_pid = fork();
+
+  if (forksrv_pid < 0) PFATAL("fork() failed");
+
+  if (!forksrv_pid) {
+
+    /* Isolate the process and configure standard descriptors. If out_file is
+       specified, stdin is /dev/null; otherwise, out_fd is cloned instead. */
+
+    setsid();
+
+    /* Set up control and status pipes, close the unneeded original fds. */
+
+    if (dup2(ctl_pipe[0], FORKSRV_FD) < 0) PFATAL("dup2() failed");
+    if (dup2(st_pipe[1], FORKSRV_FD + 1) < 0) PFATAL("dup2() failed");
+
+    close(ctl_pipe[0]);
+    close(ctl_pipe[1]);
+    close(st_pipe[0]);
+    close(st_pipe[1]);
+
+    execv(target_path, argv);
+
+    /* Use a distinctive bitmap signature to tell the parent about execv()
+       falling through. */
+
+    *(u32*)trace_bits = EXEC_FAIL_SIG;
+    exit(0);
+
+  }
+
+  /* Close the unneeded endpoints. */
+
+  close(ctl_pipe[0]);
+  close(st_pipe[1]);
+
+  fsrv_ctl_fd = ctl_pipe[1];
+  fsrv_st_fd  = st_pipe[0];
+
+  /* Wait for the fork server to come up, but don't wait too long. */
+
+  it.it_value.tv_sec = ((exec_tmout * FORK_WAIT_MULT) / 1000);
+  it.it_value.tv_usec = ((exec_tmout * FORK_WAIT_MULT) % 1000) * 1000;
+
+  setitimer(ITIMER_REAL, &it, NULL);
+
+  rlen = read(fsrv_st_fd, &status, 4);
+
+  it.it_value.tv_sec = 0;
+  it.it_value.tv_usec = 0;
+
+  setitimer(ITIMER_REAL, &it, NULL);
+
+  /* If we have a four-byte "hello" message from the server, we're all set.
+     Otherwise, try to figure out what went wrong. */
+
+  if (rlen == 4) {
+    OKF("All right - fork server is up.");
+    return;
+  }
+
+  if (child_timed_out)
+    FATAL("Timeout while initializing fork server (adjusting -t may help)");
+
+  if (waitpid(forksrv_pid, &status, 0) <= 0)
+    PFATAL("waitpid() failed");
+
+  if (*(u32*)trace_bits == EXEC_FAIL_SIG)
+    FATAL("Unable to execute target application ('%s')", argv[0]);
+
+  FATAL("Fork server handshake failed");
+
+}
 
 /* Execute target application. */
 
@@ -474,7 +562,8 @@ static void usage(u8* argv0) {
 
        "  -t msec       - timeout for each run (none)\n"
        "  -m megs       - memory limit for child process (%u MB)\n"
-       "  -Q            - use binary-only instrumentation (QEMU mode)\n\n"
+       "  -Q            - use binary-only instrumentation (QEMU mode)\n"
+       "  -P            - use binary-only instrumentation (PT mode)\n\n"
 
        "Other settings:\n\n"
 
@@ -602,19 +691,85 @@ static char** get_qemu_argv(u8* own_loc, char** argv, int argc) {
 
 }
 
+/* Rewrite argv for AFLPT-PORXY. */
+static char** get_pt_argv(u8* own_loc, char** argv, int argc) {
+
+  char** new_argv = ck_alloc(sizeof(char*) * (argc + 3));
+  u8 *tmp, *cp, *rsl, *own_copy;
+
+  memcpy(new_argv + 2, argv + 1, sizeof(char*) * argc);
+
+  new_argv[1] = target_path;
+
+  /* Now we need to actually find the PT_PROXY binary to put in argv[0]. */
+
+  tmp = getenv("AFL_PATH");
+
+  if (tmp) {
+
+    cp = alloc_printf("%s/afl-pt-proxy", tmp);
+
+    if (access(cp, X_OK))
+      FATAL("Unable to find '%s'", tmp);
+
+    target_path = new_argv[0] = cp;
+    return new_argv;
+
+  }
+
+  own_copy = ck_strdup(own_loc);
+  rsl = strrchr(own_copy, '/');
+
+  if (rsl) {
+
+    *rsl = 0;
+
+    cp = alloc_printf("%s/afl-pt-proxy", own_copy);
+    ck_free(own_copy);
+
+    if (!access(cp, X_OK)) {
+
+      target_path = new_argv[0] = cp;
+      return new_argv;
+
+    }
+
+  } else ck_free(own_copy);
+
+  if (!access(BIN_PATH "/afl-pt-proxy", X_OK)) {
+
+    target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-pt-proxy");
+    return new_argv;
+
+  }
+
+
+  SAYF("\n" cLRD "[-] " cRST
+       "Oops, unable to find the 'afl-pt-proxy' binary. The binary must be built\n"
+       "    separately by following the instructions in pt_mode/README.pt. If you\n"
+       "    already have the binary installed, you may need to specify AFL_PATH in the\n"
+       "    environment.\n\n"
+
+       "    Of course, even without PT or QEMU, afl-fuzz can still work with binaries\n"
+       "    that are instrumented at compile time with afl-gcc. It is also possible to\n"
+       "     use it as atraditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
+
+  FATAL("Failed to locate 'afl-pt-proxy'.");
+
+}
 
 /* Main entry point */
 
 int main(int argc, char** argv) {
 
   s32 opt;
-  u8  mem_limit_given = 0, timeout_given = 0, qemu_mode = 0;
+  u8  mem_limit_given = 0, timeout_given = 0, qemu_mode = 0, pt_mode = 0;
   u32 tcnt;
   char** use_argv;
 
   doc_path = access(DOC_PATH, F_OK) ? "docs" : DOC_PATH;
 
-  while ((opt = getopt(argc,argv,"+o:m:t:A:eqZQb")) > 0)
+  while ((opt = getopt(argc,argv,"+o:m:t:A:eqZQPb")) > 0)
 
     switch (opt) {
 
@@ -711,6 +866,15 @@ int main(int argc, char** argv) {
         qemu_mode = 1;
         break;
 
+      case 'P':
+
+        if (qemu_mode) FATAL("-P and -Q options are mutually exclusive");
+        if (pt_mode) FATAL("Multiple -P options not supported");
+        if (!mem_limit_given) mem_limit = MEM_LIMIT_QEMU;
+
+        pt_mode = 1;
+        break;
+
       case 'b':
 
         /* Secret undocumented mode. Writes output in raw binary format
@@ -743,10 +907,50 @@ int main(int argc, char** argv) {
 
   if (qemu_mode)
     use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
+  else if (pt_mode)
+    use_argv = get_pt_argv(argv[0], argv + optind, argc - optind);
   else
     use_argv = argv + optind;
 
-  run_target(use_argv);
+  if (pt_mode){
+    s32 res, tmp, child_pid, status;
+
+    if (quiet_mode) {
+
+        s32 fd = open("/dev/null", O_RDWR);
+
+        if (fd < 0 || dup2(fd, 1) < 0 || dup2(fd, 2) < 0) {
+            *(u32*)trace_bits = EXEC_FAIL_SIG;
+            PFATAL("Descriptor initialization failed");
+        }
+
+        close(fd);
+
+    }
+    MEM_BARRIER();
+
+    init_forkserver(use_argv);
+    /* we have the fork server up and running, so simply
+       tell it to have at it, and then read back PID. */
+
+    if ((res = write(fsrv_ctl_fd, &tmp, 4)) != 4) {
+        if (stop_soon) return 0;
+        RPFATAL(res, "Unable to request new process from fork server (OOM?)");
+    }
+
+    if ((res = read(fsrv_st_fd, &child_pid, 4)) != 4) {
+        if (stop_soon) return 0;
+        RPFATAL(res, "Unable to request new process from fork server (OOM?)");
+    }
+    if (child_pid <= 0) FATAL("Fork server is misbehaving (OOM?)");
+    if ((res = read(fsrv_st_fd, &status, 4)) != 4) {
+        if (stop_soon) return 0;
+        RPFATAL(res, "Unable to communicate with fork server (OOM?)");
+    }
+
+  }else{
+    run_target(use_argv);
+  }
 
   tcnt = write_results();
 

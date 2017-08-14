@@ -6,4 +6,6 @@
 *.files
 *.ko
 *.cmd
+*.Po
+*.lo
 afl-pt-proxy

@@ -7590,7 +7590,7 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
 
   new_argv[1] = target_path;
 
-  /* Now we need to actually find the QEMU binary to put in argv[0]. */
+  /* Now we need to actually find the PT_PROXY binary to put in argv[0]. */
 
   tmp = getenv("AFL_PATH");
 
