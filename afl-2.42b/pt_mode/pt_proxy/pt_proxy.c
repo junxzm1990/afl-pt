@@ -312,7 +312,7 @@ static void *pt_parse_worker(void *arg)
 			bound_snapshot = *p_pt_trace_off;
 #endif
 
-			if(0 && bound_snapshot > cursor_pos){
+			if(bound_snapshot > cursor_pos){
 				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot - cursor_pos);
 				//write(off_fd, msg, strlen(msg));
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
@@ -330,7 +330,7 @@ static void *pt_parse_worker(void *arg)
 
 				if(bound_snapshot > cursor_pos ){
 				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
-					write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
+			//		write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 					cursor_pos = bound_snapshot;
 				}
