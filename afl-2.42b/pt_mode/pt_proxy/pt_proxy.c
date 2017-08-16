@@ -13,6 +13,7 @@
 #include <dirent.h>
 #include <sched.h>
 #include <fcntl.h>
+#include <libgen.h>
 
 #include "../../config.h"
 #include "../../types.h"
@@ -23,6 +24,7 @@
 
 /* using global data because afl will start one proxy instance per target                 */
 /* #define HAS_MSR */
+#define USE_RANDOM_SEED
 #ifndef HAVE_AFFINITY
 #define HAVE_AFFINITY
 #endif
@@ -130,7 +132,9 @@ static inline u32 UR(u32 limit) {
 
         ck_read(dev_urandom_fd, &seed, sizeof(seed), "/dev/urandom");
 
-       // srandom(seed[0]);
+#ifdef USE_RANDOM_SEED
+       srandom(seed[0]);
+#endif
         rand_cnt = (RESEED_RNG / 2) + (seed[1] % RESEED_RNG);
 
     }
@@ -139,15 +143,55 @@ static inline u32 UR(u32 limit) {
 
 }
 
-/* Populate a new rand_map for fuzzing */
+
+static void
+serialize_rand_map(u8 *prog_path){
+    //by default output randmap to target_dir/.name.rmap 
+    u8 *fn = alloc_printf("%s/.%s.rmap", dirname(realpath(prog_path, NULL)),
+                          basename(prog_path));
+    s32 fd = open(fn, O_CREAT | O_WRONLY | O_TRUNC, 0600 );
+    s32 i;
+    if (fd < 0) PFATAL("unable to open '%s'", fn);
+    ck_free(fn);
+
+    FILE *f = fdopen(fd, "w");
+    if (f < 0) PFATAL("fdopen failed");
+    for(i=0; i<sizeof(rand_map)/sizeof(u64);++i){
+        fprintf(f, "%llu\n", rand_map[i]);
+    }
+    fclose(f);
+}
+
+/*
+  Populate a new rand_map for fuzzing
+  if given AFL_PTMODE_RAND_MAP, try load from the old one
+  for resumption fuzzing works
+*/
 static inline void
 gen_rand_map(u32 entries, u32 max){
-    int i;
-    srandom(0);
-    if(sizeof(rand_map)/sizeof(u64) < entries)
-        PFATAL("randmap size is too small!");
-    for (i=0; i<entries; ++i){
-        rand_map[i] = UR(max); 
+    s32 i;
+    u8* rand_map_loc = getenv("AFL_PTMODE_RAND_MAP");
+    if (rand_map_loc){
+        s32 fd = open(rand_map_loc, O_RDONLY);
+        if(fd < 0) PFATAL("unable to open '%s'", rand_map_loc);
+        FILE *f = fdopen(fd, "r");
+        if (!f) PFATAL("fdopen failed");
+        for (i=0; i<entries; ++i){
+            if(fscanf(f, "%llu\n", &rand_map[i]) == EOF){
+                PFATAL("no enough rand map entries in '%s', expect %u",
+                       rand_map_loc, entries);
+            } 
+        }
+        fclose(f);
+    }else{
+#ifndef USE_RANDOM_SEED
+        srandom(0);
+#endif
+        if(sizeof(rand_map)/sizeof(u64) < entries)
+            PFATAL("randmap size is too small!");
+        for (i=0; i<entries; ++i){
+            rand_map[i] = UR(max); 
+        }
     }
 }
 
@@ -597,6 +641,7 @@ int main(int argc, char *argv[])
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
   gen_rand_map(TWO_BYTE_ENTRIES, MAP_SIZE);
+  serialize_rand_map(argv[1]);
 
   /* setting up share memory bitmap */
   __afl_map_shm();

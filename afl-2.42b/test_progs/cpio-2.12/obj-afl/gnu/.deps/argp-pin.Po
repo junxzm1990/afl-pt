@@ -1,3 +1,0 @@
-argp-pin.o: ../../gnu/argp-pin.c ../config.h
-
-../config.h:
