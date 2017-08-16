@@ -337,6 +337,7 @@ uname = Linux
 
 --------------------
 ../configure
+<<<<<<< HEAD
 Sat Aug  5 15:02:40 EDT 2017
 === ztest12689.c ===
 extern int getchar();
@@ -361,10 +362,37 @@ int hello() {return getchar();}
 Building shared library libz.so.1.2.11 with /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast.
 
 === ztest12689.c ===
+=======
+Fri Aug  4 16:15:15 PDT 2017
+=== ztest9812.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c ztest9812.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest9812.c ===
+int foo() { return 0; }
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 ztest9812.c
+
+Checking for shared library support...
+=== ztest9812.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -w -c -O3 -fPIC ztest9812.c
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest9812.so ztest9812.o
+Building shared library libz.so.1.2.11 with /home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast.
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdlib.h>
 size_t dummy = 0;
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -c -O3 ztest12689.c
 Checking for size_t... Yes.
 
@@ -378,10 +406,26 @@ Checking for off64_t... Yes.
 Checking for fseeko... Yes.
 
 === ztest12689.c ===
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 ztest9812.c
+Checking for size_t... Yes.
+
+
+=== ztest9812.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+Checking for off64_t... Yes.
+Checking for fseeko... Yes.
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <string.h>
 #include <errno.h>
 int main() { return strlen(strerror(errno)); }
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12689 ztest12689.c
 Checking for strerror... Yes.
 
@@ -400,6 +444,26 @@ int main() { return 0; }
 Checking for stdarg.h... Yes.
 
 === ztest12689.c ===
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -O3 -D_LARGEFILE64_SOURCE=1 -o ztest9812 ztest9812.c
+Checking for strerror... Yes.
+
+=== ztest9812.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+Checking for unistd.h... Yes.
+
+=== ztest9812.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+Checking for stdarg.h... Yes.
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 #include "zconf.h"
@@ -411,10 +475,17 @@ int main()
   return 0;
 }
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12689.c
 Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
 
 === ztest12689.c ===
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -431,10 +502,17 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12689 ztest12689.c
 Checking for vsnprintf() in stdio.h... Yes.
 
 === ztest12689.c ===
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -O3 -D_LARGEFILE64_SOURCE=1 -o ztest9812 ztest9812.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -452,10 +530,17 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12689.c
 Checking for return value of vsnprintf()... Yes.
 
 === ztest12689.c ===
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest9812.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
 int ZLIB_INTERNAL foo;
 int main()
@@ -463,12 +548,17 @@ int main()
   return 0;
 }
 ===
+<<<<<<< HEAD
 /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12689.c
+=======
+/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9812.c
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 Checking for attribute(visibility) support... Yes.
 
 ALL = static shared all64
 AR = ar
 ARFLAGS = rc
+<<<<<<< HEAD
 CC = /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast
 CFLAGS = -O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 CPP = /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -E
@@ -476,6 +566,15 @@ EXE =
 LDCONFIG = ldconfig
 LDFLAGS =
 LDSHARED = /home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+=======
+CC = /home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast
+CFLAGS = -O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+CPP = /home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 LDSHAREDLIBC = -lc
 OBJC = $(OBJZ) $(OBJG)
 PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)

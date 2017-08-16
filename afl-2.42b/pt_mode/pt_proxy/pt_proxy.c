@@ -130,7 +130,7 @@ static inline u32 UR(u32 limit) {
 
         ck_read(dev_urandom_fd, &seed, sizeof(seed), "/dev/urandom");
 
-        srandom(seed[0]);
+       // srandom(seed[0]);
         rand_cnt = (RESEED_RNG / 2) + (seed[1] % RESEED_RNG);
 
     }
@@ -143,6 +143,7 @@ static inline u32 UR(u32 limit) {
 static inline void
 gen_rand_map(u32 entries, u32 max){
     int i;
+    srandom(0);
     if(sizeof(rand_map)/sizeof(u64) < entries)
         PFATAL("randmap size is too small!");
     for (i=0; i<entries; ++i){
@@ -298,6 +299,7 @@ static void *pt_parse_worker(void *arg)
 	off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
+#define DEBUG_PACKET
 #ifdef DEBUG_PACKET
 	packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
@@ -328,7 +330,7 @@ static void *pt_parse_worker(void *arg)
 
 				if(bound_snapshot > cursor_pos ){
 				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
-				//	write(off_fd, msg, strlen(msg));
+			//		write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 					cursor_pos = bound_snapshot;
 				}

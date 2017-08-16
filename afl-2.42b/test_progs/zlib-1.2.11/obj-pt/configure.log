@@ -165,6 +165,7 @@ uname = Linux
 
 --------------------
 ../configure
+<<<<<<< HEAD
 Sat Aug  5 14:58:00 EDT 2017
 Checking for gcc...
 === ztest7400.c ===
@@ -190,10 +191,38 @@ gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztes
 Building shared library libz.so.1.2.11 with gcc.
 
 === ztest7400.c ===
+=======
+Fri Aug  4 15:42:51 PDT 2017
+Checking for gcc...
+=== ztest24335.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest24335.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest24335.c ===
+int foo() { return 0; }
+===
+gcc -c -O3 ztest24335.c
+
+Checking for shared library support...
+=== ztest24335.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -w -c -O3 -fPIC ztest24335.c
+gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest24335.so ztest24335.o
+Building shared library libz.so.1.2.11 with gcc.
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdlib.h>
 size_t dummy = 0;
 ===
+<<<<<<< HEAD
 gcc -c -O3 ztest7400.c
 Checking for size_t... Yes.
 
@@ -207,10 +236,26 @@ Checking for off64_t... Yes.
 Checking for fseeko... Yes.
 
 === ztest7400.c ===
+=======
+gcc -c -O3 ztest24335.c
+Checking for size_t... Yes.
+
+
+=== ztest24335.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+Checking for off64_t... Yes.
+Checking for fseeko... Yes.
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <string.h>
 #include <errno.h>
 int main() { return strlen(strerror(errno)); }
 ===
+<<<<<<< HEAD
 gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest7400 ztest7400.c
 Checking for strerror... Yes.
 
@@ -229,6 +274,26 @@ gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest7400.c
 Checking for stdarg.h... Yes.
 
 === ztest7400.c ===
+=======
+gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest24335 ztest24335.c
+Checking for strerror... Yes.
+
+=== ztest24335.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+Checking for unistd.h... Yes.
+
+=== ztest24335.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+Checking for stdarg.h... Yes.
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 #include "zconf.h"
@@ -240,10 +305,17 @@ int main()
   return 0;
 }
 ===
+<<<<<<< HEAD
 gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest7400.c
 Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
 
 === ztest7400.c ===
+=======
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -260,10 +332,17 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
+<<<<<<< HEAD
 gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest7400 ztest7400.c
 Checking for vsnprintf() in stdio.h... Yes.
 
 === ztest7400.c ===
+=======
+gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest24335 ztest24335.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -281,10 +360,17 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
+<<<<<<< HEAD
 gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest7400.c
 Checking for return value of vsnprintf()... Yes.
 
 === ztest7400.c ===
+=======
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest24335.c ===
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 #define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
 int ZLIB_INTERNAL foo;
 int main()
@@ -292,7 +378,11 @@ int main()
   return 0;
 }
 ===
+<<<<<<< HEAD
 gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest7400.c
+=======
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest24335.c
+>>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 Checking for attribute(visibility) support... Yes.
 
 ALL = static shared all64
