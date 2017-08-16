@@ -10,8 +10,8 @@ opendir-safer.o: ../../gnu/opendir-safer.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
-  /usr/include/linux/limits.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h sys/types.h \
+  /usr/include/linux/limits.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/types.h time.h /usr/include/time.h \
   /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap.h \
@@ -20,6 +20,7 @@ opendir-safer.o: ../../gnu/opendir-safer.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/errno.h \
   /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
@@ -29,7 +30,9 @@ opendir-safer.o: ../../gnu/opendir-safer.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/confname.h getopt.h \
-  /usr/include/getopt.h ../../gnu/unistd-safer.h
+  /usr/include/getopt.h /usr/include/x86_64-linux-gnu/bits/unistd.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  ../../gnu/unistd-safer.h
 
 ../config.h:
 
@@ -63,9 +66,7 @@ dirent.h:
 
 /usr/include/linux/limits.h:
 
-stddef.h:
-
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
 sys/types.h:
 
@@ -90,6 +91,8 @@ time.h:
 /usr/include/x86_64-linux-gnu/bits/sigset.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/select2.h:
 
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
@@ -120,5 +123,9 @@ unistd.h:
 getopt.h:
 
 /usr/include/getopt.h:
+
+/usr/include/x86_64-linux-gnu/bits/unistd.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 ../../gnu/unistd-safer.h:

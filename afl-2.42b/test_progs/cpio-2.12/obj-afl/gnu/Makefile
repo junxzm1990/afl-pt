@@ -348,7 +348,7 @@ am__relativize = \
   done; \
   reldir="$$dir2"
 pkglibexecdir = ${libexecdir}/${PACKAGE}
-ACLOCAL = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing aclocal-1.14
 ALLOCA = 
 ALLOCA_H = alloca.h
 AMTAR = $${TAR-tar}
@@ -356,20 +356,20 @@ AM_DEFAULT_VERBOSITY = 0
 APPLE_UNIVERSAL_BUILD = 0
 AR = ar
 ARFLAGS = cr
-AUTOCONF = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autoconf
-AUTOHEADER = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autoheader
-AUTOM4TE = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autom4te
-AUTOMAKE = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing automake-1.14
+AUTOCONF = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autoconf
+AUTOHEADER = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autoheader
+AUTOM4TE = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing autom4te
+AUTOMAKE = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing automake-1.14
 AWK = gawk
 BITSIZEOF_PTRDIFF_T = 
 BITSIZEOF_SIG_ATOMIC_T = 
 BITSIZEOF_SIZE_T = 
 BITSIZEOF_WCHAR_T = 
 BITSIZEOF_WINT_T = 
-CC = /home/farshaq/work/afl-pt/afl-2.42b/afl-clang-fast
+CC = /home/mdl/afl-pt/afl-2.42b/afl-clang-fast
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
-CPP = /home/farshaq/work/afl-pt/afl-2.42b/afl-clang-fast -E
+CPP = /home/mdl/afl-pt/afl-2.42b/afl-clang-fast -E
 CPPFLAGS = 
 CYGPATH_W = echo
 DEFAULT_RMT_COMMAND = 
@@ -739,7 +739,7 @@ HAVE_LINK = 1
 HAVE_LINKAT = 1
 HAVE_LONG_LONG_INT = 1
 HAVE_LSTAT = 1
-HAVE_MAX_ALIGN_T = 0
+HAVE_MAX_ALIGN_T = 1
 HAVE_MBRLEN = 1
 HAVE_MBRTOWC = 1
 HAVE_MBSINIT = 1
@@ -903,7 +903,7 @@ LOCALE_ZH_CN = none
 LTLIBICONV = 
 LTLIBINTL = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing makeinfo
+MAKEINFO = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 MSGFMT = /usr/bin/msgfmt
 MSGFMT_015 = /usr/bin/msgfmt
@@ -916,7 +916,7 @@ NEXT_AS_FIRST_DIRECTIVE_GETOPT_H = <getopt.h>
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H = <inttypes.h>
 NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H = <signal.h>
 NEXT_AS_FIRST_DIRECTIVE_STDARG_H = 
-NEXT_AS_FIRST_DIRECTIVE_STDDEF_H = <stddef.h>
+NEXT_AS_FIRST_DIRECTIVE_STDDEF_H = 
 NEXT_AS_FIRST_DIRECTIVE_STDINT_H = <stdint.h>
 NEXT_AS_FIRST_DIRECTIVE_STDIO_H = <stdio.h>
 NEXT_AS_FIRST_DIRECTIVE_STDLIB_H = <stdlib.h>
@@ -938,7 +938,7 @@ NEXT_GETOPT_H = <getopt.h>
 NEXT_INTTYPES_H = <inttypes.h>
 NEXT_SIGNAL_H = <signal.h>
 NEXT_STDARG_H = <stdarg.h>
-NEXT_STDDEF_H = <stddef.h>
+NEXT_STDDEF_H = 
 NEXT_STDINT_H = <stdint.h>
 NEXT_STDIO_H = <stdio.h>
 NEXT_STDLIB_H = <stdlib.h>
@@ -1117,7 +1117,7 @@ SIZE_T_SUFFIX =
 STDALIGN_H = 
 STDARG_H = 
 STDBOOL_H = 
-STDDEF_H = stddef.h
+STDDEF_H = 
 STDINT_H = 
 STRIP = 
 SYSEXITS_H = 
@@ -1140,11 +1140,11 @@ XGETTEXT_015 = /usr/bin/xgettext
 XGETTEXT_EXTRA_OPTIONS =  --flag=argp_error:2:c-format --flag=argp_failure:4:c-format --flag=error:3:c-format --flag=error_at_line:5:c-format
 YACC = bison -y
 YFLAGS = 
-abs_builddir = /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/gnu
-abs_srcdir = /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/../gnu
-abs_top_builddir = /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl
-abs_top_srcdir = /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/..
-ac_ct_CC = /home/farshaq/work/afl-pt/afl-2.42b/afl-clang-fast
+abs_builddir = /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/gnu
+abs_srcdir = /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/../gnu
+abs_top_builddir = /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl
+abs_top_srcdir = /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/..
+ac_ct_CC = /home/mdl/afl-pt/afl-2.42b/afl-clang-fast
 am__include = include
 am__leading_dot = .
 am__quote = 
@@ -1175,7 +1175,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh
+install_sh = ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 lispdir = ${datarootdir}/emacs/site-lisp
@@ -2239,22 +2239,22 @@ stdbool.h: $(top_builddir)/config.status
 
 # We need the following in order to create <stddef.h> when the system
 # doesn't have one that works with the given compiler.
-stddef.h: stddef.in.h $(top_builddir)/config.status
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
-	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
-	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|#pragma GCC system_header|g' \
-	      -e 's|@''PRAGMA_COLUMNS''@||g' \
-	      -e 's|@''NEXT_STDDEF_H''@|$(NEXT_STDDEF_H)|g' \
-	      -e 's|@''HAVE_MAX_ALIGN_T''@|$(HAVE_MAX_ALIGN_T)|g' \
-	      -e 's|@''HAVE_WCHAR_T''@|$(HAVE_WCHAR_T)|g' \
-	      -e 's|@''REPLACE_NULL''@|$(REPLACE_NULL)|g' \
-	      < $(srcdir)/stddef.in.h; \
-	} > $@-t && \
-	mv $@-t $@
-#stddef.h: $(top_builddir)/config.status
-#	rm -f $@
+#stddef.h: stddef.in.h $(top_builddir)/config.status
+#	$(AM_V_GEN)rm -f $@-t $@ && \
+#	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
+#	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+#	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+#	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|#pragma GCC system_header|g' \
+#	      -e 's|@''PRAGMA_COLUMNS''@||g' \
+#	      -e 's|@''NEXT_STDDEF_H''@|$(NEXT_STDDEF_H)|g' \
+#	      -e 's|@''HAVE_MAX_ALIGN_T''@|$(HAVE_MAX_ALIGN_T)|g' \
+#	      -e 's|@''HAVE_WCHAR_T''@|$(HAVE_WCHAR_T)|g' \
+#	      -e 's|@''REPLACE_NULL''@|$(REPLACE_NULL)|g' \
+#	      < $(srcdir)/stddef.in.h; \
+#	} > $@-t && \
+#	mv $@-t $@
+stddef.h: $(top_builddir)/config.status
+	rm -f $@
 
 # We need the following in order to create <stdint.h> when the system
 # doesn't have one that works with the given compiler.

@@ -36,12 +36,12 @@ INSTALL_DATA = ${INSTALL} -m 644
 # We use $(mkdir_p).
 # In automake <= 1.9.x, $(mkdir_p) is defined either as "mkdir -p --" or as
 # "$(mkinstalldirs)" or as "$(install_sh) -d". For these automake versions,
-# ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh does not start with $(SHELL), so we add it.
+# ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh does not start with $(SHELL), so we add it.
 # In automake >= 1.10, $(MKDIR_P) is derived from ${MKDIR_P}, which is defined
 # either as "/path/to/mkdir -p" or ".../install-sh -c -d". For these automake
 # versions, $(mkinstalldirs) and $(install_sh) are unused.
-mkinstalldirs = $(SHELL) ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh -d
-install_sh = $(SHELL) ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh
+mkinstalldirs = $(SHELL) ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh -d
+install_sh = $(SHELL) ${SHELL} /home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/build-aux/install-sh
 MKDIR_P = /bin/mkdir -p
 mkdir_p = $(MKDIR_P)
 

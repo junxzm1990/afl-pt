@@ -4,13 +4,13 @@
 
 # The test suite will define top_srcdir=/../.. etc.
 at_testdir='tests'
-abs_builddir='/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/tests'
+abs_builddir='/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/tests'
 at_srcdir='../../tests'
-abs_srcdir='/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/../tests'
+abs_srcdir='/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/../tests'
 at_top_srcdir='../..'
-abs_top_srcdir='/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/..'
+abs_top_srcdir='/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/..'
 at_top_build_prefix='../'
-abs_top_builddir='/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl'
+abs_top_builddir='/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl'
 
 # Backward compatibility with Autotest <= 2.59b:
 at_top_builddir=$at_top_build_prefix

@@ -1,13 +1,14 @@
 asnprintf.o: ../../gnu/asnprintf.c ../config.h ../../gnu/vasnprintf.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdarg.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdarg.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h
 
 ../config.h:
 
 ../../gnu/vasnprintf.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdarg.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdarg.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:

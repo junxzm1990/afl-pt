@@ -2,5 +2,5 @@
 # Configurable variable values for tar test suite.
 # Copyright (C) 2004, 2010, 2014-2015 Free Software Foundation, Inc.
 
-PATH=/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/tests:/home/farshaq/work/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/src:$top_srcdir:$srcdir:$PATH
+PATH=/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/tests:/home/mdl/afl-pt/afl-2.42b/test_progs/cpio-2.12/obj-afl/src:$top_srcdir:$srcdir:$PATH
 

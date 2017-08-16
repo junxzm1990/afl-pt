@@ -3,12 +3,13 @@ timespec.o: ../../gnu/timespec.c ../config.h ../../gnu/timespec.h time.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
   /usr/include/x86_64-linux-gnu/bits/typesizes.h \
-  /usr/include/x86_64-linux-gnu/bits/timex.h /usr/include/xlocale.h
+  /usr/include/x86_64-linux-gnu/bits/timex.h /usr/include/xlocale.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h
 
 ../config.h:
 
@@ -30,9 +31,7 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
-stddef.h:
-
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
@@ -43,3 +42,5 @@ stddef.h:
 /usr/include/x86_64-linux-gnu/bits/timex.h:
 
 /usr/include/xlocale.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:

@@ -6,18 +6,20 @@ utimensat.o: ../../gnu/utimensat.c ../config.h sys/stat.h sys/types.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
   /usr/include/x86_64-linux-gnu/bits/typesizes.h time.h \
-  /usr/include/time.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h /usr/include/endian.h \
-  /usr/include/x86_64-linux-gnu/bits/endian.h \
+  /usr/include/time.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
   /usr/include/x86_64-linux-gnu/bits/timex.h /usr/include/xlocale.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
   /usr/include/x86_64-linux-gnu/sys/stat.h \
   /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/errno.h \
   /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
@@ -32,11 +34,11 @@ utimensat.o: ../../gnu/utimensat.c ../config.h sys/stat.h sys/types.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/confname.h getopt.h \
-  /usr/include/getopt.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdbool.h \
+  /usr/include/getopt.h /usr/include/x86_64-linux-gnu/bits/unistd.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdbool.h \
   ../../gnu/openat-priv.h \
-  /usr/local/bin/../lib/clang/3.4/include/limits.h /usr/include/limits.h \
-  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h \
+  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/linux/limits.h \
   /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
@@ -45,7 +47,8 @@ utimensat.o: ../../gnu/utimensat.c ../config.h sys/stat.h sys/types.h \
   /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h alloca.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h ../../gnu/save-cwd.h
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib.h ../../gnu/save-cwd.h
 
 ../config.h:
 
@@ -75,9 +78,7 @@ time.h:
 
 /usr/include/time.h:
 
-stddef.h:
-
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
 /usr/include/endian.h:
 
@@ -95,6 +96,8 @@ stddef.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -102,6 +105,8 @@ stddef.h:
 /usr/include/x86_64-linux-gnu/bits/timex.h:
 
 /usr/include/xlocale.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 /usr/include/x86_64-linux-gnu/sys/stat.h:
 
@@ -155,11 +160,13 @@ getopt.h:
 
 /usr/include/getopt.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdbool.h:
+/usr/include/x86_64-linux-gnu/bits/unistd.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdbool.h:
 
 ../../gnu/openat-priv.h:
 
-/usr/local/bin/../lib/clang/3.4/include/limits.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h:
 
 /usr/include/limits.h:
 
@@ -188,5 +195,7 @@ alloca.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 
 ../../gnu/save-cwd.h:

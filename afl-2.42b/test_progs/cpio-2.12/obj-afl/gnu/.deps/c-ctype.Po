@@ -1,8 +1,8 @@
 c-ctype.o: ../../gnu/c-ctype.c ../config.h ../../gnu/c-ctype.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdbool.h
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdbool.h
 
 ../config.h:
 
 ../../gnu/c-ctype.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdbool.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdbool.h:

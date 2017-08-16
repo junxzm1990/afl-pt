@@ -4,12 +4,14 @@ printf-parse.o: ../../gnu/printf-parse.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h ../../gnu/printf-args.h \
-  stddef.h /usr/local/bin/../lib/clang/3.4/include/stddef.h wchar.h \
-  /usr/include/wchar.h stdio.h /usr/include/stdio.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdarg.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  wchar.h /usr/include/wchar.h stdio.h /usr/include/stdio.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdarg.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h /usr/include/xlocale.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdint.h /usr/include/stdint.h \
-  stdlib.h /usr/include/stdlib.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdint.h \
+  /usr/include/stdint.h stdlib.h /usr/include/stdlib.h \
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/endian.h \
   /usr/include/x86_64-linux-gnu/bits/endian.h \
@@ -22,16 +24,20 @@ printf-parse.o: ../../gnu/printf-parse.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h alloca.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h string.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib.h string.h \
   /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string.h \
-  /usr/include/x86_64-linux-gnu/bits/string2.h /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/string2.h \
+  /usr/include/x86_64-linux-gnu/bits/string3.h /usr/include/errno.h \
   /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
-  ../../gnu/xsize.h /usr/local/bin/../lib/clang/3.4/include/limits.h \
+  ../../gnu/xsize.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h \
   /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/linux/limits.h \
@@ -57,9 +63,9 @@ printf-parse.o: ../../gnu/printf-parse.c ../config.h \
 
 ../../gnu/printf-args.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 wchar.h:
 
@@ -69,13 +75,15 @@ stdio.h:
 
 /usr/include/stdio.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdarg.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdarg.h:
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
 /usr/include/xlocale.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdint.h:
+/usr/include/x86_64-linux-gnu/bits/wchar2.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -115,6 +123,8 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -125,6 +135,8 @@ alloca.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+
 string.h:
 
 /usr/include/string.h:
@@ -132,6 +144,8 @@ string.h:
 /usr/include/x86_64-linux-gnu/bits/string.h:
 
 /usr/include/x86_64-linux-gnu/bits/string2.h:
+
+/usr/include/x86_64-linux-gnu/bits/string3.h:
 
 /usr/include/errno.h:
 
@@ -147,7 +161,7 @@ string.h:
 
 ../../gnu/xsize.h:
 
-/usr/local/bin/../lib/clang/3.4/include/limits.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h:
 
 /usr/include/limits.h:
 

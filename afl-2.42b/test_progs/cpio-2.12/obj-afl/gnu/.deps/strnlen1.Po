@@ -1,6 +1,7 @@
 strnlen1.o: ../../gnu/strnlen1.c ../config.h ../../gnu/strnlen1.h \
-  stddef.h /usr/local/bin/../lib/clang/3.4/include/stddef.h string.h \
-  /usr/include/string.h /usr/include/features.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  string.h /usr/include/string.h /usr/include/features.h \
   /usr/include/stdc-predef.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
@@ -12,15 +13,15 @@ strnlen1.o: ../../gnu/strnlen1.c ../config.h ../../gnu/strnlen1.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
   /usr/include/x86_64-linux-gnu/bits/typesizes.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap-16.h stdlib.h \
-  /usr/include/stdlib.h
+  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/string3.h
 
 ../config.h:
 
 ../../gnu/strnlen1.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 string.h:
 
@@ -59,3 +60,5 @@ string.h:
 stdlib.h:
 
 /usr/include/stdlib.h:
+
+/usr/include/x86_64-linux-gnu/bits/string3.h:

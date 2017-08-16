@@ -9,8 +9,8 @@ savedir.o: ../../gnu/savedir.c ../config.h ../../gnu/savedir.h dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
-  /usr/include/linux/limits.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h sys/types.h \
+  /usr/include/linux/limits.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/types.h time.h /usr/include/time.h \
   /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap.h \
@@ -19,18 +19,23 @@ savedir.o: ../../gnu/savedir.c ../config.h ../../gnu/savedir.h dirent.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/errno.h \
   /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
-  ../../gnu/dirent--.h ../../gnu/dirent-safer.h stdlib.h \
-  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+  ../../gnu/dirent--.h ../../gnu/dirent-safer.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  stdlib.h /usr/include/stdlib.h \
+  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/xlocale.h \
   alloca.h /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h string.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib.h string.h \
   /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string.h \
-  /usr/include/x86_64-linux-gnu/bits/string2.h ../../gnu/xalloc.h \
+  /usr/include/x86_64-linux-gnu/bits/string2.h \
+  /usr/include/x86_64-linux-gnu/bits/string3.h ../../gnu/xalloc.h \
   ../../gnu/xalloc-oversized.h
 
 ../config.h:
@@ -65,9 +70,7 @@ dirent.h:
 
 /usr/include/linux/limits.h:
 
-stddef.h:
-
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
 sys/types.h:
 
@@ -93,6 +96,8 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -113,6 +118,8 @@ time.h:
 
 ../../gnu/dirent-safer.h:
 
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
+
 stdlib.h:
 
 /usr/include/stdlib.h:
@@ -129,6 +136,8 @@ alloca.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+
 string.h:
 
 /usr/include/string.h:
@@ -136,6 +145,8 @@ string.h:
 /usr/include/x86_64-linux-gnu/bits/string.h:
 
 /usr/include/x86_64-linux-gnu/bits/string2.h:
+
+/usr/include/x86_64-linux-gnu/bits/string3.h:
 
 ../../gnu/xalloc.h:
 

@@ -1,6 +1,7 @@
 malloca.o: ../../gnu/malloca.c ../config.h ../../gnu/malloca.h alloca.h \
-  stddef.h /usr/local/bin/../lib/clang/3.4/include/stddef.h stdlib.h \
-  /usr/include/stdlib.h /usr/include/features.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  stdlib.h /usr/include/stdlib.h /usr/include/features.h \
   /usr/include/stdc-predef.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
@@ -18,12 +19,15 @@ malloca.o: ../../gnu/malloca.c ../config.h ../../gnu/malloca.h alloca.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/local/bin/../lib/clang/3.4/include/stdint.h /usr/include/stdint.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar.h ../../gnu/verify.h
+  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdint.h \
+  /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  ../../gnu/verify.h
 
 ../config.h:
 
@@ -31,9 +35,9 @@ malloca.o: ../../gnu/malloca.c ../config.h ../../gnu/malloca.h alloca.h \
 
 alloca.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 stdlib.h:
 
@@ -85,6 +89,8 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -93,7 +99,9 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stdint.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stdint.h:
 
 /usr/include/stdint.h:
 

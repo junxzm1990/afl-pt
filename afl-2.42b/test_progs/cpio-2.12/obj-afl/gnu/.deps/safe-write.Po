@@ -1,8 +1,10 @@
 safe-write.o: ../../gnu/safe-write.c ../../gnu/safe-read.c ../config.h \
-  ../../gnu/safe-write.h stddef.h \
-  /usr/local/bin/../lib/clang/3.4/include/stddef.h sys/types.h \
-  /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/features.h \
-  /usr/include/stdc-predef.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  ../../gnu/safe-write.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
+  sys/types.h /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/include/features.h /usr/include/stdc-predef.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
@@ -16,17 +18,18 @@ safe-write.o: ../../gnu/safe-write.c ../../gnu/safe-read.c ../config.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h unistd.h \
   /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/confname.h getopt.h \
-  /usr/include/getopt.h /usr/include/errno.h \
-  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
-  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/getopt.h /usr/include/x86_64-linux-gnu/bits/unistd.h \
+  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
-  /usr/local/bin/../lib/clang/3.4/include/limits.h /usr/include/limits.h \
-  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h \
+  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/linux/limits.h \
   /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
@@ -39,9 +42,9 @@ safe-write.o: ../../gnu/safe-write.c ../../gnu/safe-read.c ../config.h \
 
 ../../gnu/safe-write.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 sys/types.h:
 
@@ -83,6 +86,8 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -101,6 +106,8 @@ getopt.h:
 
 /usr/include/getopt.h:
 
+/usr/include/x86_64-linux-gnu/bits/unistd.h:
+
 /usr/include/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/errno.h:
@@ -113,7 +120,7 @@ getopt.h:
 
 /usr/include/asm-generic/errno-base.h:
 
-/usr/local/bin/../lib/clang/3.4/include/limits.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/limits.h:
 
 /usr/include/limits.h:
 

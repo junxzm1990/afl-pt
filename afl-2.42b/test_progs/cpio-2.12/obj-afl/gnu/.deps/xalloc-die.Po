@@ -1,5 +1,6 @@
 xalloc-die.o: ../../gnu/xalloc-die.c ../config.h ../../gnu/xalloc.h \
-  stddef.h /usr/local/bin/../lib/clang/3.4/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h \
+  /usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h \
   ../../gnu/xalloc-oversized.h stdlib.h /usr/include/stdlib.h \
   /usr/include/features.h /usr/include/stdc-predef.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -19,23 +20,26 @@ xalloc-die.o: ../../gnu/xalloc-die.c ../config.h ../../gnu/xalloc.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/sigset.h \
   /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h alloca.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h ../../gnu/error.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib.h ../../gnu/error.h \
   ../../gnu/exitfail.h ../../gnu/gettext.h /usr/include/libintl.h \
   /usr/include/locale.h /usr/include/x86_64-linux-gnu/bits/locale.h \
   string.h /usr/include/string.h \
   /usr/include/x86_64-linux-gnu/bits/string.h \
-  /usr/include/x86_64-linux-gnu/bits/string2.h
+  /usr/include/x86_64-linux-gnu/bits/string2.h \
+  /usr/include/x86_64-linux-gnu/bits/string3.h
 
 ../config.h:
 
 ../../gnu/xalloc.h:
 
-stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/stddef.h:
 
-/usr/local/bin/../lib/clang/3.4/include/stddef.h:
+/usr/lib/llvm-3.8/bin/../lib/clang/3.8.0/include/__stddef_max_align_t.h:
 
 ../../gnu/xalloc-oversized.h:
 
@@ -89,6 +93,8 @@ time.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
@@ -98,6 +104,8 @@ alloca.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 
 ../../gnu/error.h:
 
@@ -118,3 +126,5 @@ string.h:
 /usr/include/x86_64-linux-gnu/bits/string.h:
 
 /usr/include/x86_64-linux-gnu/bits/string2.h:
+
+/usr/include/x86_64-linux-gnu/bits/string3.h:
