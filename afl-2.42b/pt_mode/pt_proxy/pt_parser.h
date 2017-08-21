@@ -390,16 +390,26 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     } while (0)
 
 
+#define MAX_TNT_LEN 15
 
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
         if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
-        __afl_area_ptr[                                                 \
-            (map_64(ctx_curr_ip)                                        \
-            ^map_64(ctx_last_tip_ip)                                    \
-            ^map_8(ctx_curr_tnt_prod)                                   \
-             +log_map[ctx_tnt_counter]) % MAP_SIZE                      \
-            ]++;                                                        \
+        if(ctx_tnt_counter < MAX_TNT_LEN){                              \
+            __afl_area_ptr[                                             \
+                (map_64(ctx_curr_ip)                                    \
+                 ^map_64(ctx_last_tip_ip)                               \
+                 ^map_8(ctx_curr_tnt_prod)                              \
+                 +log_map[ctx_tnt_counter]) % MAP_SIZE                  \
+                ]++;                                                    \
+        }else{                                                          \
+            __afl_area_ptr[                                             \
+                (map_64(ctx_curr_ip)                                    \
+                 ^map_64(ctx_last_tip_ip)                               \
+                    )                                                   \
+                ]+=log_map[ctx_tnt_counter];                            \
+                                                                        \
+        }                                                               \
         ctx_curr_tnt_prod = 0;                                          \
         ctx_last_tip_ip=ctx_curr_ip;                                    \
         ctx_tnt_counter= 0;                                             \
@@ -422,10 +432,10 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 
     while (bytes_remained > 0) {
         kind = pt_get_packet(packet, bytes_remained, &packet_len);
-/* #ifdef DEBUG_PACKET */
+// #ifdef DEBUG_PACKET
         /* writeout_packet(fd, "BYTE remained:", bytes_remained); */
         /* writeout_packet(fd, "packet addr:", packet); */
-/* #endif */
+// #endif
         switch (kind) {
         case PT_PACKET_TNTSHORT:
             ctx_tnt_short = (u8)*packet;
@@ -456,6 +466,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
             ctx_last_ip = ctx_curr_ip;
             ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
 #ifdef DEBUG_PACKET
+            writeout_packet(dfd, "TNTCOUNT", ctx_tnt_counter);
             writeout_packet(dfd, "TNTPROD", ctx_curr_tnt_prod);
             writeout_packet(dfd, "TIP", ctx_curr_ip);
 #endif
