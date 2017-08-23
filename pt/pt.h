@@ -42,7 +42,7 @@
 
 #define MAXTHREAD 0x08
 
-#define PTEN 0x11 //64 entries for ToPA // 256 MB in total
+#define PTEN 0x21 //64 entries for ToPA // 256 MB in total
 #define PTINT PTEN-3
 
 #define TOPANROM 0x1e
