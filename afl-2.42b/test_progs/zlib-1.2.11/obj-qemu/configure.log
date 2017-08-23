@@ -1,69 +1,68 @@
 --------------------
 ../configure
-Sat Jul  8 17:19:01 EDT 2017
-Checking for gcc...
-=== ztest12030.c ===
+Wed Aug 23 08:53:56 PDT 2017
+=== ztest27384.c ===
 extern int getchar();
 int hello() {return getchar();}
 ===
-gcc -c ztest12030.c
+clang -c ztest27384.c
 ... using gcc
 
 Checking for obsessive-compulsive compiler options...
-=== ztest12030.c ===
+=== ztest27384.c ===
 int foo() { return 0; }
 ===
-gcc -c -O3 ztest12030.c
+clang -c -O3 ztest27384.c
 
 Checking for shared library support...
-=== ztest12030.c ===
+=== ztest27384.c ===
 extern int getchar();
 int hello() {return getchar();}
 ===
-gcc -w -c -O3 -fPIC ztest12030.c
-gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest12030.so ztest12030.o
-Building shared library libz.so.1.2.11 with gcc.
+clang -w -c -O3 -fPIC ztest27384.c
+clang -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest27384.so ztest27384.o
+Building shared library libz.so.1.2.11 with clang.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <stdio.h>
 #include <stdlib.h>
 size_t dummy = 0;
 ===
-gcc -c -O3 ztest12030.c
+clang -c -O3 ztest27384.c
 Checking for size_t... Yes.
 
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <sys/types.h>
 off64_t dummy = 0;
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking for off64_t... Yes.
 Checking for fseeko... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <string.h>
 #include <errno.h>
 int main() { return strlen(strerror(errno)); }
 ===
-gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12030 ztest12030.c
+clang -O3 -D_LARGEFILE64_SOURCE=1 -o ztest27384 ztest27384.c
 Checking for strerror... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <unistd.h>
 int main() { return 0; }
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking for unistd.h... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <stdarg.h>
 int main() { return 0; }
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking for stdarg.h... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <stdio.h>
 #include <stdarg.h>
 #include "zconf.h"
@@ -75,10 +74,10 @@ int main()
   return 0;
 }
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -95,10 +94,10 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
-gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12030 ztest12030.c
+clang -O3 -D_LARGEFILE64_SOURCE=1 -o ztest27384 ztest27384.c
 Checking for vsnprintf() in stdio.h... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #include <stdio.h>
 #include <stdarg.h>
 int mytest(const char *fmt, ...)
@@ -116,10 +115,10 @@ int main()
   return (mytest("Hello%d\n", 1));
 }
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking for return value of vsnprintf()... Yes.
 
-=== ztest12030.c ===
+=== ztest27384.c ===
 #define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
 int ZLIB_INTERNAL foo;
 int main()
@@ -127,19 +126,19 @@ int main()
   return 0;
 }
 ===
-gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12030.c
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest27384.c
 Checking for attribute(visibility) support... Yes.
 
 ALL = static shared all64
 AR = ar
 ARFLAGS = rc
-CC = gcc
+CC = clang
 CFLAGS = -O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
-CPP = gcc -E
+CPP = clang -E
 EXE =
 LDCONFIG = ldconfig
 LDFLAGS =
-LDSHARED = gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+LDSHARED = clang -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
 LDSHAREDLIBC = -lc
 OBJC = $(OBJZ) $(OBJG)
 PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
