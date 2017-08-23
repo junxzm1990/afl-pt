@@ -162,3 +162,267 @@ uname = Linux
 --------------------
 
 
+--------------------
+../configure
+<<<<<<< HEAD
+Sat Aug  5 15:02:58 EDT 2017
+Checking for gcc...
+=== ztest12945.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest12945.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest12945.c ===
+int foo() { return 0; }
+===
+gcc -c -O3 ztest12945.c
+
+Checking for shared library support...
+=== ztest12945.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -w -c -O3 -fPIC ztest12945.c
+gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest12945.so ztest12945.o
+Building shared library libz.so.1.2.11 with gcc.
+
+=== ztest12945.c ===
+=======
+Tue Aug 22 20:20:26 EDT 2017
+=== ztest9042.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+clang -c ztest9042.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest9042.c ===
+int foo() { return 0; }
+===
+clang -c -O3 ztest9042.c
+
+Checking for shared library support...
+=== ztest9042.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+clang -w -c -O3 -fPIC ztest9042.c
+clang -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -O3 -fPIC -o ztest9042.so ztest9042.o
+Building shared library libz.so.1.2.11 with clang.
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+<<<<<<< HEAD
+gcc -c -O3 ztest12945.c
+Checking for size_t... Yes.
+
+
+=== ztest12945.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+Checking for off64_t... Yes.
+Checking for fseeko... Yes.
+
+=== ztest12945.c ===
+=======
+clang -c -O3 ztest9042.c
+Checking for size_t... Yes.
+
+
+=== ztest9042.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+Checking for off64_t... Yes.
+Checking for fseeko... Yes.
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+<<<<<<< HEAD
+gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12945 ztest12945.c
+Checking for strerror... Yes.
+
+=== ztest12945.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+Checking for unistd.h... Yes.
+
+=== ztest12945.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+Checking for stdarg.h... Yes.
+
+=== ztest12945.c ===
+=======
+clang -O3 -D_LARGEFILE64_SOURCE=1 -o ztest9042 ztest9042.c
+Checking for strerror... Yes.
+
+=== ztest9042.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+Checking for unistd.h... Yes.
+
+=== ztest9042.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+Checking for stdarg.h... Yes.
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+<<<<<<< HEAD
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest12945.c ===
+=======
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+<<<<<<< HEAD
+gcc -O3 -D_LARGEFILE64_SOURCE=1 -o ztest12945 ztest12945.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest12945.c ===
+=======
+clang -O3 -D_LARGEFILE64_SOURCE=1 -o ztest9042 ztest9042.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+<<<<<<< HEAD
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest12945.c ===
+=======
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest9042.c ===
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+<<<<<<< HEAD
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest12945.c
+=======
+clang -c -O3 -D_LARGEFILE64_SOURCE=1 ztest9042.c
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+Checking for attribute(visibility) support... Yes.
+
+ALL = static shared all64
+AR = ar
+ARFLAGS = rc
+<<<<<<< HEAD
+CC = gcc
+CFLAGS = -O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+CPP = gcc -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+=======
+CC = clang
+CFLAGS = -O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+CPP = clang -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = clang -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+>>>>>>> 9b927d4272080ff321a1826d3b5339146bccec20
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+SHAREDLIB = libz.so
+SHAREDLIBM = libz.so.1
+SHAREDLIBV = libz.so.1.2.11
+STATICLIB = libz.a
+TEST = all teststatic testshared test64
+VER = 1.2.11
+Z_U4 =
+SRCDIR = ../
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+

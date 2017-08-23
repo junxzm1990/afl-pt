@@ -70,8 +70,8 @@ volatile u8  worker_done,                              /* for syncing worker and
             worker_not_done;
 #define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
 #define TWO_BYTE_ENTRIES (1<<16)                       /* num of keys in the rand_map     */
-#define MAX_64K (1<<16) 
-u64 rand_map[TWO_BYTE_ENTRIES];                        /* maps u8 val to random value UR()*/
+#define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
+u64 rand_map[RAND_MAP_SIZE];                           /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 
@@ -373,8 +373,8 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 				if(bound_snapshot > cursor_pos ){
-				//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
-			//		write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
+			//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
+			//	write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 					cursor_pos = bound_snapshot;
 				}
@@ -640,7 +640,7 @@ int main(int argc, char *argv[])
   dev_urandom_fd = open("/dev/urandom", O_RDONLY);
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
-  gen_rand_map(TWO_BYTE_ENTRIES, MAP_SIZE);
+  gen_rand_map(RAND_MAP_SIZE, MAP_SIZE);
   serialize_rand_map(argv[1]);
 
   /* setting up share memory bitmap */
