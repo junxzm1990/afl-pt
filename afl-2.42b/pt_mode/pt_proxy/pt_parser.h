@@ -27,11 +27,11 @@ extern u8  ctx_curr_tnt_cnt;
 
 static const u8 log_map[2097152] = {
 
-    [0 ... 1]           = 0,
-    [2 ... 3]           = 1,
-    [4 ... 7]           = 2,
-    [8 ... 15]          = 3,
-    [16 ... 31]         = 4,
+    [0]                 = 0,
+    [1 ... 2]           = 1,
+    [3 ... 4]           = 2,
+    [5 ... 10]          = 3,
+    [11 ... 31]         = 4,
     [32 ... 63]         = 5,
     [64 ... 127]        = 6,
     [128 ... 255]       = 7,
@@ -390,26 +390,17 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     } while (0)
 
 
-#define MAX_TNT_LEN 15
+// #define MAX_TNT_LEN 63
 
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
         if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
-        if(ctx_tnt_counter < MAX_TNT_LEN){                              \
-            __afl_area_ptr[                                             \
-                (map_64(ctx_curr_ip)                                    \
-                 ^map_64(ctx_last_tip_ip)                               \
-                 ^map_8(ctx_curr_tnt_prod)                              \
-                 +log_map[ctx_tnt_counter]) % MAP_SIZE                  \
-                ]++;                                                    \
-        }else{                                                          \
-            __afl_area_ptr[                                             \
-                (map_64(ctx_curr_ip)                                    \
-                 ^map_64(ctx_last_tip_ip)                               \
-                    )                                                   \
-                ]+=log_map[ctx_tnt_counter];                            \
-                                                                        \
-        }                                                               \
+        __afl_area_ptr[                                                 \
+            (map_64(ctx_curr_ip)                                        \
+             ^map_64(ctx_last_tip_ip)                                   \
+             ^map_8(ctx_curr_tnt_prod)                                  \
+             +log_map[ctx_tnt_counter]) % MAP_SIZE                      \
+            ]++;                                                        \
         ctx_curr_tnt_prod = 0;                                          \
         ctx_last_tip_ip=ctx_curr_ip;                                    \
         ctx_tnt_counter= 0;                                             \
@@ -417,6 +408,32 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
         ctx_curr_tnt_cnt= 0;                                            \
                                                                         \
     } while (0)
+
+// #define UPDATE_TRACEBITS_IDX()                                          \
+//     do {                                                                \
+//         if(ctx_tnt_counter < MAX_TNT_LEN){                              \
+//             if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
+//             __afl_area_ptr[                                             \
+//                 (map_64(ctx_curr_ip)                                    \
+//                  ^map_64(ctx_last_tip_ip)                               \
+//                  ^map_8(ctx_curr_tnt_prod)                              \
+//                  +log_map[ctx_tnt_counter]) % MAP_SIZE                  \
+//                 ]++;                                                    \
+//         }else{                                                          \
+//             __afl_area_ptr[                                             \
+//                 (map_64(ctx_curr_ip)                                    \
+//                  ^map_64(ctx_last_tip_ip)                               \
+//                     )                                                   \
+//                 ]+=log_map[ctx_tnt_counter];                            \
+//                                                                         \
+//         }                                                               \
+//         ctx_curr_tnt_prod = 0;                                          \
+//         ctx_last_tip_ip=ctx_curr_ip;                                    \
+//         ctx_tnt_counter= 0;                                             \
+//         ctx_tnt_container= 0;                                           \
+//         ctx_curr_tnt_cnt= 0;                                            \
+//                                                                         \
+//     } while (0)
     // __afl_area_ptr[                         \
     //     map_64(ctx_curr_ip)                 \
     //     ^map_64(ctx_last_tip_ip)            \
