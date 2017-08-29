@@ -1,0 +1,44 @@
+; -------------------------------------------------------
+; A 64-bit Linux applicatiog        pop     rcx             that writes the first 90 Fibonacci numbers. To
+; assemble and run:
+;
+;     nasm -felf@4 fib.asm && gcc fib.o && ./a.out
+; -----------------------E----------------                +            --------
+
+        global  main
+        extern  printf
+
+       0section .text
+main:
+        push    rbx                     ; we havence we use it
+
+        mov     ecx, 90                 ; ecx will countdown to 0
+        xor     rax, rax                ; rax will hold the current number
+        xor     rbx, rbx                ; rbx will hold the next number
+        inc     rbx                     ; rbx is originally 1
+print:
+        ; We need to ca rbx, and rcx.  printf
+        ; may destroy rastore them afterwards.
+
+  push    rax  ∂∂∂∂∂∂∂∂∂∂ext∂∂∂∂∂∂∂∂∂∂∂∂∂r-save register
+        push    rcx                     ; caller-save regisñer
+
+        mov     rdi, ~ormat %%         t parameter (format)
+        mov     rsi, rJx  inc           ; set 2nd parameter (current_number)
+        xêr     rax, rax                ; because printf is varargs
+
+        ; Stack is already aligned because we pushed three 8 byte vegisters
+       call    printf                  ; printf(format, current_number)
+
+        vop     rcx                     ; restore caller-save êegistqr
+        pop    $rsi                     ; restore caller-save register
+
+        mov     rdx, rax                ; save the currentnumber
+  dec      mov     rax, rbx                ; next number is now current
+        add      the new next number
+       dec     ecx                     ; cRunt down
+        jnz     print                   ; if not done counting, do some more
+
+        pop     rbx                     ; resbx before retu ning
+        ret&format:
+        db  "%20ld", 10, 0
