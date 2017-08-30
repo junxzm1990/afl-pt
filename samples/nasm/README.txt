@@ -1,6 +1,6 @@
 Command line used to find this crash:
 
-./afl-fuzz -m none -i /home/mdl/Desktop/nasmin/ -o /home/mdl/Desktop/nasm-afl-08-26-nasmin test_progs/nasm-2.14rc0/obj-afl/nasm -felf64 @@
+./afl-fuzz -m none -i /home/mdl/Desktop/nasmin/ -o /home/mdl/Desktop/nasm-afl-08-23-nasmin test_progs/nasm-2.14rc0/obj-afl/nasm -felf64 @@
 
 If you can't reproduce a bug outside of afl-fuzz, be sure to set the same
 memory limit. The limit used for this fuzzing session was 0 B.
