@@ -1236,7 +1236,12 @@ static void minimize_bits(u8* dst, u8* src) {
 static void update_bitmap_score(struct queue_entry* q) {
 
   u32 i;
-  u64 fav_factor = q->exec_us * q->len;
+  u64 fav_factor;
+
+  if (pt_mode)
+      fav_factor = q->exec_us * q->len;
+  else
+      fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
 
   /* For every byte set in trace_bits[], see if there is a previous winner,
      and how it compares to us. */
@@ -1249,7 +1254,12 @@ static void update_bitmap_score(struct queue_entry* q) {
 
          /* Faster-executing or smaller test cases are favored. */
 
-         if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+           if (pt_mode){
+               if (fav_factor > (top_rated[i]->exec_us * top_rated[i]->exec_us *
+                                 top_rated[i]->exec_us) * top_rated[i]->len) continue;
+           }else{
+               if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+           }
 
          /* Looks like we're going to win. Decrease ref count for the
             previous winner, discard its trace_bits[] if necessary. */

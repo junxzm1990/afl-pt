@@ -262,7 +262,7 @@ AUTOMAKE = ${SHELL} /home/farshaq/work/afl-pt/afl-2.42b/test_progs/jpeg-9b/missi
 AWK = gawk
 CC = gcc -std=gnu99
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O0
+CFLAGS = -O3 -fstack-protector-all
 CPP = gcc -std=gnu99 -E
 CPPFLAGS = 
 CYGPATH_W = echo
