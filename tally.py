@@ -29,7 +29,7 @@ def show_cov_line(cov_list, interval):
     cnt = 1
 
     for log in cov_list:
-        if log[0] > start_time + cnt * interval * 3600:
+        if log[0] > start_time + cnt * interval * 3600 and log[0] < start_time + (cnt+1) * interval *3600:
             print "-- ", cnt * interval, " hour function coverage ", log[1], " line coverage ", log[2]     
             print "\n"    
             cnt += 1
