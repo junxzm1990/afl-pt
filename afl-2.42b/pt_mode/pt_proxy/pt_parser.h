@@ -406,7 +406,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
                 ^map_64(ctx_last_tip_ip)                                   \
                 ^map_8(ctx_curr_tnt_prod)                                  \
                 +log_map[ctx_tnt_counter]) % MAP_SIZE                      \
-                ]++;                                                        \
+                ]=1;                                                        \
             ctx_curr_tnt_prod = 0;                                          \
             ctx_last_tip_ip=ctx_curr_ip;                                    \
             ctx_tnt_counter= 0;                                             \
@@ -429,13 +429,13 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
                     ^map_64(ctx_last_tip_ip)                               \
                     ^map_8(ctx_curr_tnt_prod)                              \
                     +log_map[ctx_tnt_counter]) % MAP_SIZE                  \
-                    ]++;                                                    \
+                    ]=1;                                                    \
             }else{                                                          \
                 __afl_area_ptr[                                             \
                     (map_64(ctx_curr_ip)                                    \
-                    ^map_64(ctx_last_tip_ip)                               \
-                        )                                                   \
-                    ]+=log_map[ctx_tnt_counter];                            \
+                     ^map_64(ctx_last_tip_ip)                           \
+                     +log_map[ctx_tnt_counter]    )                     \
+                    ]=1;                                                \
                                                                             \
             }                                                               \
             ctx_curr_tnt_prod = 0;                                          \
@@ -445,11 +445,11 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
             ctx_curr_tnt_cnt= 0;                                            \
                                                                             \
         } while (0)
-        __afl_area_ptr[                         \
-            map_64(ctx_curr_ip)                 \
-            ^map_64(ctx_last_tip_ip)            \
-            +log_map[ctx_tnt_counter]           \
-            ]++;                                \
+        // __afl_area_ptr[                         \
+        //     map_64(ctx_curr_ip)                 \
+        //     ^map_64(ctx_last_tip_ip)            \
+        //     +log_map[ctx_tnt_counter]           \
+        //     ]++;                                \
 
 #endif
 
