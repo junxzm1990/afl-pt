@@ -1236,7 +1236,12 @@ static void minimize_bits(u8* dst, u8* src) {
 static void update_bitmap_score(struct queue_entry* q) {
 
   u32 i;
-  u64 fav_factor = q->exec_us * q->len;
+  u64 fav_factor;
+
+  if (pt_mode)
+      fav_factor = q->exec_us * q->len;
+  else
+      fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
 
   /* For every byte set in trace_bits[], see if there is a previous winner,
      and how it compares to us. */
@@ -1249,7 +1254,12 @@ static void update_bitmap_score(struct queue_entry* q) {
 
          /* Faster-executing or smaller test cases are favored. */
 
-         if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+           if (pt_mode){
+               if (fav_factor > (top_rated[i]->exec_us * top_rated[i]->exec_us *
+                                 top_rated[i]->exec_us) * top_rated[i]->len) continue;
+           }else{
+               if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+           }
 
          /* Looks like we're going to win. Decrease ref count for the
             previous winner, discard its trace_bits[] if necessary. */
@@ -2425,11 +2435,17 @@ static u8 run_target(char** argv, u32 timeout) {
 
   tb4 = *(u32*)trace_bits;
 
+  if (!pt_mode){
+      /* In pt_mode the path is already encoded in the touched tracebit pattern
+         so, no need to waste time on classifying tracebits
+      */
 #ifdef __x86_64__
-  classify_counts((u64*)trace_bits);
+      classify_counts((u64*)trace_bits);
 #else
-  classify_counts((u32*)trace_bits);
+      classify_counts((u32*)trace_bits);
 #endif /* ^__x86_64__ */
+      
+  }
 
   prev_timed_out = child_timed_out;
 
@@ -7041,6 +7057,7 @@ static void usage(u8* argv0) {
        "  -t msec       - timeout for each run (auto-scaled, 50-%u ms)\n"
        "  -m megs       - memory limit for child process (%u MB)\n"
        "  -Q            - use binary-only instrumentation (QEMU mode)\n\n"     
+       "  -P            - use binary-only fast hardware tracing (PT mode)\n\n"     
  
        "Fuzzing behavior settings:\n\n"
 
