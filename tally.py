@@ -60,8 +60,8 @@ if __name__ == "__main__":
         if lines[index].find("AFL test case:") != -1:
             fname = get_file_name(lines[index])
             ftime = get_time_stamp(case_path+"/"+fname)
-            fcov = get_func_cov(lines[index+1])
-            lcov = get_line_cov(lines[index+2])
+            fcov = get_func_cov(lines[index+2])
+            lcov = get_line_cov(lines[index+1])
             cov_list.append((ftime, fcov, lcov))
             
     show_cov_line(cov_list, interval)    
