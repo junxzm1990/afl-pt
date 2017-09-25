@@ -29,7 +29,7 @@ def show_cov_line(cov_list, interval):
     cnt = 1
 
     for log in cov_list:
-        if log[0] > start_time + cnt * interval * 3600 and log[0] < start_time + (cnt+1) * interval *3600:
+        if (log[0] > (start_time + cnt * interval * 3600)) and (log[0] < (start_time + (cnt+1) * interval *3600)):
             print "-- ", cnt * interval, " hour function coverage ", log[1], " line coverage ", log[2]     
             print "\n"    
             cnt += 1
@@ -60,8 +60,14 @@ if __name__ == "__main__":
         if lines[index].find("AFL test case:") != -1:
             fname = get_file_name(lines[index])
             ftime = get_time_stamp(case_path+"/"+fname)
-            fcov = get_func_cov(lines[index+2])
-            lcov = get_line_cov(lines[index+1])
+            for i in xrange(10):
+                if 'functions' in lines[index+i]:
+                    fcov = get_func_cov(lines[index+i])
+                    break
+            for i in xrange(10):
+                if 'lines' in lines[index+i]:
+                    lcov = get_line_cov(lines[index+i])
+                    break
             cov_list.append((ftime, fcov, lcov))
             
     show_cov_line(cov_list, interval)    
