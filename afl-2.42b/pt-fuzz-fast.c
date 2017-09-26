@@ -3882,7 +3882,7 @@ static void show_stats(void) {
   double t_byte_ratio, stab_ratio;
 
   u64 cur_ms;
-  u32 t_bytes, t_bits;
+  u32 t_bytes, t_bits, pt_bits;
 
   u32 banner_len, banner_pad;
   u8  tmp[256];
@@ -3929,8 +3929,10 @@ static void show_stats(void) {
 
   /* Do some bitmap stats. */
 
-  t_bytes = count_non_255_bytes(virgin_bits);
-  t_byte_ratio = ((double)t_bytes * 100) / PT_MAP_SIZE;
+  /* In fast pt mode, the density should be calculated using bits */
+  pt_bits = (PT_MAP_SIZE << 3) - count_bits(virgin_bits);
+  t_byte_ratio = ((double)pt_bits * 100) / (PT_MAP_SIZE << 3);
+  t_bytes = pt_bits >> 3; //TODO: modify all calculation related to t_bytes to pt_bits
 
   if (t_bytes) 
     stab_ratio = 100 - ((double)var_byte_count) * 100 / t_bytes;
