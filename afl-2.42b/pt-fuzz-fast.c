@@ -137,11 +137,11 @@ static s32 forksrv_pid,               /* PID of the fork server           */
 
 EXP_ST u8* trace_bits;                /* SHM with instrumentation bitmap  */
 
-EXP_ST u8  virgin_bits[MAP_SIZE],     /* Regions yet untouched by fuzzing */
-           virgin_tmout[MAP_SIZE],    /* Bits we haven't seen in tmouts   */
-           virgin_crash[MAP_SIZE];    /* Bits we haven't seen in crashes  */
+EXP_ST u8  virgin_bits[PT_MAP_SIZE],     /* Regions yet untouched by fuzzing */
+           virgin_tmout[PT_MAP_SIZE],    /* Bits we haven't seen in tmouts   */
+           virgin_crash[PT_MAP_SIZE];    /* Bits we haven't seen in crashes  */
 
-static u8  var_bytes[MAP_SIZE];       /* Bytes that appear to be variable */
+static u8  var_bytes[PT_MAP_SIZE];       /* Bytes that appear to be variable */
 
 static s32 shm_id;                    /* ID of the SHM region             */
 
@@ -258,8 +258,9 @@ static struct queue_entry *queue,     /* Fuzzing queue (linked list)      */
                           *queue_top, /* Top of the list                  */
                           *q_prev100; /* Previous 100 marker              */
 
+
 static struct queue_entry*
-  top_rated[MAP_SIZE];                /* Top entries for bitmap bytes     */
+  pt_top_rated[PT_MAP_SIZE*8];        /* Top entries for bitmap bits (pt) */
 
 struct extra_data {
   u8* data;                           /* Dictionary token data            */
@@ -845,7 +846,7 @@ EXP_ST void write_bitmap(void) {
 
   if (fd < 0) PFATAL("Unable to open '%s'", fname);
 
-  ck_write(fd, virgin_bits, MAP_SIZE, fname);
+  ck_write(fd, virgin_bits, PT_MAP_SIZE, fname);
 
   close(fd);
   ck_free(fname);
@@ -861,7 +862,7 @@ EXP_ST void read_bitmap(u8* fname) {
 
   if (fd < 0) PFATAL("Unable to open '%s'", fname);
 
-  ck_read(fd, virgin_bits, MAP_SIZE, fname);
+  ck_read(fd, virgin_bits, PT_MAP_SIZE, fname);
 
   close(fd);
 
@@ -883,14 +884,14 @@ static inline u8 has_new_bits(u8* virgin_map) {
   u64* current = (u64*)trace_bits;
   u64* virgin  = (u64*)virgin_map;
 
-  u32  i = (MAP_SIZE >> 3);
+  u32  i = (PT_MAP_SIZE >> 3);
 
 #else
 
   u32* current = (u32*)trace_bits;
   u32* virgin  = (u32*)virgin_map;
 
-  u32  i = (MAP_SIZE >> 2);
+  u32  i = (PT_MAP_SIZE >> 2);
 
 #endif /* ^__x86_64__ */
 
@@ -898,47 +899,15 @@ static inline u8 has_new_bits(u8* virgin_map) {
 
 
 
-  while(i--) {
-
-    /* Optimize for (*current & *virgin) == 0 - i.e., no bits in current bitmap
-       that have not been already cleared from the virgin map - since this will
-       almost always be the case. */
+  while(i--){
 
     if (unlikely(*current) && unlikely(*current & *virgin)) {
-
-      if (likely(ret < 2)) {
-
-        u8* cur = (u8*)current;
-        u8* vir = (u8*)virgin;
-
-        /* Looks like we have not found any new bytes yet; see if any non-zero
-           bytes in current[] are pristine in virgin[]. */
-
-#ifdef __x86_64__
-
-        if ((cur[0] && vir[0] == 0xff) || (cur[1] && vir[1] == 0xff) ||
-            (cur[2] && vir[2] == 0xff) || (cur[3] && vir[3] == 0xff) ||
-            (cur[4] && vir[4] == 0xff) || (cur[5] && vir[5] == 0xff) ||
-            (cur[6] && vir[6] == 0xff) || (cur[7] && vir[7] == 0xff)) ret = 2;
-        else ret = 1;
-
-#else
-
-        if ((cur[0] && vir[0] == 0xff) || (cur[1] && vir[1] == 0xff) ||
-            (cur[2] && vir[2] == 0xff) || (cur[3] && vir[3] == 0xff)) ret = 2;
-        else ret = 1;
-
-#endif /* ^__x86_64__ */
-
-      }
-
+      //pt mode, yes it is that simple
+      ret = 2;
       *virgin &= ~*current;
-
     }
-
     current++;
     virgin++;
-
   }
 
 
@@ -957,7 +926,7 @@ static inline u8 has_new_bits(u8* virgin_map) {
 static u32 count_bits(u8* mem) {
 
   u32* ptr = (u32*)mem;
-  u32  i   = (MAP_SIZE >> 2);
+  u32  i   = (PT_MAP_SIZE >> 2);
   u32  ret = 0;
 
   while (i--) {
@@ -992,7 +961,7 @@ static u32 count_bits(u8* mem) {
 static u32 count_bytes(u8* mem) {
 
   u32* ptr = (u32*)mem;
-  u32  i   = (MAP_SIZE >> 2);
+  u32  i   = (PT_MAP_SIZE >> 2);
   u32  ret = 0;
 
   while (i--) {
@@ -1018,7 +987,7 @@ static u32 count_bytes(u8* mem) {
 static u32 count_non_255_bytes(u8* mem) {
 
   u32* ptr = (u32*)mem;
-  u32  i   = (MAP_SIZE >> 2);
+  u32  i   = (PT_MAP_SIZE >> 2);
   u32  ret = 0;
 
   while (i--) {
@@ -1057,7 +1026,7 @@ static const u8 simplify_lookup[256] = {
 
 static void simplify_trace(u64* mem) {
 
-  u32 i = MAP_SIZE >> 3;
+  u32 i = PT_MAP_SIZE >> 3;
 
   while (i--) {
 
@@ -1090,7 +1059,7 @@ static void simplify_trace(u32* mem) {
 
   /*we don't need to simplify trace_bits when in pt_mode*/
 
-  u32 i = MAP_SIZE >> 2;
+  u32 i = PT_MAP_SIZE >> 2;
 
   while (i--) {
 
@@ -1154,7 +1123,7 @@ EXP_ST void init_count_class16(void) {
 static inline void classify_counts(u64* mem) {
 
 /*we don't need to classify counts when in pt_mode*/
-  u32 i = MAP_SIZE >> 3;
+  u32 i = PT_MAP_SIZE >> 3;
 
   while (i--) {
 
@@ -1181,7 +1150,7 @@ static inline void classify_counts(u64* mem) {
 
 static inline void classify_counts(u32* mem) {
 
-  u32 i = MAP_SIZE >> 2;
+  u32 i = PT_MAP_SIZE >> 2;
 
   while (i--) {
 
@@ -1214,23 +1183,6 @@ static void remove_shm(void) {
 }
 
 
-/* Compact trace bytes into a smaller bitmap. We effectively just drop the
-   count information here. This is called only sporadically, for some
-   new paths. */
-
-static void minimize_bits(u8* dst, u8* src) {
-/*we don't need to minimize bits when in pt_mode*/
-
-  u32 i = 0;
-
-  while (i < MAP_SIZE) {
-
-    if (*(src++)) dst[i >> 3] |= 1 << (i & 7);
-    i++;
-
-  }
-
-}
 
 
 /* When we bump into a new path, we call this to see if the path appears
@@ -1245,109 +1197,123 @@ static void minimize_bits(u8* dst, u8* src) {
 
 static void update_bitmap_score(struct queue_entry* q) {
 
-  u32 i;
+  u32 i,j;
   u64 fav_factor;
 
   /* For every byte set in trace_bits[], see if there is a previous winner,
      and how it compares to us. */
 
-  if (pt_mode){
-      /*PT mode*/
-      fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
+  /*PT mode*/
+  fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
 
-      for (i = 0; i < MAP_SIZE; i++){
-          if (trace_bits[i]) {//optimization
+  for (i = 0; i < PT_MAP_SIZE; i++){
+    if (trace_bits[i]) {//optimization
+      for (j=0; j < 8; ++j){
 
-            if ((trace_bits[i]) && top_rated[i]) {
+        if ((trace_bits[i] & (1<<j)) && pt_top_rated[i+j]) {
 
-              /* Faster-executing or smaller test cases are favored. */
-              if (fav_factor > (top_rated[i]->exec_us * top_rated[i]->exec_us *
-                                top_rated[i]->exec_us) * top_rated[i]->len) continue;
+          /* Faster-executing or smaller test cases are favored. */
+          if (fav_factor > (pt_top_rated[i+j]->exec_us * pt_top_rated[i+j]->exec_us *
+                            pt_top_rated[i+j]->exec_us) * pt_top_rated[i+j]->len) continue;
 
-              /* Looks like we're going to win. Decrease ref count for the
-                 previous winner, discard its trace_bits[] if necessary. */
+          /* Looks like we're going to win. Decrease ref count for the
+             previous winner, discard its trace_bits[] if necessary. */
 
-              if (!--top_rated[i]->tc_ref) {
-                ck_free(top_rated[i]->trace_mini);
-                top_rated[i]->trace_mini = 0;
-              }
-            }
-
-            /* Insert ourselves as the new winner. */
-
-            top_rated[i] = q;
-            q->tc_ref++;
-
-            if (!q->trace_mini) {
-              q->trace_mini = ck_alloc(MAP_SIZE >> 3);
-              minimize_bits(q->trace_mini, trace_bits);
-            }
-
-            score_changed = 1;
-
+          if (!--pt_top_rated[i+j]->tc_ref) {
+            ck_free(pt_top_rated[i+j]->trace_mini);
+            pt_top_rated[i+j]->trace_mini = 0;
           }
+        }
+
+        /* Insert ourselves as the new winner. */
+
+        pt_top_rated[i+j] = q;
+        q->tc_ref++;
+
+        if (!q->trace_mini) {
+          q->trace_mini = ck_alloc(PT_MAP_SIZE);
+          /* Just copy trace_bits. */ 
+          /* In PT mode, trace_bits is as big as trace_mini. */
+          memcpy(q->trace_mini, trace_bits, PT_MAP_SIZE);
+        }
+
+        score_changed = 1;
+
       }
-  }else{
-
-      /*Normal mode*/
-      fav_factor = q->exec_us * q->len;
-
-      for (i = 0; i < MAP_SIZE; i++){
-
-          if (trace_bits[i]) {
-
-              if (top_rated[i]) {
-
-                  /* Faster-executing or smaller test cases are favored. */
-
-                  if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
-
-                  /* Looks like we're going to win. Decrease ref count for the
-                     previous winner, discard its trace_bits[] if necessary. */
-
-                  if (!--top_rated[i]->tc_ref) {
-                      ck_free(top_rated[i]->trace_mini);
-                      top_rated[i]->trace_mini = 0;
-                  }
-
-              }
-
-              /* Insert ourselves as the new winner. */
-
-              top_rated[i] = q;
-              q->tc_ref++;
-
-              if (!q->trace_mini) {
-                  q->trace_mini = ck_alloc(MAP_SIZE >> 3);
-                  minimize_bits(q->trace_mini, trace_bits);
-              }
-
-              score_changed = 1;
-
-          }
-      } 
+    }
   }
-
 }
 
 
 /* The second part of the mechanism discussed above is a routine that
-   goes over top_rated[] entries, and then sequentially grabs winners for
+   goes over pt_top_rated[] entries, and then sequentially grabs winners for
    previously-unseen bytes (temp_v) and marks them as favored, at least
    until the next run. The favored entries are given more air time during
    all fuzzing steps. */
+static void pt_cull_queue(void) {
+
+    struct queue_entry* q;
+    static u8 temp_v[PT_MAP_SIZE];
+    u32 i;
+
+    if (dumb_mode || !score_changed) return;
+
+    score_changed = 0;
+
+    memset(temp_v, 255, PT_MAP_SIZE);
+
+    queued_favored  = 0;
+    pending_favored = 0;
+
+    q = queue;
+
+    while (q) {
+        q->favored = 0;
+        q = q->next;
+    }
+
+    /* Let's see if anything in the bitmap isn't captured in temp_v.
+       If yes, and if it has a pt_top_rated[] contender, let's use it. */
+
+    for (i = 0; i < PT_MAP_SIZE * 8; i++)
+        if (pt_top_rated[i] && (temp_v[i >> 3] & (1 << (i & 7)))) {
+
+            u32 j = PT_MAP_SIZE;
+
+            /* Remove all bits belonging to the current entry from temp_v. */
+            /* In PT mode, trace_bits is as big as trace_mini. */
+
+            while (j--) 
+                if (pt_top_rated[i]->trace_mini[j])
+                    temp_v[j] &= ~pt_top_rated[i]->trace_mini[j];
+
+            pt_top_rated[i]->favored = 1;
+            queued_favored++;
+
+            if (!pt_top_rated[i]->was_fuzzed) pending_favored++;
+
+        }
+
+    q = queue;
+
+    while (q) {
+        mark_as_redundant(q, !q->favored);
+        q = q->next;
+    }
+
+}
 
 static void cull_queue(void) {
 
   struct queue_entry* q;
-  static u8 temp_v[MAP_SIZE >> 3];
+  static u8 temp_v[PT_MAP_SIZE >> 3];
   u32 i;
 
   if (dumb_mode || !score_changed) return;
 
   score_changed = 0;
 
-  memset(temp_v, 255, MAP_SIZE >> 3);
+  memset(temp_v, 255, PT_MAP_SIZE >> 3);
 
   queued_favored  = 0;
   pending_favored = 0;
@@ -1360,23 +1326,23 @@ static void cull_queue(void) {
   }
 
   /* Let's see if anything in the bitmap isn't captured in temp_v.
-     If yes, and if it has a top_rated[] contender, let's use it. */
+     If yes, and if it has a pt_top_rated[] contender, let's use it. */
 
-  for (i = 0; i < MAP_SIZE; i++)
-    if (top_rated[i] && (temp_v[i >> 3] & (1 << (i & 7)))) {
+  for (i = 0; i < PT_MAP_SIZE; i++)
+    if (pt_top_rated[i] && (temp_v[i >> 3] & (1 << (i & 7)))) {
 
-      u32 j = MAP_SIZE >> 3;
+      u32 j = PT_MAP_SIZE >> 3;
 
       /* Remove all bits belonging to the current entry from temp_v. */
 
       while (j--) 
-        if (top_rated[i]->trace_mini[j])
-          temp_v[j] &= ~top_rated[i]->trace_mini[j];
+        if (pt_top_rated[i]->trace_mini[j])
+          temp_v[j] &= ~pt_top_rated[i]->trace_mini[j];
 
-      top_rated[i]->favored = 1;
+      pt_top_rated[i]->favored = 1;
       queued_favored++;
 
-      if (!top_rated[i]->was_fuzzed) pending_favored++;
+      if (!pt_top_rated[i]->was_fuzzed) pending_favored++;
 
     }
 
@@ -1396,12 +1362,12 @@ EXP_ST void setup_shm(void) {
 
   u8* shm_str;
 
-  if (!in_bitmap) memset(virgin_bits, 255, MAP_SIZE);
+  if (!in_bitmap) memset(virgin_bits, 255, PT_MAP_SIZE);
 
-  memset(virgin_tmout, 255, MAP_SIZE);
-  memset(virgin_crash, 255, MAP_SIZE);
+  memset(virgin_tmout, 255, PT_MAP_SIZE);
+  memset(virgin_crash, 255, PT_MAP_SIZE);
 
-  shm_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
+  shm_id = shmget(IPC_PRIVATE, PT_MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
 
   if (shm_id < 0) PFATAL("shmget() failed");
 
@@ -2325,7 +2291,7 @@ static u8 run_target(char** argv, u32 timeout) {
      must prevent any earlier operations from venturing into that
      territory. */
 
-  memset(trace_bits, 0, MAP_SIZE);
+  memset(trace_bits, 0, PT_MAP_SIZE);
   MEM_BARRIER();
 
   /* If we're running in "dumb" mode, we can't rely on the fork server
@@ -2587,7 +2553,7 @@ static void show_stats(void);
 static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
                          u32 handicap, u8 from_queue) {
 
-  static u8 first_trace[MAP_SIZE];
+  static u8 first_trace[PT_MAP_SIZE];
 
   u8  fault = 0, new_bits = 0, var_detected = 0,
       first_run = (q->exec_cksum == 0);
@@ -2617,7 +2583,7 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
   if (dumb_mode != 1 && !no_forkserver && !forksrv_pid)
     init_forkserver(argv);
 
-  if (q->exec_cksum) memcpy(first_trace, trace_bits, MAP_SIZE);
+  if (q->exec_cksum) memcpy(first_trace, trace_bits, PT_MAP_SIZE);
 
   start_us = get_cur_time_us();
 
@@ -2641,7 +2607,7 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
       goto abort_calibration;
     }
 
-    cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
+    cksum = hash32(trace_bits, PT_MAP_SIZE, HASH_CONST);
 
     if (q->exec_cksum != cksum) {
 
@@ -2652,7 +2618,7 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
 
         u32 i;
 
-        for (i = 0; i < MAP_SIZE; i++) {
+        for (i = 0; i < PT_MAP_SIZE; i++) {
 
           /* TODO: does this matter for PT mode, which uses bit grained shm map? */
           /* Here we use some overapproximation for now*/
@@ -2670,7 +2636,7 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
       } else {
 
         q->exec_cksum = cksum;
-        memcpy(first_trace, trace_bits, MAP_SIZE);
+        memcpy(first_trace, trace_bits, PT_MAP_SIZE);
 
       }
 
@@ -2741,7 +2707,7 @@ static void check_map_coverage(void) {
 
   if (count_bytes(trace_bits) < 100) return;
 
-  for (i = (1 << (MAP_SIZE_POW2 - 1)); i < MAP_SIZE; i++)
+  for (i = (1 << (PT_MAP_SIZE_POW2 - 1)); i < PT_MAP_SIZE; i++)
     if (trace_bits[i]) return;
 
   WARNF("Recompile binary with newer version of afl to improve coverage!");
@@ -3207,7 +3173,7 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
       queued_with_cov++;
     }
 
-    queue_top->exec_cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
+    queue_top->exec_cksum = hash32(trace_bits, PT_MAP_SIZE, HASH_CONST);
 
     /* Try to calibrate inline; this also calls update_bitmap_score() when
        successful. */
@@ -3964,7 +3930,7 @@ static void show_stats(void) {
   /* Do some bitmap stats. */
 
   t_bytes = count_non_255_bytes(virgin_bits);
-  t_byte_ratio = ((double)t_bytes * 100) / MAP_SIZE;
+  t_byte_ratio = ((double)t_bytes * 100) / PT_MAP_SIZE;
 
   if (t_bytes) 
     stab_ratio = 100 - ((double)var_byte_count) * 100 / t_bytes;
@@ -4004,7 +3970,7 @@ static void show_stats(void) {
 
   /* Compute some mildly useful bitmap stats. */
 
-  t_bits = (MAP_SIZE << 3) - count_bits(virgin_bits);
+  t_bits = (PT_MAP_SIZE << 3) - count_bits(virgin_bits);
 
   /* Now, for the visuals... */
 
@@ -4147,7 +4113,7 @@ static void show_stats(void) {
   SAYF(bV bSTOP "  now processing : " cRST "%-17s " bSTG bV bSTOP, tmp);
 
   sprintf(tmp, "%0.02f%% / %0.02f%%", ((double)queue_cur->bitmap_size) * 
-          100 / MAP_SIZE, t_byte_ratio);
+          100 / PT_MAP_SIZE, t_byte_ratio);
 
   SAYF("    map density : %s%-21s " bSTG bV "\n", t_byte_ratio > 70 ? cLRD : 
        ((t_bytes < 200 && !dumb_mode) ? cPIN : cRST), tmp);
@@ -4509,7 +4475,7 @@ static u32 next_p2(u32 val) {
 static u8 trim_case(char** argv, struct queue_entry* q, u8* in_buf) {
 
   static u8 tmp[64];
-  static u8 clean_trace[MAP_SIZE];
+  static u8 clean_trace[PT_MAP_SIZE];
 
   u8  needs_write = 0, fault = 0;
   u32 trim_exec = 0;
@@ -4557,7 +4523,7 @@ static u8 trim_case(char** argv, struct queue_entry* q, u8* in_buf) {
 
       /* Note that we don't keep track of crashes or hangs here; maybe TODO? */
 
-      cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
+      cksum = hash32(trace_bits, PT_MAP_SIZE, HASH_CONST);
 
       /* If the deletion had no impact on the trace, make it permanent. This
          isn't perfect for variable-path inputs, but we're just making a
@@ -4580,7 +4546,7 @@ static u8 trim_case(char** argv, struct queue_entry* q, u8* in_buf) {
         if (!needs_write) {
 
           needs_write = 1;
-          memcpy(clean_trace, trace_bits, MAP_SIZE);
+          memcpy(clean_trace, trace_bits, PT_MAP_SIZE);
 
         }
 
@@ -4613,7 +4579,7 @@ static u8 trim_case(char** argv, struct queue_entry* q, u8* in_buf) {
     ck_write(fd, in_buf, q->len, q->fname);
     close(fd);
 
-    memcpy(trace_bits, clean_trace, MAP_SIZE);
+    memcpy(trace_bits, clean_trace, PT_MAP_SIZE);
     update_bitmap_score(q);
 
   }
@@ -4738,25 +4704,15 @@ static u32 calculate_score(struct queue_entry* q) {
      global average. Multiplier ranges from 0.1x to 3x. Fast inputs are
      less expensive to fuzz, so we're giving them more air time. */
 
-  if (pt_mode){
-      /* pt mode is more harsh on the execution time*/
-      if (q->exec_us * 0.1 > avg_exec_us) perf_score = 5;
-      else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 10;
-      else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 25;
-      else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 30;
-      else if (q->exec_us * 4 < avg_exec_us) perf_score = 600;
-      else if (q->exec_us * 3 < avg_exec_us) perf_score = 400;
-      else if (q->exec_us * 2 < avg_exec_us) perf_score = 300;
+  /* pt mode is more harsh on the execution time*/
+  if (q->exec_us * 0.1 > avg_exec_us) perf_score = 5;
+  else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 10;
+  else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 25;
+  else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 30;
+  else if (q->exec_us * 4 < avg_exec_us) perf_score = 600;
+  else if (q->exec_us * 3 < avg_exec_us) perf_score = 400;
+  else if (q->exec_us * 2 < avg_exec_us) perf_score = 300;
       
-  }else{
-      if (q->exec_us * 0.1 > avg_exec_us) perf_score = 10;
-      else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 25;
-      else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 50;
-      else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 75;
-      else if (q->exec_us * 4 < avg_exec_us) perf_score = 300;
-      else if (q->exec_us * 3 < avg_exec_us) perf_score = 200;
-      else if (q->exec_us * 2 < avg_exec_us) perf_score = 150;
-  }
 
 
   /* Adjust score based on bitmap size. The working theory is that better
@@ -5215,7 +5171,7 @@ static u8 fuzz_one(char** argv) {
 
     if (!dumb_mode && (stage_cur & 7) == 7) {
 
-      u32 cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
+      u32 cksum = hash32(trace_bits, PT_MAP_SIZE, HASH_CONST);
 
       if (stage_cur == stage_max - 1 && cksum == prev_cksum) {
 
@@ -5371,7 +5327,7 @@ static u8 fuzz_one(char** argv) {
          without wasting time on checksums. */
 
       if (!dumb_mode && len >= EFF_MIN_LEN)
-        cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
+        cksum = hash32(trace_bits, PT_MAP_SIZE, HASH_CONST);
       else
         cksum = ~queue_cur->exec_cksum;
 
@@ -7674,7 +7630,7 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
 
   if (tmp) {
 
-    cp = alloc_printf("%s/afl-pt-proxy", tmp);
+    cp = alloc_printf("%s/pt-proxy-fast", tmp);
 
     if (access(cp, X_OK))
       FATAL("Unable to find '%s'", tmp);
@@ -7691,7 +7647,7 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
 
     *rsl = 0;
 
-    cp = alloc_printf("%s/afl-pt-proxy", own_copy);
+    cp = alloc_printf("%s/pt-proxy-fast", own_copy);
     ck_free(own_copy);
 
     if (!access(cp, X_OK)) {
@@ -7703,16 +7659,16 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
 
   } else ck_free(own_copy);
 
-  if (!access(BIN_PATH "/afl-pt-proxy", X_OK)) {
+  if (!access(BIN_PATH "/pt-proxy-fast", X_OK)) {
 
-    target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-pt-proxy");
+    target_path = new_argv[0] = ck_strdup(BIN_PATH "/pt-proxy-fast");
     return new_argv;
 
   }
 
 
   SAYF("\n" cLRD "[-] " cRST
-       "Oops, unable to find the 'afl-pt-proxy' binary. The binary must be built\n"
+       "Oops, unable to find the 'pt-proxy-fast' binary. The binary must be built\n"
        "    separately by following the instructions in pt_mode/README.pt. If you\n"
        "    already have the binary installed, you may need to specify AFL_PATH in the\n"
        "    environment.\n\n"
@@ -7721,7 +7677,7 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
        "    that are instrumented at compile time with afl-gcc. It is also possible to\n"
        "     use it as atraditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
 
-  FATAL("Failed to locate 'afl-pt-proxy'.");
+  FATAL("Failed to locate 'pt-proxy-fast'.");
 
 }
 
@@ -8030,12 +7986,17 @@ int main(int argc, char** argv) {
     }
 
 
+
   if (optind == argc || !in_dir || !out_dir) usage(argv[0]);
 
   setup_signal_handlers();
   check_asan_opts();
 
   if (sync_id) fix_up_sync();
+
+  if (!pt_mode){
+    FATAL("%s is only for PT mode (-P)", argv[0]);
+  }
 
   if (!strcmp(in_dir, out_dir))
     FATAL("Input and output directories can't be the same");
@@ -8114,7 +8075,10 @@ int main(int argc, char** argv) {
 
   perform_dry_run(use_argv);
 
-  cull_queue();
+  if (pt_mode)
+      pt_cull_queue();
+  else
+      cull_queue();
 
   show_init_stats();
 
@@ -8137,7 +8101,10 @@ int main(int argc, char** argv) {
 
     u8 skipped_fuzz;
 
-    cull_queue();
+    if (pt_mode)
+        pt_cull_queue();
+    else
+        cull_queue();
 
 
     if (!queue_cur) {

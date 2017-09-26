@@ -318,7 +318,9 @@
    after changing this - otherwise, SEGVs may ensue. */
 
 #define MAP_SIZE_POW2       17
+#define PT_MAP_SIZE_POW2    (MAP_SIZE_POW2 - 3)
 #define MAP_SIZE            (1 << MAP_SIZE_POW2)
+#define PT_MAP_SIZE         (MAP_SIZE >> 3)
 
 /* Maximum allocator request size (keep well under INT_MAX): */
 
