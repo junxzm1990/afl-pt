@@ -333,6 +333,19 @@ static void *pt_parse_worker(void *arg)
 	u64 cursor_pos = 0;
 	u64 bound_snapshot = 0;
 
+#ifdef KAFL_MODE
+////Basic Logic Here
+///	Load the code segment into memory 
+///	Starting with a TIP -> Cache all the TNT until the next TIP is encountered
+///	Cache format: 
+///		[Start_addr of BB1] -->TRUE--> [Start_addr of BB2] 
+///		[Start_addr of BB1] -->FALSE--> [Start_addr of BB3]			
+///	When no cache found, perform online disassembling and cache the results
+///	Need an efficient implementation of cache
+
+#endif
+
+
 #ifdef HAVE_AFFINITY
 	bind_to_free_core();
 #endif
