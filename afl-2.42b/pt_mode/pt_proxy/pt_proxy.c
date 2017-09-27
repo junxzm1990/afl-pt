@@ -26,7 +26,6 @@
 #include "disassembler.h"
 #endif
 
-
 /* using global data because afl will start one proxy instance per target                 */
 /* #define HAS_MSR */
 #define USE_RANDOM_SEED
@@ -350,10 +349,12 @@ static void *pt_parse_worker(void *arg)
 ///		Can we just create an array whose size equals to the code segment? 
 ///			Too much memory consumption? Do we really care? 
 
-
-
-
-
+	disassembler_t disassembler;
+	//set up the code, min_addr, and max_addr
+	//also malloc memory for cfg_cache
+	if(!init_disassembler(target_path, &disassembler)){
+		 FATAL("Failed to initialize disassembler in KAFL MODE");  
+	}
 #endif
 
 
@@ -381,9 +382,14 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 			if(bound_snapshot > cursor_pos){
-				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot - cursor_pos);
-				//write(off_fd, msg, strlen(msg));
-				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+
+				#ifdef KAFL_MODE
+					parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), 
+						bound_snapshot-cursor_pos,
+						&disassembler);
+				#else
+					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				#endif
 				cursor_pos = bound_snapshot;
 			}
 
@@ -397,9 +403,13 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 				if(bound_snapshot > cursor_pos ){
-			//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
-			//	write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
+				#ifdef KAFL_MODE
+					parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), 
+						bound_snapshot-cursor_pos,
+						&disassembler);
+				#else
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				#endif
 					cursor_pos = bound_snapshot;
 				}
 
@@ -407,7 +417,6 @@ static void *pt_parse_worker(void *arg)
           cnt++;
 					cursor_pos = 0;
 					RESET_DECODE_CTX();
-				//	write(off_fd, "===============\n", 17);
 					cnt++;
 				}
 			}
@@ -691,8 +700,6 @@ int main(int argc, char *argv[])
   strcat(target_msg, target_path);
   proxy_send_msg(target_msg);
   proxy_recv_msg();
-
-
 
   printf("proxy starting %s", new_argv[0]);
 

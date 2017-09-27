@@ -1,3 +1,11 @@
+#ifdef KAFL_MODE
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <elf.h>
+#include <unistd.h>
+
 #include "disassembler.h"
 
 #define LOOKUP_TABLES		5
@@ -105,6 +113,81 @@ uint8_t lookup_table_sizes[] = {
 	2,
 	19
 };
+
+
+//initialize the disassembler based on the elf file
+bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
+
+	int elffd; 
+	int index; 
+
+
+#ifdef ARCH_32
+	Elf32_Ehdr *elfhdr;
+	Elf32_Phdr *phdrs 
+#else
+	Elf64_Ehdr *elfhdr;
+	Elf64_Phdr *phdrs 
+#endif	
+
+	disassembler->code = NULL;
+	disassembler->min_addr = 0;
+	disassembler->max_addr = 0;
+	disassembler->cfg_cache = 0;
+
+	elffd = open(elfpath, O_RDONLY);
+
+	if(elffd <= 0)
+		return false;
+
+//read program header
+	read(fd, &elfhdr, 
+
+#ifdef ARCH_32
+	sizeof(Elf32_Ehdr)
+#else
+	sizeof(Elf64_Ehdr)
+#endif	
+	);
+
+	// check if the file is ELF
+	if(elfhdr.e_ident[0]!=0x7f ||
+		elfhdr.e_ident[1]!='E' ||
+		elfhdr.e_ident[2]!='L' ||
+		elfhdr.e_ident[3]!='F'){
+		printf("Not an elf file\n");
+		return false;
+	}
+
+//read segment table
+	phdrs = malloc(
+#ifdef ARCH_32
+		sizeof(Elf32_Phdr) 
+#else 	
+		sizeof(Elf64_Phdr) 			
+#endif
+		* elfhdr->phdr_num);
+
+	lseek(elffd, elfhdr->phdr_base, SEEK_SET);
+
+	read(elffd, shdrs, 
+#ifdef ARCH_32
+		sizeof(Elf32_Phdr) 
+#else 	
+		sizeof(Elf64_Phdr) 			
+#endif
+	*shdr_num);
+	 
+
+	for(index = 0; index < elfhdr->e_phnum; index++){
+
+	//code segment is to be loaded and executable
+
+
+
+	}
+}
+
 
 /* ===== kAFL disassembler cofi list ===== */
 
@@ -437,4 +520,6 @@ bool trace_disassembler(disassembler_t* self, uint64_t entry_point, bool isr, tn
 		}
 	}
 }
+
+#endif
 
