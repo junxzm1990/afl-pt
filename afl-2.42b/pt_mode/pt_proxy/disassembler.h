@@ -4,11 +4,8 @@
 #define DISASSEMBLER_H
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <elf.h>
-#include <unistd.h>
+
+
 
 #ifdef ARCH_32
 typedef uint64_t addr_t; 
