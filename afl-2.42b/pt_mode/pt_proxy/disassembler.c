@@ -170,7 +170,7 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 
 	lseek(elffd, elfhdr->phdr_base, SEEK_SET);
 
-	read(elffd, shdrs, 
+	read(elffd, phdrs, 
 #ifdef ARCH_32
 		sizeof(Elf32_Phdr) 
 #else 	
@@ -182,11 +182,27 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 	for(index = 0; index < elfhdr->e_phnum; index++){
 
 	//code segment is to be loaded and executable
-
-
-
+		if(phdrs[index].p_type == PT_LOAD
+		&& phdrs[index].p_flags == PF_X){
+			break;
+		}
 	}
+
+	//Did not find the executable segment 
+	if(index == elfhdr->e_phnum){
+		free(phdrs);
+		return false; 
+	}
+
+	//Now we can finally initializ the disassembler 
+
+
+
+
 }
+
+
+
 
 
 /* ===== kAFL disassembler cofi list ===== */
