@@ -22,6 +22,11 @@
 #include "pt_proxy.h"
 #include "pt_parser.h"
 
+#ifdef KAFL_MODE
+#include "disassembler.h"
+#endif
+
+
 /* using global data because afl will start one proxy instance per target                 */
 /* #define HAS_MSR */
 #define USE_RANDOM_SEED
@@ -341,7 +346,13 @@ static void *pt_parse_worker(void *arg)
 ///		[Start_addr of BB1] -->TRUE--> [Start_addr of BB2] 
 ///		[Start_addr of BB1] -->FALSE--> [Start_addr of BB3]			
 ///	When no cache found, perform online disassembling and cache the results
-///	Need an efficient implementation of cache
+///	Need an efficient implementation of cache. But do we really need? 
+///		Can we just create an array whose size equals to the code segment? 
+///			Too much memory consumption? Do we really care? 
+
+
+
+
 
 #endif
 
