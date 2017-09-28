@@ -1,0 +1,684 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - trace.lcov_info_final - libpng-1.6.31/contrib/libtests/timepng.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">libpng-1.6.31/contrib/libtests</a> - timepng.c<span style="font-size: 80%;"> (source / <a href="timepng.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">trace.lcov_info_final</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">219</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-09-28</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* timepng.c</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright (c) 2013,2016 John Cunningham Bowler
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Last changed in libpng 1.6.22 [May 26, 2016]
+<span class="lineNum">       6 </span>            :  *
+<span class="lineNum">       7 </span>            :  * This code is released under the libpng license.
+<span class="lineNum">       8 </span>            :  * For conditions of distribution and use, see the disclaimer
+<span class="lineNum">       9 </span>            :  * and license in png.h
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Load an arbitrary number of PNG files (from the command line, or, if there
+<span class="lineNum">      12 </span>            :  * are no arguments on the command line, from stdin) then run a time test by
+<span class="lineNum">      13 </span>            :  * reading each file by row or by image (possibly with transforms in the latter
+<span class="lineNum">      14 </span>            :  * case).  The only output is a time as a floating point number of seconds with
+<span class="lineNum">      15 </span>            :  * 9 decimal digits.
+<span class="lineNum">      16 </span>            :  */
+<span class="lineNum">      17 </span>            : #define _POSIX_C_SOURCE 199309L /* for clock_gettime */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      20 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      21 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;limits.h&gt;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #include &lt;time.h&gt;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : #if defined(HAVE_CONFIG_H) &amp;&amp; !defined(PNG_NO_CONFIG_H)
+<span class="lineNum">      28 </span>            : #  include &lt;config.h&gt;
+<span class="lineNum">      29 </span>            : #endif
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /* Define the following to use this test against your installed libpng, rather
+<span class="lineNum">      32 </span>            :  * than the one being built here:
+<span class="lineNum">      33 </span>            :  */
+<span class="lineNum">      34 </span>            : #ifdef PNG_FREESTANDING_TESTS
+<span class="lineNum">      35 </span>            : #  include &lt;png.h&gt;
+<span class="lineNum">      36 </span>            : #else
+<span class="lineNum">      37 </span>            : #  include &quot;../../png.h&quot;
+<span class="lineNum">      38 </span>            : #endif
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : /* The following is to support direct compilation of this file as C++ */
+<span class="lineNum">      41 </span>            : #ifdef __cplusplus
+<span class="lineNum">      42 </span>            : #  define voidcast(type, value) static_cast&lt;type&gt;(value)
+<span class="lineNum">      43 </span>            : #else
+<span class="lineNum">      44 </span>            : #  define voidcast(type, value) (value)
+<span class="lineNum">      45 </span>            : #endif /* __cplusplus */
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : /* 'CLOCK_PROCESS_CPUTIME_ID' is one of the clock timers for clock_gettime.  It
+<span class="lineNum">      48 </span>            :  * need not be supported even when clock_gettime is available.  It returns the
+<span class="lineNum">      49 </span>            :  * 'CPU' time the process has consumed.  'CPU' time is assumed to include time
+<span class="lineNum">      50 </span>            :  * when the CPU is actually blocked by a pending cache fill but not time
+<span class="lineNum">      51 </span>            :  * waiting for page faults.  The attempt is to get a measure of the actual time
+<span class="lineNum">      52 </span>            :  * the implementation takes to read a PNG ignoring the potentially very large IO
+<span class="lineNum">      53 </span>            :  * overhead.
+<span class="lineNum">      54 </span>            :  */
+<span class="lineNum">      55 </span>            : #if defined (CLOCK_PROCESS_CPUTIME_ID) &amp;&amp; defined(PNG_STDIO_SUPPORTED) &amp;&amp;\
+<span class="lineNum">      56 </span>            :     defined(PNG_EASY_ACCESS_SUPPORTED) &amp;&amp;\
+<span class="lineNum">      57 </span>            :     (PNG_LIBPNG_VER &gt;= 10700 ? defined(PNG_READ_PNG_SUPPORTED) :\
+<span class="lineNum">      58 </span>            :      defined (PNG_SEQUENTIAL_READ_SUPPORTED) &amp;&amp;\
+<span class="lineNum">      59 </span>            :      defined(PNG_INFO_IMAGE_SUPPORTED))
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : typedef struct
+<span class="lineNum">      62 </span>            : {
+<span class="lineNum">      63 </span>            :    FILE *input;
+<span class="lineNum">      64 </span>            :    FILE *output;
+<a name="65"><span class="lineNum">      65 </span>            : }  io_data;</a>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 : static PNG_CALLBACK(void, read_and_copy,</span>
+<span class="lineNum">      68 </span>            :       (png_structp png_ptr, png_bytep buffer, png_size_t cb))
+<span class="lineNum">      69 </span>            : {
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :    io_data *io = (io_data*)png_get_io_ptr(png_ptr);</span>
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :    if (fread(buffer, cb, 1, io-&gt;input) != 1)</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :       png_error(png_ptr, strerror(errno));</span>
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :    if (fwrite(buffer, cb, 1, io-&gt;output) != 1)</span>
+<span class="lineNum">      76 </span>            :    {
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :       perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;temporary file PNG write failed\n&quot;);</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :       exit(1);</span>
+<span class="lineNum">      80 </span>            :    }
+<a name="81"><span class="lineNum">      81 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 : static void read_by_row(png_structp png_ptr, png_infop info_ptr,</span>
+<span class="lineNum">      84 </span>            :       FILE *write_ptr, FILE *read_ptr)
+<span class="lineNum">      85 </span>            : {
+<span class="lineNum">      86 </span>            :    /* These don't get freed on error, this is fine; the program immediately
+<span class="lineNum">      87 </span>            :     * exits.
+<span class="lineNum">      88 </span>            :     */
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :    png_bytep row = NULL, display = NULL;</span>
+<span class="lineNum">      90 </span>            :    io_data io_copy;
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :    if (write_ptr != NULL)</span>
+<span class="lineNum">      93 </span>            :    {
+<span class="lineNum">      94 </span>            :       /* Set up for a copy to the temporary file: */
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :       io_copy.input = read_ptr;</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :       io_copy.output = write_ptr;</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :       png_set_read_fn(png_ptr, &amp;io_copy, read_and_copy);</span>
+<span class="lineNum">      98 </span>            :    }
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :    png_read_info(png_ptr, info_ptr);</span>
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            :    {
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :       png_size_t rowbytes = png_get_rowbytes(png_ptr, info_ptr);</span>
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :       row = voidcast(png_bytep,malloc(rowbytes));</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :       display = voidcast(png_bytep,malloc(rowbytes));</span>
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :       if (row == NULL || display == NULL)</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :          png_error(png_ptr, &quot;OOM allocating row buffers&quot;);</span>
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :       {
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :          png_uint_32 height = png_get_image_height(png_ptr, info_ptr);</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :          int passes = png_set_interlace_handling(png_ptr);</span>
+<span class="lineNum">     114 </span>            :          int pass;
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :          png_start_read_image(png_ptr);</span>
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :          for (pass = 0; pass &lt; passes; ++pass)</span>
+<span class="lineNum">     119 </span>            :          {
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :             png_uint_32 y = height;</span>
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :             /* NOTE: this trashes the row each time; interlace handling won't
+<span class="lineNum">     123 </span>            :              * work, but this avoids memory thrashing for speed testing and is
+<span class="lineNum">     124 </span>            :              * somewhat representative of an application that works row-by-row.
+<span class="lineNum">     125 </span>            :              */
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :             while (y-- &gt; 0)</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :                png_read_row(png_ptr, row, display);</span>
+<span class="lineNum">     128 </span>            :          }
+<span class="lineNum">     129 </span>            :       }
+<span class="lineNum">     130 </span>            :    }
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            :    /* Make sure to read to the end of the file: */
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :    png_read_end(png_ptr, info_ptr);</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :    /* Free this up: */
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :    free(row);</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :    free(display);</span>
+<a name="138"><span class="lineNum">     138 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 : static PNG_CALLBACK(void, no_warnings, (png_structp png_ptr,</span>
+<span class="lineNum">     141 </span>            :          png_const_charp warning))
+<span class="lineNum">     142 </span>            : {
+<span class="lineNum">     143 </span>            :    (void)png_ptr;
+<span class="lineNum">     144 </span>            :    (void)warning;
+<a name="145"><span class="lineNum">     145 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 : static int read_png(FILE *fp, png_int_32 transforms, FILE *write_file)</span>
+<span class="lineNum">     148 </span>            : {
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,0,0,</span>
+<span class="lineNum">     150 </span>            :          no_warnings);
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :    png_infop info_ptr = NULL;</span>
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :    if (png_ptr == NULL)</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :       return 0;</span>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :    if (setjmp(png_jmpbuf(png_ptr)))</span>
+<span class="lineNum">     157 </span>            :    {
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :       png_destroy_read_struct(&amp;png_ptr, &amp;info_ptr, NULL);</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :       return 0;</span>
+<span class="lineNum">     160 </span>            :    }
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : #  ifdef PNG_BENIGN_ERRORS_SUPPORTED
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :       png_set_benign_errors(png_ptr, 1/*allowed*/);</span>
+<span class="lineNum">     164 </span>            : #  endif
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :    png_init_io(png_ptr, fp);</span>
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :    info_ptr = png_create_info_struct(png_ptr);</span>
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :    if (info_ptr == NULL)</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :       png_error(png_ptr, &quot;OOM allocating info structure&quot;);</span>
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :    if (transforms &lt; 0)</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :       read_by_row(png_ptr, info_ptr, write_file, fp);</span>
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :    else
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :       png_read_png(png_ptr, info_ptr, transforms, NULL/*params*/);</span>
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :    png_destroy_read_struct(&amp;png_ptr, &amp;info_ptr, NULL);</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :    return 1;</span>
+<a name="180"><span class="lineNum">     180 </span>            : }</a>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 : static int mytime(struct timespec *t)</span>
+<span class="lineNum">     183 </span>            : {
+<span class="lineNum">     184 </span>            :    /* Do the timing using clock_gettime and the per-process timer. */
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :    if (!clock_gettime(CLOCK_PROCESS_CPUTIME_ID, t))</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :       return 1;</span>
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :    perror(&quot;CLOCK_PROCESS_CPUTIME_ID&quot;);</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :    fprintf(stderr, &quot;timepng: could not get the time\n&quot;);</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :    return 0;</span>
+<a name="191"><span class="lineNum">     191 </span>            : }</a>
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 : static int perform_one_test(FILE *fp, int nfiles, png_int_32 transforms)</span>
+<span class="lineNum">     194 </span>            : {
+<span class="lineNum">     195 </span>            :    int i;
+<span class="lineNum">     196 </span>            :    struct timespec before, after;
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            :    /* Clear out all errors: */
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :    rewind(fp);</span>
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :    if (mytime(&amp;before))</span>
+<span class="lineNum">     202 </span>            :    {
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :       for (i=0; i&lt;nfiles; ++i)</span>
+<span class="lineNum">     204 </span>            :       {
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :          if (read_png(fp, transforms, NULL/*write*/))</span>
+<span class="lineNum">     206 </span>            :          {
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :             if (ferror(fp))</span>
+<span class="lineNum">     208 </span>            :             {
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :                perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :                fprintf(stderr, &quot;file %d: error reading PNG data\n&quot;, i);</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :                return 0;</span>
+<span class="lineNum">     212 </span>            :             }
+<span class="lineNum">     213 </span>            :          }
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :          else
+<span class="lineNum">     216 </span>            :          {
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :             perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;file %d: error from libpng\n&quot;, i);</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :             return 0;</span>
+<span class="lineNum">     220 </span>            :          }
+<span class="lineNum">     221 </span>            :       }
+<span class="lineNum">     222 </span>            :    }
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            :    else
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :       return 0;</span>
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :    if (mytime(&amp;after))</span>
+<span class="lineNum">     228 </span>            :    {
+<span class="lineNum">     229 </span>            :       /* Work out the time difference and print it - this is the only output,
+<span class="lineNum">     230 </span>            :        * so flush it immediately.
+<span class="lineNum">     231 </span>            :        */
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :       unsigned long s = after.tv_sec - before.tv_sec;</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :       long ns = after.tv_nsec - before.tv_nsec;</span>
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :       if (ns &lt; 0)</span>
+<span class="lineNum">     236 </span>            :       {
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :          --s;</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :          ns += 1000000000;</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :          if (ns &lt; 0)</span>
+<span class="lineNum">     241 </span>            :          {
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;timepng: bad clock from kernel\n&quot;);</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :             return 0;</span>
+<span class="lineNum">     244 </span>            :          }
+<span class="lineNum">     245 </span>            :       }
+<span class="lineNum">     246 </span>            : 
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :       printf(&quot;%lu.%.9ld\n&quot;, s, ns);</span>
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :       fflush(stdout);</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :       if (ferror(stdout))</span>
+<span class="lineNum">     250 </span>            :       {
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng: error writing output\n&quot;);</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :          return 0;</span>
+<span class="lineNum">     253 </span>            :       }
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :       /* Successful return */
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :       return 1;</span>
+<span class="lineNum">     257 </span>            :    }
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            :    else
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :       return 0;</span>
+<a name="261"><span class="lineNum">     261 </span>            : }</a>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 : static int add_one_file(FILE *fp, char *name)</span>
+<span class="lineNum">     264 </span>            : {
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :    FILE *ip = fopen(name, &quot;rb&quot;);</span>
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :    if (ip != NULL)</span>
+<span class="lineNum">     268 </span>            :    {
+<span class="lineNum">     269 </span>            :       /* Read the file using libpng; this detects errors and also deals with
+<span class="lineNum">     270 </span>            :        * files which contain data beyond the end of the file.
+<span class="lineNum">     271 </span>            :        */
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :       int ok = 0;</span>
+<span class="lineNum">     273 </span>            :       fpos_t pos;
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :       if (fgetpos(fp, &amp;pos))</span>
+<span class="lineNum">     276 </span>            :       {
+<span class="lineNum">     277 </span>            :          /* Fatal error reading the start: */
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :          perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;temporary file fgetpos error\n&quot;);</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     281 </span>            :       }
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :       if (read_png(ip, -1/*by row*/, fp/*output*/))</span>
+<span class="lineNum">     284 </span>            :       {
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :          if (ferror(ip))</span>
+<span class="lineNum">     286 </span>            :          {
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :             perror(name);</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;%s: read error\n&quot;, name);</span>
+<span class="lineNum">     289 </span>            :          }
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            :          else
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :             ok = 1; /* read ok */</span>
+<span class="lineNum">     293 </span>            :       }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :       else
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;%s: file not added\n&quot;, name);</span>
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :       (void)fclose(ip);</span>
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :       /* An error in the output is fatal; exit immediately: */
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :       if (ferror(fp))</span>
+<span class="lineNum">     302 </span>            :       {
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :          perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;temporary file write error\n&quot;);</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     306 </span>            :       }
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :       if (ok)</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :          return 1;</span>
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            :       /* Did not read the file successfully, simply rewind the temporary
+<span class="lineNum">     312 </span>            :        * file.  This must happen after the ferror check above to avoid clearing
+<span class="lineNum">     313 </span>            :        * the error.
+<span class="lineNum">     314 </span>            :        */
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :       if (fsetpos(fp, &amp;pos))</span>
+<span class="lineNum">     316 </span>            :       {
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :          perror(&quot;temporary file&quot;);</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;temporary file fsetpos error\n&quot;);</span>
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     320 </span>            :       }
+<span class="lineNum">     321 </span>            :    }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            :    else
+<span class="lineNum">     324 </span>            :    {
+<span class="lineNum">     325 </span>            :       /* file open error: */
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :       perror(name);</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s: open failed\n&quot;, name);</span>
+<span class="lineNum">     328 </span>            :    }
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :    return 0; /* file not added */</span>
+<span class="lineNum">     331 </span>            : }
+<a name="332"><span class="lineNum">     332 </span>            : </a>
+<span class="lineNum">     333 </span>            : static void
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 : usage(FILE *fp)</span>
+<span class="lineNum">     335 </span>            : {
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 :    if (fp != NULL) fclose(fp);</span>
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :    fprintf(stderr,</span>
+<span class="lineNum">     339 </span>            : &quot;Usage:\n&quot;
+<span class="lineNum">     340 </span>            : &quot; timepng --assemble &lt;assembly&gt; {files}\n&quot;
+<span class="lineNum">     341 </span>            : &quot;  Read the files into &lt;assembly&gt;, output the count.  Options are ignored.\n&quot;
+<span class="lineNum">     342 </span>            : &quot; timepng --dissemble &lt;assembly&gt; &lt;count&gt; [options]\n&quot;
+<span class="lineNum">     343 </span>            : &quot;  Time &lt;count&gt; files from &lt;assembly&gt;, additional files may not be given.\n&quot;
+<span class="lineNum">     344 </span>            : &quot; Otherwise:\n&quot;
+<span class="lineNum">     345 </span>            : &quot;  Read the files into a temporary file and time the decode\n&quot;
+<span class="lineNum">     346 </span>            : &quot;Transforms:\n&quot;
+<span class="lineNum">     347 </span>            : &quot;  --by-image: read by image with png_read_png\n&quot;
+<span class="lineNum">     348 </span>            : &quot;  --&lt;transform&gt;: implies by-image, use PNG_TRANSFORM_&lt;transform&gt;\n&quot;
+<span class="lineNum">     349 </span>            : &quot;  Otherwise: read by row using png_read_row (to a single row buffer)\n&quot;
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :    /* ISO C90 string length max 509 */);fprintf(stderr,</span>
+<span class="lineNum">     351 </span>            : &quot;{files}:\n&quot;
+<span class="lineNum">     352 </span>            : &quot;  PNG files to copy into the assembly and time.  Invalid files are skipped\n&quot;
+<span class="lineNum">     353 </span>            : &quot;  with appropriate error messages.  If no files are given the list of files\n&quot;
+<span class="lineNum">     354 </span>            : &quot;  is read from stdin with each file name terminated by a newline\n&quot;
+<span class="lineNum">     355 </span>            : &quot;Output:\n&quot;
+<span class="lineNum">     356 </span>            : &quot;  For --assemble the output is the name of the assembly file followed by the\n&quot;
+<span class="lineNum">     357 </span>            : &quot;  count of the files it contains; the arguments for --dissemble.  Otherwise\n&quot;
+<span class="lineNum">     358 </span>            : &quot;  the output is the total decode time in seconds.\n&quot;);
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :    exit(99);</span>
+<a name="361"><span class="lineNum">     361 </span>            : }</a>
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 : int main(int argc, char **argv)</span>
+<span class="lineNum">     364 </span>            : {
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :    int ok = 0;</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :    int err = 0;</span>
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :    int nfiles = 0;</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :    int transforms = -1; /* by row */</span>
+<span class="lineNum">     369 </span><span class="lineNoCov">          0 :    const char *assembly = NULL;</span>
+<span class="lineNum">     370 </span>            :    FILE *fp;
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :    if (argc &gt; 2 &amp;&amp; strcmp(argv[1], &quot;--assemble&quot;) == 0)</span>
+<span class="lineNum">     373 </span>            :    {
+<span class="lineNum">     374 </span>            :       /* Just build the test file, argv[2] is the file name. */
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :       assembly = argv[2];</span>
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :       fp = fopen(assembly, &quot;wb&quot;);</span>
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :       if (fp == NULL)</span>
+<span class="lineNum">     378 </span>            :       {
+<span class="lineNum">     379 </span><span class="lineNoCov">          0 :          perror(assembly);</span>
+<span class="lineNum">     380 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng --assemble %s: could not open for write\n&quot;,</span>
+<span class="lineNum">     381 </span>            :                assembly);
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :          usage(NULL);</span>
+<span class="lineNum">     383 </span>            :       }
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :       argv += 2;</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :       argc -= 2;</span>
+<span class="lineNum">     387 </span>            :    }
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :    else if (argc &gt; 3 &amp;&amp; strcmp(argv[1], &quot;--dissemble&quot;) == 0)</span>
+<span class="lineNum">     390 </span>            :    {
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :       fp = fopen(argv[2], &quot;rb&quot;);</span>
+<span class="lineNum">     392 </span>            : 
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :       if (fp == NULL)</span>
+<span class="lineNum">     394 </span>            :       {
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :          perror(argv[2]);</span>
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng --dissemble %s: could not open for read\n&quot;,</span>
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :                argv[2]);</span>
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :          usage(NULL);</span>
+<span class="lineNum">     399 </span>            :       }
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :       nfiles = atoi(argv[3]);</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :       if (nfiles &lt;= 0)</span>
+<span class="lineNum">     403 </span>            :       {
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :          fprintf(stderr,</span>
+<span class="lineNum">     405 </span>            :                &quot;timepng --dissemble &lt;file&gt; &lt;count&gt;: %s is not a count\n&quot;,
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :                argv[3]);</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :          exit(99);</span>
+<span class="lineNum">     408 </span>            :       }
+<span class="lineNum">     409 </span>            : #ifdef __COVERITY__
+<span class="lineNum">     410 </span>            :       else
+<span class="lineNum">     411 </span>            :       {
+<span class="lineNum">     412 </span>            :          nfiles &amp;= PNG_UINT_31_MAX;
+<span class="lineNum">     413 </span>            :       }
+<span class="lineNum">     414 </span>            : #endif
+<span class="lineNum">     415 </span>            : 
+<span class="lineNum">     416 </span><span class="lineNoCov">          0 :       argv += 3;</span>
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :       argc -= 3;</span>
+<span class="lineNum">     418 </span>            :    }
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span>            :    else /* Else use a temporary file */
+<span class="lineNum">     421 </span>            :    {
+<span class="lineNum">     422 </span>            : #ifndef __COVERITY__
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :       fp = tmpfile();</span>
+<span class="lineNum">     424 </span>            : #else
+<span class="lineNum">     425 </span>            :       /* Experimental. Coverity says tmpfile() is insecure because it
+<span class="lineNum">     426 </span>            :        * generates predictable names.
+<span class="lineNum">     427 </span>            :        *
+<span class="lineNum">     428 </span>            :        * It is possible to satisfy Coverity by using mkstemp(); however,
+<span class="lineNum">     429 </span>            :        * any platform supporting mkstemp() undoubtedly has a secure tmpfile()
+<span class="lineNum">     430 </span>            :        * implementation as well, and doesn't need the fix.  Note that
+<span class="lineNum">     431 </span>            :        * the fix won't work on platforms that don't support mkstemp().
+<span class="lineNum">     432 </span>            :        *
+<span class="lineNum">     433 </span>            :        * https://www.securecoding.cert.org/confluence/display/c/
+<span class="lineNum">     434 </span>            :        * FIO21-C.+Do+not+create+temporary+files+in+shared+directories
+<span class="lineNum">     435 </span>            :        * says that most historic implementations of tmpfile() provide
+<span class="lineNum">     436 </span>            :        * only a limited number of possible temporary file names
+<span class="lineNum">     437 </span>            :        * (usually 26) before file names are recycled. That article also
+<span class="lineNum">     438 </span>            :        * provides a secure solution that unfortunately depends upon mkstemp().
+<span class="lineNum">     439 </span>            :        */
+<span class="lineNum">     440 </span>            :       char tmpfile[] = &quot;timepng-XXXXXX&quot;;
+<span class="lineNum">     441 </span>            :       int filedes;
+<span class="lineNum">     442 </span>            :       umask(0177);
+<span class="lineNum">     443 </span>            :       filedes = mkstemp(tmpfile);
+<span class="lineNum">     444 </span>            :       if (filedes &lt; 0)
+<span class="lineNum">     445 </span>            :         fp = NULL;
+<span class="lineNum">     446 </span>            :       else
+<span class="lineNum">     447 </span>            :       {
+<span class="lineNum">     448 </span>            :         fp = fdopen(filedes,&quot;w+&quot;);
+<span class="lineNum">     449 </span>            :         /* Hide the filename immediately and ensure that the file does
+<span class="lineNum">     450 </span>            :          * not exist after the program ends
+<span class="lineNum">     451 </span>            :          */
+<span class="lineNum">     452 </span>            :         (void) unlink(tmpfile);
+<span class="lineNum">     453 </span>            :       }
+<span class="lineNum">     454 </span>            : #endif
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :       if (fp == NULL)</span>
+<span class="lineNum">     457 </span>            :       {
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :          perror(&quot;tmpfile&quot;);</span>
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng: could not open the temporary file\n&quot;);</span>
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :          exit(1); /* not a user error */</span>
+<span class="lineNum">     461 </span>            :       }
+<span class="lineNum">     462 </span>            :    }
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span>            :    /* Handle the transforms: */
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :    while (argc &gt; 1 &amp;&amp; argv[1][0] == '-' &amp;&amp; argv[1][1] == '-')</span>
+<span class="lineNum">     466 </span>            :    {
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :       const char *opt = *++argv + 2;</span>
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :       --argc;</span>
+<span class="lineNum">     470 </span>            : 
+<span class="lineNum">     471 </span>            :       /* Transforms turn on the by-image processing and maybe set some
+<span class="lineNum">     472 </span>            :        * transforms:
+<span class="lineNum">     473 </span>            :        */
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :       if (transforms == -1)</span>
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :          transforms = PNG_TRANSFORM_IDENTITY;</span>
+<span class="lineNum">     476 </span>            : 
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 :       if (strcmp(opt, &quot;by-image&quot;) == 0)</span>
+<span class="lineNum">     478 </span>            :       {
+<span class="lineNum">     479 </span>            :          /* handled above */
+<span class="lineNum">     480 </span>            :       }
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            : #        define OPT(name) else if (strcmp(opt, #name) == 0)\
+<span class="lineNum">     483 </span>            :          transforms |= PNG_TRANSFORM_ ## name
+<span class="lineNum">     484 </span>            : 
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :       OPT(STRIP_16);</span>
+<span class="lineNum">     486 </span><span class="lineNoCov">          0 :       OPT(STRIP_ALPHA);</span>
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :       OPT(PACKING);</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :       OPT(PACKSWAP);</span>
+<span class="lineNum">     489 </span><span class="lineNoCov">          0 :       OPT(EXPAND);</span>
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :       OPT(INVERT_MONO);</span>
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :       OPT(SHIFT);</span>
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :       OPT(BGR);</span>
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :       OPT(SWAP_ALPHA);</span>
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :       OPT(SWAP_ENDIAN);</span>
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :       OPT(INVERT_ALPHA);</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :       OPT(STRIP_FILLER);</span>
+<span class="lineNum">     497 </span><span class="lineNoCov">          0 :       OPT(STRIP_FILLER_BEFORE);</span>
+<span class="lineNum">     498 </span><span class="lineNoCov">          0 :       OPT(STRIP_FILLER_AFTER);</span>
+<span class="lineNum">     499 </span><span class="lineNoCov">          0 :       OPT(GRAY_TO_RGB);</span>
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :       OPT(EXPAND_16);</span>
+<span class="lineNum">     501 </span><span class="lineNoCov">          0 :       OPT(SCALE_16);</span>
+<span class="lineNum">     502 </span>            : 
+<span class="lineNum">     503 </span>            :       else
+<span class="lineNum">     504 </span>            :       {
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng %s: unrecognized transform\n&quot;, opt);</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :          usage(fp);</span>
+<span class="lineNum">     507 </span>            :       }
+<span class="lineNum">     508 </span>            :    }
+<span class="lineNum">     509 </span>            : 
+<span class="lineNum">     510 </span>            :    /* Handle the files: */
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :    if (argc &gt; 1 &amp;&amp; nfiles &gt; 0)</span>
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :       usage(fp); /* Additional files not valid with --dissemble */</span>
+<span class="lineNum">     513 </span>            : 
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :    else if (argc &gt; 1)</span>
+<span class="lineNum">     515 </span>            :    {
+<span class="lineNum">     516 </span>            :       int i;
+<span class="lineNum">     517 </span>            : 
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :       for (i=1; i&lt;argc; ++i)</span>
+<span class="lineNum">     519 </span>            :       {
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :          if (nfiles == INT_MAX)</span>
+<span class="lineNum">     521 </span>            :          {
+<span class="lineNum">     522 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;%s: skipped, too many files\n&quot;, argv[i]);</span>
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     524 </span>            :          }
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span><span class="lineNoCov">          0 :          else if (add_one_file(fp, argv[i]))</span>
+<span class="lineNum">     527 </span><span class="lineNoCov">          0 :             ++nfiles;</span>
+<span class="lineNum">     528 </span>            :       }
+<span class="lineNum">     529 </span>            :    }
+<span class="lineNum">     530 </span>            : 
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :    else if (nfiles == 0) /* Read from stdin withoout --dissemble */</span>
+<span class="lineNum">     532 </span>            :    {
+<span class="lineNum">     533 </span>            :       char filename[FILENAME_MAX+1];
+<span class="lineNum">     534 </span>            : 
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :       while (fgets(filename, FILENAME_MAX+1, stdin))</span>
+<span class="lineNum">     536 </span>            :       {
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 :          size_t len = strlen(filename);</span>
+<span class="lineNum">     538 </span>            : 
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :          if (filename[len-1] == '\n')</span>
+<span class="lineNum">     540 </span>            :          {
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :             filename[len-1] = 0;</span>
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :             if (nfiles == INT_MAX)</span>
+<span class="lineNum">     543 </span>            :             {
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :                fprintf(stderr, &quot;%s: skipped, too many files\n&quot;, filename);</span>
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     546 </span>            :             }
+<span class="lineNum">     547 </span>            : 
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :             else if (add_one_file(fp, filename))</span>
+<span class="lineNum">     549 </span><span class="lineNoCov">          0 :                ++nfiles;</span>
+<span class="lineNum">     550 </span>            :          }
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            :          else
+<span class="lineNum">     553 </span>            :          {
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;timepng: file name too long: ...%s\n&quot;,</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :                filename+len-32);</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :             err = 1;</span>
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     558 </span>            :          }
+<span class="lineNum">     559 </span>            :       }
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span><span class="lineNoCov">          0 :       if (ferror(stdin))</span>
+<span class="lineNum">     562 </span>            :       {
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;timepng: stdin: read error\n&quot;);</span>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :          err = 1;</span>
+<span class="lineNum">     565 </span>            :       }
+<span class="lineNum">     566 </span>            :    }
+<span class="lineNum">     567 </span>            : 
+<span class="lineNum">     568 </span>            :    /* Perform the test, or produce the --assemble output: */
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :    if (!err)</span>
+<span class="lineNum">     570 </span>            :    {
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :       if (nfiles &gt; 0)</span>
+<span class="lineNum">     572 </span>            :       {
+<span class="lineNum">     573 </span><span class="lineNoCov">          0 :          if (assembly != NULL)</span>
+<span class="lineNum">     574 </span>            :          {
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :             if (fflush(fp) &amp;&amp; !ferror(fp) &amp;&amp; fclose(fp))</span>
+<span class="lineNum">     576 </span>            :             {
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :                perror(assembly);</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :                fprintf(stderr, &quot;%s: close failed\n&quot;, assembly);</span>
+<span class="lineNum">     579 </span>            :             }
+<span class="lineNum">     580 </span>            : 
+<span class="lineNum">     581 </span>            :             else
+<span class="lineNum">     582 </span>            :             {
+<span class="lineNum">     583 </span><span class="lineNoCov">          0 :                printf(&quot;%s %d\n&quot;, assembly, nfiles);</span>
+<span class="lineNum">     584 </span><span class="lineNoCov">          0 :                fflush(stdout);</span>
+<span class="lineNum">     585 </span><span class="lineNoCov">          0 :                ok = !ferror(stdout);</span>
+<span class="lineNum">     586 </span>            :             }
+<span class="lineNum">     587 </span>            :          }
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            :          else
+<span class="lineNum">     590 </span>            :          {
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :             ok = perform_one_test(fp, nfiles, transforms);</span>
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :             (void)fclose(fp);</span>
+<span class="lineNum">     593 </span>            :          }
+<span class="lineNum">     594 </span>            :       }
+<span class="lineNum">     595 </span>            : 
+<span class="lineNum">     596 </span>            :       else
+<span class="lineNum">     597 </span><span class="lineNoCov">          0 :          usage(fp);</span>
+<span class="lineNum">     598 </span>            :    }
+<span class="lineNum">     599 </span>            : 
+<span class="lineNum">     600 </span>            :    else
+<span class="lineNum">     601 </span><span class="lineNoCov">          0 :       (void)fclose(fp);</span>
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            :    /* Exit code 0 on success. */
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :    return ok == 0;</span>
+<span class="lineNum">     605 </span>            : }
+<span class="lineNum">     606 </span>            : #else /* !sufficient support */
+<span class="lineNum">     607 </span>            : int main(void) { return 77; }
+<span class="lineNum">     608 </span>            : #endif /* !sufficient support */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

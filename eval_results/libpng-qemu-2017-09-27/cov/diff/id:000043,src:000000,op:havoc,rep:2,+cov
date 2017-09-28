@@ -1,0 +1,19 @@
+diff id:000042,src:000000,op:havoc,rep:2,+cov -> id:000043,src:000000,op:havoc,rep:2,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngerror.c
+  New 'function' coverage: png_chunk_benign_error()
+  New 'function' coverage: png_chunk_warning()
+  New 'line' coverage: 497
+  New 'line' coverage: 500
+  New 'line' coverage: 505
+  New 'line' coverage: 506
+  New 'line' coverage: 508
+  New 'line' coverage: 514
+  New 'line' coverage: 517
+  New 'line' coverage: 518
+  New 'line' coverage: 526
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 4162
+  New 'line' coverage: 4196
+  New 'line' coverage: 4201
+  New 'line' coverage: 4203
+  New 'line' coverage: 4204

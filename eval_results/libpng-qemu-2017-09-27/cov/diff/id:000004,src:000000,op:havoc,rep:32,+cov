@@ -1,0 +1,25 @@
+diff id:000003,orig:not_kitty_icc.png -> id:000004,src:000000,op:havoc,rep:32,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngerror.c
+  New 'function' coverage: png_default_error()
+  New 'function' coverage: png_error()
+  New 'function' coverage: png_longjmp()
+  New 'line' coverage: 38
+  New 'line' coverage: 710
+  New 'line' coverage: 747
+  New 'line' coverage: 749
+  New 'line' coverage: 754
+  New 'line' coverage: 757
+  New 'line' coverage: 761
+  New 'line' coverage: 762
+  New 'line' coverage: 763
+  New 'line' coverage: 82
+  New 'line' coverage: 88
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 142
+  New 'line' coverage: 143
+  New 'line' coverage: 146
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/contrib/libtests/readpng.c
+  New 'line' coverage: 46
+  New 'line' coverage: 47
+  New 'line' coverage: 48
+  New 'line' coverage: 49

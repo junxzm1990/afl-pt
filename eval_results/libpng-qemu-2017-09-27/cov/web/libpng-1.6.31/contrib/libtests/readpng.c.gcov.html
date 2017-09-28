@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - trace.lcov_info_final - libpng-1.6.31/contrib/libtests/readpng.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">libpng-1.6.31/contrib/libtests</a> - readpng.c<span style="font-size: 80%;"> (source / <a href="readpng.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">trace.lcov_info_final</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">33</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntryHi">91.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-09-28</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* readpng.c</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright (c) 2013 John Cunningham Bowler
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Last changed in libpng 1.6.1 [March 28, 2013]
+<span class="lineNum">       6 </span>            :  *
+<span class="lineNum">       7 </span>            :  * This code is released under the libpng license.
+<span class="lineNum">       8 </span>            :  * For conditions of distribution and use, see the disclaimer
+<span class="lineNum">       9 </span>            :  * and license in png.h
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Load an arbitrary number of PNG files (from the command line, or, if there
+<span class="lineNum">      12 </span>            :  * are no arguments on the command line, from stdin) then run a time test by
+<span class="lineNum">      13 </span>            :  * reading each file by row.  The test does nothing with the read result and
+<span class="lineNum">      14 </span>            :  * does no transforms.  The only output is a time as a floating point number of
+<span class="lineNum">      15 </span>            :  * seconds with 9 decimal digits.
+<span class="lineNum">      16 </span>            :  */
+<span class="lineNum">      17 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      18 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      19 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #if defined(HAVE_CONFIG_H) &amp;&amp; !defined(PNG_NO_CONFIG_H)
+<span class="lineNum">      22 </span>            : #  include &lt;config.h&gt;
+<span class="lineNum">      23 </span>            : #endif
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : /* Define the following to use this test against your installed libpng, rather
+<span class="lineNum">      26 </span>            :  * than the one being built here:
+<span class="lineNum">      27 </span>            :  */
+<span class="lineNum">      28 </span>            : #ifdef PNG_FREESTANDING_TESTS
+<span class="lineNum">      29 </span>            : #  include &lt;png.h&gt;
+<span class="lineNum">      30 </span>            : #else
+<span class="lineNum">      31 </span>            : #  include &quot;../../png.h&quot;
+<span class="lineNum">      32 </span>            : #endif
+<a name="33"><span class="lineNum">      33 </span>            : </a>
+<span class="lineNum">      34 </span>            : static int
+<span class="lineNum">      35 </span><span class="lineCov">       1626 : read_png(FILE *fp)</span>
+<span class="lineNum">      36 </span>            : {
+<span class="lineNum">      37 </span><span class="lineCov">       1626 :    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,0,0,0);</span>
+<span class="lineNum">      38 </span><span class="lineCov">       1626 :    png_infop info_ptr = NULL;</span>
+<span class="lineNum">      39 </span><span class="lineCov">       1626 :    png_bytep row = NULL, display = NULL;</span>
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span><span class="lineCov">       1626 :    if (png_ptr == NULL)</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :       return 0;</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineCov">       1626 :    if (setjmp(png_jmpbuf(png_ptr)))</span>
+<span class="lineNum">      45 </span>            :    {
+<span class="lineNum">      46 </span><span class="lineCov">       1579 :       png_destroy_read_struct(&amp;png_ptr, &amp;info_ptr, NULL);</span>
+<span class="lineNum">      47 </span><span class="lineCov">       1579 :       if (row != NULL) free(row);</span>
+<span class="lineNum">      48 </span><span class="lineCov">       1579 :       if (display != NULL) free(display);</span>
+<span class="lineNum">      49 </span><span class="lineCov">       1579 :       return 0;</span>
+<span class="lineNum">      50 </span>            :    }
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span><span class="lineCov">       1626 :    png_init_io(png_ptr, fp);</span>
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span><span class="lineCov">       1626 :    info_ptr = png_create_info_struct(png_ptr);</span>
+<span class="lineNum">      55 </span><span class="lineCov">       1626 :    if (info_ptr == NULL)</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :       png_error(png_ptr, &quot;OOM allocating info structure&quot;);</span>
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span><span class="lineCov">       1626 :    png_set_keep_unknown_chunks(png_ptr, PNG_HANDLE_CHUNK_ALWAYS, NULL, 0);</span>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">       1626 :    png_read_info(png_ptr, info_ptr);</span>
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            :    {
+<span class="lineNum">      63 </span><span class="lineCov">        713 :       png_size_t rowbytes = png_get_rowbytes(png_ptr, info_ptr);</span>
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :       /* Failure to initialize these is harmless */
+<span class="lineNum">      66 </span><span class="lineCov">        713 :       row = malloc(rowbytes);</span>
+<span class="lineNum">      67 </span><span class="lineCov">        713 :       display = malloc(rowbytes);</span>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span><span class="lineCov">        713 :       if (row == NULL || display == NULL)</span>
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :          png_error(png_ptr, &quot;OOM allocating row buffers&quot;);</span>
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :       {
+<span class="lineNum">      73 </span><span class="lineCov">        713 :          png_uint_32 height = png_get_image_height(png_ptr, info_ptr);</span>
+<span class="lineNum">      74 </span>            : #        ifdef PNG_READ_INTERLACING_SUPPORTED
+<span class="lineNum">      75 </span><span class="lineCov">        713 :             int passes = png_set_interlace_handling(png_ptr);</span>
+<span class="lineNum">      76 </span>            : #        else /* !READ_INTERLACING */
+<span class="lineNum">      77 </span>            :             int passes = png_get_interlace_type(png_ptr, info_ptr) ==
+<span class="lineNum">      78 </span>            :                PNG_INTERLACE_ADAM7 ? PNG_INTERLACE_ADAM7_PASSES : 1;
+<span class="lineNum">      79 </span>            : #        endif /* !READ_INTERLACING */
+<span class="lineNum">      80 </span>            :          int pass;
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span><span class="lineCov">        713 :          png_start_read_image(png_ptr);</span>
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span><span class="lineCov">       2569 :          for (pass = 0; pass &lt; passes; ++pass)</span>
+<span class="lineNum">      85 </span>            :          {
+<span class="lineNum">      86 </span><span class="lineCov">       2341 :             png_uint_32 y = height;</span>
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : #           ifndef PNG_READ_INTERLACING_SUPPORTED
+<span class="lineNum">      89 </span>            :                if (passes == PNG_INTERLACE_ADAM7_PASSES)
+<span class="lineNum">      90 </span>            :                   y = PNG_PASS_ROWS(y, pass);
+<span class="lineNum">      91 </span>            : #           endif /* READ_INTERLACING */
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            :             /* NOTE: this trashes the row each time; interlace handling won't
+<span class="lineNum">      94 </span>            :              * work, but this avoids memory thrashing for speed testing.
+<span class="lineNum">      95 </span>            :              */
+<span class="lineNum">      96 </span><span class="lineCov">     216466 :             while (y-- &gt; 0)</span>
+<span class="lineNum">      97 </span><span class="lineCov">     212269 :                png_read_row(png_ptr, row, display);</span>
+<span class="lineNum">      98 </span>            :          }
+<span class="lineNum">      99 </span>            :       }
+<span class="lineNum">     100 </span>            :    }
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            :    /* Make sure to read to the end of the file: */
+<span class="lineNum">     103 </span><span class="lineCov">        228 :    png_read_end(png_ptr, info_ptr);</span>
+<span class="lineNum">     104 </span><span class="lineCov">         47 :    png_destroy_read_struct(&amp;png_ptr, &amp;info_ptr, NULL);</span>
+<span class="lineNum">     105 </span><span class="lineCov">         47 :    free(row);</span>
+<span class="lineNum">     106 </span><span class="lineCov">         47 :    free(display);</span>
+<span class="lineNum">     107 </span><span class="lineCov">         47 :    return 1;</span>
+<span class="lineNum">     108 </span>            : }
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<span class="lineNum">     110 </span>            : int
+<span class="lineNum">     111 </span><span class="lineCov">       1626 : main(void)</span>
+<span class="lineNum">     112 </span>            : {
+<span class="lineNum">     113 </span>            :    /* Exit code 0 on success. */
+<span class="lineNum">     114 </span><span class="lineCov">       1626 :    return !read_png(stdin);</span>
+<span class="lineNum">     115 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

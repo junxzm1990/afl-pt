@@ -1,0 +1,13 @@
+diff id:000410,src:000299+000296,op:splice,rep:2,+cov -> id:000411,src:000299+000072,op:splice,rep:2,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngread.c
+  New 'line' coverage: 783
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngerror.c
+  New 'function' coverage: png_benign_error()
+  New 'line' coverage: 362
+  New 'line' coverage: 364
+  New 'line' coverage: 367
+  New 'line' coverage: 368
+  New 'line' coverage: 369
+  New 'line' coverage: 389
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 3333
