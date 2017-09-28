@@ -30,7 +30,7 @@ extern u8  ctx_tnt_go;
 extern u8  ctx_curr_tnt_cnt;
 
 
-static const u8 log_map[2097152] = {
+static const u8 log_map[1<<21+1] = {
 
     [0]                 = 0,
     [1 ... 2]           = 1,
@@ -52,7 +52,7 @@ static const u8 log_map[2097152] = {
     [131072 ... 262143] = 17,
     [262144 ... 524287] = 18,
     [524288 ... 1048575]= 19,
-    [1048576 ... 2097151] = 20
+    [1048576 ... 1<<21] = 20
 
 };
 
@@ -401,18 +401,18 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
       if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
-            u32 idx= (map_64(ctx_curr_ip)                               \
-                      ^map_64(ctx_last_tip_ip)                          \
-                      ^map_8(ctx_curr_tnt_prod)                         \
-                      +log_map[ctx_tnt_counter]) % MAP_SIZE;            \
-            __afl_area_ptr[idx>>3] |= 1 << (idx &0x7);                  \
-            ctx_curr_tnt_prod = 0;                                      \
-            ctx_last_tip_ip=ctx_curr_ip;                                \
-            ctx_tnt_counter= 0;                                         \
-            ctx_tnt_container= 0;                                       \
-            ctx_curr_tnt_cnt= 0;                                        \
+      u32 idx= (map_64(ctx_curr_ip)                                     \
+                ^map_64(ctx_last_tip_ip)                                \
+                ^map_8(ctx_curr_tnt_prod)                               \
+                +log_map[ctx_tnt_counter % (1<<21)]) % MAP_SIZE;          \
+      __afl_area_ptr[idx>>3] |= 1 << (idx &0x7);                        \
+      ctx_curr_tnt_prod = 0;                                            \
+      ctx_last_tip_ip=ctx_curr_ip;                                      \
+      ctx_tnt_counter= 0;                                               \
+      ctx_tnt_container= 0;                                             \
+      ctx_curr_tnt_cnt= 0;                                              \
                                                                         \
-        } while (0)
+    } while (0)
 
 #endif
 
@@ -496,6 +496,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
             writeout_packet(dfd, "TNTPROD", ctx_curr_tnt_prod);
             writeout_packet(dfd, "TIP", ctx_curr_ip);
 #endif
+
             UPDATE_TRACEBITS_IDX();
             break;
 
