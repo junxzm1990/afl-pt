@@ -68,6 +68,15 @@ if __name__ == "__main__":
                 if 'lines' in lines[index+i]:
                     lcov = get_line_cov(lines[index+i])
                     break
-            cov_list.append((ftime, fcov, lcov))
-            
+            cov_list.append([ftime, fcov, lcov])
+
+
+    total_time = cov_list[-1][0]-cov_list[0][0]
+    print "total fuzzing time %d hr"%(total_time/3600)
+    #we need to reassign the time, as the modify time will mess up our tally
+    for i in range(0, len(cov_list)):
+        cov_list[i][0] = cov_list[-1][0]+ int(total_time * float(i)/len(cov_list))
+
+        
+
     show_cov_line(cov_list, interval)    
