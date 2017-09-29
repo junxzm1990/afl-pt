@@ -1,0 +1,26 @@
+diff id:001997,src:001219,op:havoc,rep:2,+cov -> id:001998,src:001219,op:havoc,rep:4,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 3669
+  New 'line' coverage: 3670
+  New 'line' coverage: 3674
+  New 'line' coverage: 3678
+  New 'line' coverage: 3690
+  New 'line' coverage: 3691
+  New 'line' coverage: 3692
+  New 'line' coverage: 3693
+  New 'line' coverage: 3694
+  New 'line' coverage: 3697
+  New 'line' coverage: 3702
+  New 'line' coverage: 3703
+  New 'line' coverage: 3705
+  New 'line' coverage: 3706
+  New 'line' coverage: 3707
+  New 'line' coverage: 3709
+  New 'line' coverage: 3711
+  New 'line' coverage: 3712
+  New 'line' coverage: 3716
+  New 'line' coverage: 3719
+  New 'line' coverage: 3721
+  New 'line' coverage: 3722
+  New 'line' coverage: 3726
+  New 'line' coverage: 3728

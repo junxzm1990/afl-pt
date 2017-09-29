@@ -1,0 +1,1362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - trace.lcov_info_final - libpng-1.6.31/contrib/libtests/pngunknown.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">libpng-1.6.31/contrib/libtests</a> - pngunknown.c<span style="font-size: 80%;"> (source / <a href="pngunknown.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">trace.lcov_info_final</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">360</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-09-28</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : </a>
+<span class="lineNum">       2 </span>            : /* pngunknown.c - test the read side unknown chunk handling
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * Last changed in libpng 1.6.31 [July 27, 2017]
+<span class="lineNum">       5 </span>            :  * Copyright (c) 2015,2017 Glenn Randers-Pehrson
+<span class="lineNum">       6 </span>            :  * Written by John Cunningham Bowler
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * This code is released under the libpng license.
+<span class="lineNum">       9 </span>            :  * For conditions of distribution and use, see the disclaimer
+<span class="lineNum">      10 </span>            :  * and license in png.h
+<span class="lineNum">      11 </span>            :  *
+<span class="lineNum">      12 </span>            :  * NOTES:
+<span class="lineNum">      13 </span>            :  *   This is a C program that is intended to be linked against libpng.  It
+<span class="lineNum">      14 </span>            :  *   allows the libpng unknown handling code to be tested by interpreting
+<span class="lineNum">      15 </span>            :  *   arguments to save or discard combinations of chunks.  The program is
+<span class="lineNum">      16 </span>            :  *   currently just a minimal validation for the built-in libpng facilities.
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      20 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      21 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;setjmp.h&gt;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : /* Define the following to use this test against your installed libpng, rather
+<span class="lineNum">      25 </span>            :  * than the one being built here:
+<span class="lineNum">      26 </span>            :  */
+<span class="lineNum">      27 </span>            : #ifdef PNG_FREESTANDING_TESTS
+<span class="lineNum">      28 </span>            : #  include &lt;png.h&gt;
+<span class="lineNum">      29 </span>            : #else
+<span class="lineNum">      30 </span>            : #  include &quot;../../png.h&quot;
+<span class="lineNum">      31 </span>            : #endif
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : /* 1.6.1 added support for the configure test harness, which uses 77 to indicate
+<span class="lineNum">      34 </span>            :  * a skipped test, in earlier versions we need to succeed on a skipped test, so:
+<span class="lineNum">      35 </span>            :  */
+<span class="lineNum">      36 </span>            : #if PNG_LIBPNG_VER &gt;= 10601 &amp;&amp; defined(HAVE_CONFIG_H)
+<span class="lineNum">      37 </span>            : #  define SKIP 77
+<span class="lineNum">      38 </span>            : #else
+<span class="lineNum">      39 </span>            : #  define SKIP 0
+<span class="lineNum">      40 </span>            : #endif
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : /* Since this program tests the ability to change the unknown chunk handling
+<span class="lineNum">      44 </span>            :  * these must be defined:
+<span class="lineNum">      45 </span>            :  */
+<span class="lineNum">      46 </span>            : #if defined(PNG_SET_UNKNOWN_CHUNKS_SUPPORTED) &amp;&amp;\
+<span class="lineNum">      47 </span>            :    defined(PNG_STDIO_SUPPORTED) &amp;&amp;\
+<span class="lineNum">      48 </span>            :    defined(PNG_READ_SUPPORTED)
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : /* One of these must be defined to allow us to find out what happened.  It is
+<span class="lineNum">      51 </span>            :  * still useful to set unknown chunk handling without either of these in order
+<span class="lineNum">      52 </span>            :  * to cause *known* chunks to be discarded.  This can be a significant
+<span class="lineNum">      53 </span>            :  * efficiency gain, but it can't really be tested here.
+<span class="lineNum">      54 </span>            :  */
+<span class="lineNum">      55 </span>            : #if defined(PNG_READ_USER_CHUNKS_SUPPORTED) ||\
+<span class="lineNum">      56 </span>            :    defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : #if PNG_LIBPNG_VER &lt; 10500
+<span class="lineNum">      59 </span>            : /* This deliberately lacks the PNG_CONST. */
+<span class="lineNum">      60 </span>            : typedef png_byte *png_const_bytep;
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : /* This is copied from 1.5.1 png.h: */
+<span class="lineNum">      63 </span>            : #define PNG_INTERLACE_ADAM7_PASSES 7
+<span class="lineNum">      64 </span>            : #define PNG_PASS_START_ROW(pass) (((1U&amp;~(pass))&lt;&lt;(3-((pass)&gt;&gt;1)))&amp;7)
+<span class="lineNum">      65 </span>            : #define PNG_PASS_START_COL(pass) (((1U&amp; (pass))&lt;&lt;(3-(((pass)+1)&gt;&gt;1)))&amp;7)
+<span class="lineNum">      66 </span>            : #define PNG_PASS_ROW_SHIFT(pass) ((pass)&gt;2?(8-(pass))&gt;&gt;1:3)
+<span class="lineNum">      67 </span>            : #define PNG_PASS_COL_SHIFT(pass) ((pass)&gt;1?(7-(pass))&gt;&gt;1:3)
+<span class="lineNum">      68 </span>            : #define PNG_PASS_ROWS(height, pass) (((height)+(((1&lt;&lt;PNG_PASS_ROW_SHIFT(pass))\
+<span class="lineNum">      69 </span>            :    -1)-PNG_PASS_START_ROW(pass)))&gt;&gt;PNG_PASS_ROW_SHIFT(pass))
+<span class="lineNum">      70 </span>            : #define PNG_PASS_COLS(width, pass) (((width)+(((1&lt;&lt;PNG_PASS_COL_SHIFT(pass))\
+<span class="lineNum">      71 </span>            :    -1)-PNG_PASS_START_COL(pass)))&gt;&gt;PNG_PASS_COL_SHIFT(pass))
+<span class="lineNum">      72 </span>            : #define PNG_ROW_FROM_PASS_ROW(yIn, pass) \
+<span class="lineNum">      73 </span>            :    (((yIn)&lt;&lt;PNG_PASS_ROW_SHIFT(pass))+PNG_PASS_START_ROW(pass))
+<span class="lineNum">      74 </span>            : #define PNG_COL_FROM_PASS_COL(xIn, pass) \
+<span class="lineNum">      75 </span>            :    (((xIn)&lt;&lt;PNG_PASS_COL_SHIFT(pass))+PNG_PASS_START_COL(pass))
+<span class="lineNum">      76 </span>            : #define PNG_PASS_MASK(pass,off) ( \
+<span class="lineNum">      77 </span>            :    ((0x110145AFU&gt;&gt;(((7-(off))-(pass))&lt;&lt;2)) &amp; 0xFU) | \
+<span class="lineNum">      78 </span>            :    ((0x01145AF0U&gt;&gt;(((7-(off))-(pass))&lt;&lt;2)) &amp; 0xF0U))
+<span class="lineNum">      79 </span>            : #define PNG_ROW_IN_INTERLACE_PASS(y, pass) \
+<span class="lineNum">      80 </span>            :    ((PNG_PASS_MASK(pass,0) &gt;&gt; ((y)&amp;7)) &amp; 1)
+<span class="lineNum">      81 </span>            : #define PNG_COL_IN_INTERLACE_PASS(x, pass) \
+<span class="lineNum">      82 </span>            :    ((PNG_PASS_MASK(pass,1) &gt;&gt; ((x)&amp;7)) &amp; 1)
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : /* These are needed too for the default build: */
+<span class="lineNum">      85 </span>            : #define PNG_WRITE_16BIT_SUPPORTED
+<span class="lineNum">      86 </span>            : #define PNG_READ_16BIT_SUPPORTED
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : /* This comes from pnglibconf.h afer 1.5: */
+<span class="lineNum">      89 </span>            : #define PNG_FP_1 100000
+<span class="lineNum">      90 </span>            : #define PNG_GAMMA_THRESHOLD_FIXED\
+<span class="lineNum">      91 </span>            :    ((png_fixed_point)(PNG_GAMMA_THRESHOLD * PNG_FP_1))
+<span class="lineNum">      92 </span>            : #endif
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : #if PNG_LIBPNG_VER &lt; 10600
+<span class="lineNum">      95 </span>            :    /* 1.6.0 constifies many APIs. The following exists to allow pngvalid to be
+<span class="lineNum">      96 </span>            :     * compiled against earlier versions.
+<span class="lineNum">      97 </span>            :     */
+<span class="lineNum">      98 </span>            : #  define png_const_structp png_structp
+<span class="lineNum">      99 </span>            : #endif
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : #if PNG_LIBPNG_VER &lt; 10700
+<span class="lineNum">     102 </span>            :    /* Copied from libpng 1.7.0 png.h */
+<span class="lineNum">     103 </span>            : #define PNG_u2(b1, b2) (((unsigned int)(b1) &lt;&lt; 8) + (b2))
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : #define PNG_U16(b1, b2) ((png_uint_16)PNG_u2(b1, b2))
+<span class="lineNum">     106 </span>            : #define PNG_U32(b1, b2, b3, b4)\
+<span class="lineNum">     107 </span>            :    (((png_uint_32)PNG_u2(b1, b2) &lt;&lt; 16) + PNG_u2(b3, b4))
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : /* Constants for known chunk types.
+<span class="lineNum">     110 </span>            :  */
+<span class="lineNum">     111 </span>            : #define png_IDAT PNG_U32( 73,  68,  65,  84)
+<span class="lineNum">     112 </span>            : #define png_IEND PNG_U32( 73,  69,  78,  68)
+<span class="lineNum">     113 </span>            : #define png_IHDR PNG_U32( 73,  72,  68,  82)
+<span class="lineNum">     114 </span>            : #define png_PLTE PNG_U32( 80,  76,  84,  69)
+<span class="lineNum">     115 </span>            : #define png_bKGD PNG_U32( 98,  75,  71,  68)
+<span class="lineNum">     116 </span>            : #define png_cHRM PNG_U32( 99,  72,  82,  77)
+<span class="lineNum">     117 </span>            : #define png_fRAc PNG_U32(102,  82,  65,  99) /* registered, not defined */
+<span class="lineNum">     118 </span>            : #define png_gAMA PNG_U32(103,  65,  77,  65)
+<span class="lineNum">     119 </span>            : #define png_gIFg PNG_U32(103,  73,  70, 103)
+<span class="lineNum">     120 </span>            : #define png_gIFt PNG_U32(103,  73,  70, 116) /* deprecated */
+<span class="lineNum">     121 </span>            : #define png_gIFx PNG_U32(103,  73,  70, 120)
+<span class="lineNum">     122 </span>            : #define png_hIST PNG_U32(104,  73,  83,  84)
+<span class="lineNum">     123 </span>            : #define png_iCCP PNG_U32(105,  67,  67,  80)
+<span class="lineNum">     124 </span>            : #define png_iTXt PNG_U32(105,  84,  88, 116)
+<span class="lineNum">     125 </span>            : #define png_oFFs PNG_U32(111,  70,  70, 115)
+<span class="lineNum">     126 </span>            : #define png_pCAL PNG_U32(112,  67,  65,  76)
+<span class="lineNum">     127 </span>            : #define png_pHYs PNG_U32(112,  72,  89, 115)
+<span class="lineNum">     128 </span>            : #define png_sBIT PNG_U32(115,  66,  73,  84)
+<span class="lineNum">     129 </span>            : #define png_sCAL PNG_U32(115,  67,  65,  76)
+<span class="lineNum">     130 </span>            : #define png_sPLT PNG_U32(115,  80,  76,  84)
+<span class="lineNum">     131 </span>            : #define png_sRGB PNG_U32(115,  82,  71,  66)
+<span class="lineNum">     132 </span>            : #define png_sTER PNG_U32(115,  84,  69,  82)
+<span class="lineNum">     133 </span>            : #define png_tEXt PNG_U32(116,  69,  88, 116)
+<span class="lineNum">     134 </span>            : #define png_tIME PNG_U32(116,  73,  77,  69)
+<span class="lineNum">     135 </span>            : #define png_tRNS PNG_U32(116,  82,  78,  83)
+<span class="lineNum">     136 </span>            : #define png_zTXt PNG_U32(122,  84,  88, 116)
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : /* Test on flag values as defined in the spec (section 5.4): */
+<span class="lineNum">     139 </span>            : #define PNG_CHUNK_ANCILLARY(c)    (1 &amp; ((c) &gt;&gt; 29))
+<span class="lineNum">     140 </span>            : #define PNG_CHUNK_CRITICAL(c)     (!PNG_CHUNK_ANCILLARY(c))
+<span class="lineNum">     141 </span>            : #define PNG_CHUNK_PRIVATE(c)      (1 &amp; ((c) &gt;&gt; 21))
+<span class="lineNum">     142 </span>            : #define PNG_CHUNK_RESERVED(c)     (1 &amp; ((c) &gt;&gt; 13))
+<span class="lineNum">     143 </span>            : #define PNG_CHUNK_SAFE_TO_COPY(c) (1 &amp; ((c) &gt;&gt;  5))
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : #endif /* PNG_LIBPNG_VER &lt; 10700 */
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : #ifdef __cplusplus
+<span class="lineNum">     148 </span>            : #  define this not_the_cpp_this
+<span class="lineNum">     149 </span>            : #  define new not_the_cpp_new
+<span class="lineNum">     150 </span>            : #  define voidcast(type, value) static_cast&lt;type&gt;(value)
+<span class="lineNum">     151 </span>            : #else
+<span class="lineNum">     152 </span>            : #  define voidcast(type, value) (value)
+<span class="lineNum">     153 </span>            : #endif /* __cplusplus */
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            : /* Unused formal parameter errors are removed using the following macro which is
+<span class="lineNum">     156 </span>            :  * expected to have no bad effects on performance.
+<span class="lineNum">     157 </span>            :  */
+<span class="lineNum">     158 </span>            : #ifndef UNUSED
+<span class="lineNum">     159 </span>            : #  if defined(__GNUC__) || defined(_MSC_VER)
+<span class="lineNum">     160 </span>            : #     define UNUSED(param) (void)param;
+<span class="lineNum">     161 </span>            : #  else
+<span class="lineNum">     162 </span>            : #     define UNUSED(param)
+<span class="lineNum">     163 </span>            : #  endif
+<span class="lineNum">     164 </span>            : #endif
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : /* Types of chunks not known to libpng */
+<span class="lineNum">     167 </span>            : #define png_vpAg PNG_U32(118, 112, 65, 103)
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : /* Chunk information */
+<span class="lineNum">     170 </span>            : #define PNG_INFO_tEXt 0x10000000U
+<span class="lineNum">     171 </span>            : #define PNG_INFO_iTXt 0x20000000U
+<span class="lineNum">     172 </span>            : #define PNG_INFO_zTXt 0x40000000U
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            : #define PNG_INFO_sTER 0x01000000U
+<span class="lineNum">     175 </span>            : #define PNG_INFO_vpAg 0x02000000U
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : #define ABSENT  0
+<span class="lineNum">     178 </span>            : #define START   1
+<span class="lineNum">     179 </span>            : #define END     2
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : static struct
+<span class="lineNum">     182 </span>            : {
+<span class="lineNum">     183 </span>            :    char        name[5];
+<span class="lineNum">     184 </span>            :    png_uint_32 flag;
+<span class="lineNum">     185 </span>            :    png_uint_32 tag;
+<span class="lineNum">     186 </span>            :    int         unknown;    /* Chunk not known to libpng */
+<span class="lineNum">     187 </span>            :    int         all;        /* Chunk set by the '-1' option */
+<span class="lineNum">     188 </span>            :    int         position;   /* position in pngtest.png */
+<span class="lineNum">     189 </span>            :    int         keep;       /* unknown handling setting */
+<span class="lineNum">     190 </span>            : } chunk_info[] = {
+<span class="lineNum">     191 </span>            :    /* Critical chunks */
+<span class="lineNum">     192 </span>            :    { &quot;IDAT&quot;, PNG_INFO_IDAT, png_IDAT, 0, 0,  START, 0 }, /* must be [0] */
+<span class="lineNum">     193 </span>            :    { &quot;PLTE&quot;, PNG_INFO_PLTE, png_PLTE, 0, 0, ABSENT, 0 },
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            :    /* Non-critical chunks that libpng handles */
+<span class="lineNum">     196 </span>            :    /* This is a mess but it seems to be the only way to do it - there is no way
+<span class="lineNum">     197 </span>            :     * to check for a definition outside a #if.
+<span class="lineNum">     198 </span>            :     */
+<span class="lineNum">     199 </span>            :    { &quot;bKGD&quot;, PNG_INFO_bKGD, png_bKGD,
+<span class="lineNum">     200 </span>            : #     ifdef PNG_READ_bKGD_SUPPORTED
+<span class="lineNum">     201 </span>            :          0,
+<span class="lineNum">     202 </span>            : #     else
+<span class="lineNum">     203 </span>            :          1,
+<span class="lineNum">     204 </span>            : #     endif
+<span class="lineNum">     205 </span>            :       1,  START, 0 },
+<span class="lineNum">     206 </span>            :    { &quot;cHRM&quot;, PNG_INFO_cHRM, png_cHRM,
+<span class="lineNum">     207 </span>            : #     ifdef PNG_READ_cHRM_SUPPORTED
+<span class="lineNum">     208 </span>            :          0,
+<span class="lineNum">     209 </span>            : #     else
+<span class="lineNum">     210 </span>            :          1,
+<span class="lineNum">     211 </span>            : #     endif
+<span class="lineNum">     212 </span>            :       1,  START, 0 },
+<span class="lineNum">     213 </span>            :    { &quot;gAMA&quot;, PNG_INFO_gAMA, png_gAMA,
+<span class="lineNum">     214 </span>            : #     ifdef PNG_READ_gAMA_SUPPORTED
+<span class="lineNum">     215 </span>            :          0,
+<span class="lineNum">     216 </span>            : #     else
+<span class="lineNum">     217 </span>            :          1,
+<span class="lineNum">     218 </span>            : #     endif
+<span class="lineNum">     219 </span>            :       1,  START, 0 },
+<span class="lineNum">     220 </span>            :    { &quot;hIST&quot;, PNG_INFO_hIST, png_hIST,
+<span class="lineNum">     221 </span>            : #     ifdef PNG_READ_hIST_SUPPORTED
+<span class="lineNum">     222 </span>            :          0,
+<span class="lineNum">     223 </span>            : #     else
+<span class="lineNum">     224 </span>            :          1,
+<span class="lineNum">     225 </span>            : #     endif
+<span class="lineNum">     226 </span>            :       1, ABSENT, 0 },
+<span class="lineNum">     227 </span>            :    { &quot;iCCP&quot;, PNG_INFO_iCCP, png_iCCP,
+<span class="lineNum">     228 </span>            : #     ifdef PNG_READ_iCCP_SUPPORTED
+<span class="lineNum">     229 </span>            :          0,
+<span class="lineNum">     230 </span>            : #     else
+<span class="lineNum">     231 </span>            :          1,
+<span class="lineNum">     232 </span>            : #     endif
+<span class="lineNum">     233 </span>            :       1, ABSENT, 0 },
+<span class="lineNum">     234 </span>            :    { &quot;iTXt&quot;, PNG_INFO_iTXt, png_iTXt,
+<span class="lineNum">     235 </span>            : #     ifdef PNG_READ_iTXt_SUPPORTED
+<span class="lineNum">     236 </span>            :          0,
+<span class="lineNum">     237 </span>            : #     else
+<span class="lineNum">     238 </span>            :          1,
+<span class="lineNum">     239 </span>            : #     endif
+<span class="lineNum">     240 </span>            :       1, ABSENT, 0 },
+<span class="lineNum">     241 </span>            :    { &quot;oFFs&quot;, PNG_INFO_oFFs, png_oFFs,
+<span class="lineNum">     242 </span>            : #     ifdef PNG_READ_oFFs_SUPPORTED
+<span class="lineNum">     243 </span>            :          0,
+<span class="lineNum">     244 </span>            : #     else
+<span class="lineNum">     245 </span>            :          1,
+<span class="lineNum">     246 </span>            : #     endif
+<span class="lineNum">     247 </span>            :       1,  START, 0 },
+<span class="lineNum">     248 </span>            :    { &quot;pCAL&quot;, PNG_INFO_pCAL, png_pCAL,
+<span class="lineNum">     249 </span>            : #     ifdef PNG_READ_pCAL_SUPPORTED
+<span class="lineNum">     250 </span>            :          0,
+<span class="lineNum">     251 </span>            : #     else
+<span class="lineNum">     252 </span>            :          1,
+<span class="lineNum">     253 </span>            : #     endif
+<span class="lineNum">     254 </span>            :       1,  START, 0 },
+<span class="lineNum">     255 </span>            :    { &quot;pHYs&quot;, PNG_INFO_pHYs, png_pHYs,
+<span class="lineNum">     256 </span>            : #     ifdef PNG_READ_pHYs_SUPPORTED
+<span class="lineNum">     257 </span>            :          0,
+<span class="lineNum">     258 </span>            : #     else
+<span class="lineNum">     259 </span>            :          1,
+<span class="lineNum">     260 </span>            : #     endif
+<span class="lineNum">     261 </span>            :       1,  START, 0 },
+<span class="lineNum">     262 </span>            :    { &quot;sBIT&quot;, PNG_INFO_sBIT, png_sBIT,
+<span class="lineNum">     263 </span>            : #     ifdef PNG_READ_sBIT_SUPPORTED
+<span class="lineNum">     264 </span>            :          0,
+<span class="lineNum">     265 </span>            : #     else
+<span class="lineNum">     266 </span>            :          1,
+<span class="lineNum">     267 </span>            : #     endif
+<span class="lineNum">     268 </span>            :       1,  START, 0 },
+<span class="lineNum">     269 </span>            :    { &quot;sCAL&quot;, PNG_INFO_sCAL, png_sCAL,
+<span class="lineNum">     270 </span>            : #     ifdef PNG_READ_sCAL_SUPPORTED
+<span class="lineNum">     271 </span>            :          0,
+<span class="lineNum">     272 </span>            : #     else
+<span class="lineNum">     273 </span>            :          1,
+<span class="lineNum">     274 </span>            : #     endif
+<span class="lineNum">     275 </span>            :       1,  START, 0 },
+<span class="lineNum">     276 </span>            :    { &quot;sPLT&quot;, PNG_INFO_sPLT, png_sPLT,
+<span class="lineNum">     277 </span>            : #     ifdef PNG_READ_sPLT_SUPPORTED
+<span class="lineNum">     278 </span>            :          0,
+<span class="lineNum">     279 </span>            : #     else
+<span class="lineNum">     280 </span>            :          1,
+<span class="lineNum">     281 </span>            : #     endif
+<span class="lineNum">     282 </span>            :       1, ABSENT, 0 },
+<span class="lineNum">     283 </span>            :    { &quot;sRGB&quot;, PNG_INFO_sRGB, png_sRGB,
+<span class="lineNum">     284 </span>            : #     ifdef PNG_READ_sRGB_SUPPORTED
+<span class="lineNum">     285 </span>            :          0,
+<span class="lineNum">     286 </span>            : #     else
+<span class="lineNum">     287 </span>            :          1,
+<span class="lineNum">     288 </span>            : #     endif
+<span class="lineNum">     289 </span>            :       1,  START, 0 },
+<span class="lineNum">     290 </span>            :    { &quot;tEXt&quot;, PNG_INFO_tEXt, png_tEXt,
+<span class="lineNum">     291 </span>            : #     ifdef PNG_READ_tEXt_SUPPORTED
+<span class="lineNum">     292 </span>            :          0,
+<span class="lineNum">     293 </span>            : #     else
+<span class="lineNum">     294 </span>            :          1,
+<span class="lineNum">     295 </span>            : #     endif
+<span class="lineNum">     296 </span>            :       1,  START, 0 },
+<span class="lineNum">     297 </span>            :    { &quot;tIME&quot;, PNG_INFO_tIME, png_tIME,
+<span class="lineNum">     298 </span>            : #     ifdef PNG_READ_tIME_SUPPORTED
+<span class="lineNum">     299 </span>            :          0,
+<span class="lineNum">     300 </span>            : #     else
+<span class="lineNum">     301 </span>            :          1,
+<span class="lineNum">     302 </span>            : #     endif
+<span class="lineNum">     303 </span>            :       1,  START, 0 },
+<span class="lineNum">     304 </span>            :    { &quot;tRNS&quot;, PNG_INFO_tRNS, png_tRNS,
+<span class="lineNum">     305 </span>            : #     ifdef PNG_READ_tRNS_SUPPORTED
+<span class="lineNum">     306 </span>            :          0,
+<span class="lineNum">     307 </span>            : #     else
+<span class="lineNum">     308 </span>            :          1,
+<span class="lineNum">     309 </span>            : #     endif
+<span class="lineNum">     310 </span>            :       0, ABSENT, 0 },
+<span class="lineNum">     311 </span>            :    { &quot;zTXt&quot;, PNG_INFO_zTXt, png_zTXt,
+<span class="lineNum">     312 </span>            : #     ifdef PNG_READ_zTXt_SUPPORTED
+<span class="lineNum">     313 </span>            :          0,
+<span class="lineNum">     314 </span>            : #     else
+<span class="lineNum">     315 </span>            :          1,
+<span class="lineNum">     316 </span>            : #     endif
+<span class="lineNum">     317 </span>            :       1,    END, 0 },
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            :    /* No libpng handling */
+<span class="lineNum">     320 </span>            :    { &quot;sTER&quot;, PNG_INFO_sTER, png_sTER, 1, 1,  START, 0 },
+<span class="lineNum">     321 </span>            :    { &quot;vpAg&quot;, PNG_INFO_vpAg, png_vpAg, 1, 0,  START, 0 },
+<span class="lineNum">     322 </span>            : };
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span>            : #define NINFO ((int)((sizeof chunk_info)/(sizeof chunk_info[0])))
+<a name="325"><span class="lineNum">     325 </span>            : </a>
+<span class="lineNum">     326 </span>            : static void
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 : clear_keep(void)</span>
+<span class="lineNum">     328 </span>            : {
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :    int i = NINFO;</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :    while (--i &gt;= 0)</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :       chunk_info[i].keep = 0;</span>
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 : }</span>
+<a name="333"><span class="lineNum">     333 </span>            : </a>
+<span class="lineNum">     334 </span>            : static int
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 : find(const char *name)</span>
+<span class="lineNum">     336 </span>            : {
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :    int i = NINFO;</span>
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :    while (--i &gt;= 0)</span>
+<span class="lineNum">     339 </span>            :    {
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :       if (memcmp(chunk_info[i].name, name, 4) == 0)</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     342 </span>            :    }
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :    return i;</span>
+<span class="lineNum">     345 </span>            : }
+<a name="346"><span class="lineNum">     346 </span>            : </a>
+<span class="lineNum">     347 </span>            : static int
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 : findb(const png_byte *name)</span>
+<span class="lineNum">     349 </span>            : {
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :    int i = NINFO;</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :    while (--i &gt;= 0)</span>
+<span class="lineNum">     352 </span>            :    {
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :       if (memcmp(chunk_info[i].name, name, 4) == 0)</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     355 </span>            :    }
+<span class="lineNum">     356 </span>            : 
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :    return i;</span>
+<span class="lineNum">     358 </span>            : }
+<a name="359"><span class="lineNum">     359 </span>            : </a>
+<span class="lineNum">     360 </span>            : static int
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 : find_by_flag(png_uint_32 flag)</span>
+<span class="lineNum">     362 </span>            : {
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :    int i = NINFO;</span>
+<span class="lineNum">     364 </span>            : 
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :    while (--i &gt;= 0) if (chunk_info[i].flag == flag) return i;</span>
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :    fprintf(stderr, &quot;pngunknown: internal error\n&quot;);</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :    exit(4);</span>
+<span class="lineNum">     369 </span>            : }
+<a name="370"><span class="lineNum">     370 </span>            : </a>
+<span class="lineNum">     371 </span>            : static int
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 : ancillary(const char *name)</span>
+<span class="lineNum">     373 </span>            : {
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :    return PNG_CHUNK_ANCILLARY(PNG_U32(name[0], name[1], name[2], name[3]));</span>
+<span class="lineNum">     375 </span>            : }
+<span class="lineNum">     376 </span>            : 
+<a name="377"><span class="lineNum">     377 </span>            : #ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED</a>
+<span class="lineNum">     378 </span>            : static int
+<span class="lineNum">     379 </span><span class="lineNoCov">          0 : ancillaryb(const png_byte *name)</span>
+<span class="lineNum">     380 </span>            : {
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :    return PNG_CHUNK_ANCILLARY(PNG_U32(name[0], name[1], name[2], name[3]));</span>
+<span class="lineNum">     382 </span>            : }
+<span class="lineNum">     383 </span>            : #endif
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            : /* Type of an error_ptr */
+<span class="lineNum">     386 </span>            : typedef struct
+<span class="lineNum">     387 </span>            : {
+<span class="lineNum">     388 </span>            :    jmp_buf     error_return;
+<span class="lineNum">     389 </span>            :    png_structp png_ptr;
+<span class="lineNum">     390 </span>            :    png_infop   info_ptr, end_ptr;
+<span class="lineNum">     391 </span>            :    png_uint_32 before_IDAT;
+<span class="lineNum">     392 </span>            :    png_uint_32 after_IDAT;
+<span class="lineNum">     393 </span>            :    int         error_count;
+<span class="lineNum">     394 </span>            :    int         warning_count;
+<span class="lineNum">     395 </span>            :    int         keep; /* the default value */
+<span class="lineNum">     396 </span>            :    const char *program;
+<span class="lineNum">     397 </span>            :    const char *file;
+<span class="lineNum">     398 </span>            :    const char *test;
+<span class="lineNum">     399 </span>            : } display;
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            : static const char init[] = &quot;initialization&quot;;
+<span class="lineNum">     402 </span>            : static const char cmd[] = &quot;command line&quot;;
+<a name="403"><span class="lineNum">     403 </span>            : </a>
+<span class="lineNum">     404 </span>            : static void
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 : init_display(display *d, const char *program)</span>
+<span class="lineNum">     406 </span>            : {
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :    memset(d, 0, sizeof *d);</span>
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :    d-&gt;png_ptr = NULL;</span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :    d-&gt;info_ptr = d-&gt;end_ptr = NULL;</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :    d-&gt;error_count = d-&gt;warning_count = 0;</span>
+<span class="lineNum">     411 </span><span class="lineNoCov">          0 :    d-&gt;program = program;</span>
+<span class="lineNum">     412 </span><span class="lineNoCov">          0 :    d-&gt;file = program;</span>
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :    d-&gt;test = init;</span>
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 : }</span>
+<a name="415"><span class="lineNum">     415 </span>            : </a>
+<span class="lineNum">     416 </span>            : static void
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 : clean_display(display *d)</span>
+<span class="lineNum">     418 </span>            : {
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :    png_destroy_read_struct(&amp;d-&gt;png_ptr, &amp;d-&gt;info_ptr, &amp;d-&gt;end_ptr);</span>
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            :    /* This must not happen - it might cause an app crash */
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :    if (d-&gt;png_ptr != NULL || d-&gt;info_ptr != NULL || d-&gt;end_ptr != NULL)</span>
+<span class="lineNum">     423 </span>            :    {
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s(%s): png_destroy_read_struct error\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     425 </span>            :          d-&gt;test);
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :       exit(1);</span>
+<span class="lineNum">     427 </span>            :    }
+<a name="428"><span class="lineNum">     428 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 : PNG_FUNCTION(void, display_exit, (display *d), static PNG_NORETURN)</span>
+<span class="lineNum">     431 </span>            : {
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :    ++(d-&gt;error_count);</span>
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :    if (d-&gt;png_ptr != NULL)</span>
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :       clean_display(d);</span>
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span>            :    /* During initialization and if this is a single command line argument set
+<span class="lineNum">     438 </span>            :     * exit now - there is only one test, otherwise longjmp to do the next test.
+<span class="lineNum">     439 </span>            :     */
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :    if (d-&gt;test == init || d-&gt;test == cmd)</span>
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :       exit(1);</span>
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :    longjmp(d-&gt;error_return, 1);</span>
+<span class="lineNum">     444 </span>            : }
+<a name="445"><span class="lineNum">     445 </span>            : </a>
+<span class="lineNum">     446 </span>            : static int
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 : display_rc(const display *d, int strict)</span>
+<span class="lineNum">     448 </span>            : {
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :    return d-&gt;error_count + (strict ? d-&gt;warning_count : 0);</span>
+<span class="lineNum">     450 </span>            : }
+<a name="451"><span class="lineNum">     451 </span>            : </a>
+<span class="lineNum">     452 </span>            : /* libpng error and warning callbacks */
+<span class="lineNum">     453 </span><span class="lineNoCov">          0 : PNG_FUNCTION(void, (PNGCBAPI error), (png_structp png_ptr, const char *message),</span>
+<span class="lineNum">     454 </span>            :    static PNG_NORETURN)
+<span class="lineNum">     455 </span>            : {
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :    display *d = (display*)png_get_error_ptr(png_ptr);</span>
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :    fprintf(stderr, &quot;%s(%s): libpng error: %s\n&quot;, d-&gt;file, d-&gt;test, message);</span>
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :    display_exit(d);</span>
+<span class="lineNum">     460 </span>            : }
+<a name="461"><span class="lineNum">     461 </span>            : </a>
+<span class="lineNum">     462 </span>            : static void PNGCBAPI
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 : warning(png_structp png_ptr, const char *message)</span>
+<span class="lineNum">     464 </span>            : {
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :    display *d = (display*)png_get_error_ptr(png_ptr);</span>
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :    fprintf(stderr, &quot;%s(%s): libpng warning: %s\n&quot;, d-&gt;file, d-&gt;test, message);</span>
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :    ++(d-&gt;warning_count);</span>
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 : }</span>
+<a name="470"><span class="lineNum">     470 </span>            : </a>
+<span class="lineNum">     471 </span>            : static png_uint_32
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 : get_valid(display *d, png_infop info_ptr)</span>
+<span class="lineNum">     473 </span>            : {
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :    png_uint_32 flags = png_get_valid(d-&gt;png_ptr, info_ptr, (png_uint_32)~0);</span>
+<span class="lineNum">     475 </span>            : 
+<span class="lineNum">     476 </span>            :    /* Map the text chunks back into the flags */
+<span class="lineNum">     477 </span>            :    {
+<span class="lineNum">     478 </span>            :       png_textp text;
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :       png_uint_32 ntext = png_get_text(d-&gt;png_ptr, info_ptr, &amp;text, NULL);</span>
+<span class="lineNum">     480 </span>            : 
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :       while (ntext &gt; 0) switch (text[--ntext].compression)</span>
+<span class="lineNum">     482 </span>            :       {
+<span class="lineNum">     483 </span>            :          case -1:
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :             flags |= PNG_INFO_tEXt;</span>
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     486 </span>            :          case 0:
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :             flags |= PNG_INFO_zTXt;</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     489 </span>            :          case 1:
+<span class="lineNum">     490 </span>            :          case 2:
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :             flags |= PNG_INFO_iTXt;</span>
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     493 </span>            :          default:
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;%s(%s): unknown text compression %d\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :                d-&gt;test, text[ntext].compression);</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :             display_exit(d);</span>
+<span class="lineNum">     497 </span>            :       }
+<span class="lineNum">     498 </span>            :    }
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :    return flags;</span>
+<span class="lineNum">     501 </span>            : }
+<span class="lineNum">     502 </span>            : 
+<a name="503"><span class="lineNum">     503 </span>            : #ifdef PNG_READ_USER_CHUNKS_SUPPORTED</a>
+<span class="lineNum">     504 </span>            : static int PNGCBAPI
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 : read_callback(png_structp pp, png_unknown_chunkp pc)</span>
+<span class="lineNum">     506 </span>            : {
+<span class="lineNum">     507 </span>            :    /* This function mimics the behavior of png_set_keep_unknown_chunks by
+<span class="lineNum">     508 </span>            :     * returning '0' to keep the chunk and '1' to discard it.
+<span class="lineNum">     509 </span>            :     */
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :    display *d = voidcast(display*, png_get_user_chunk_ptr(pp));</span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :    int chunk = findb(pc-&gt;name);</span>
+<span class="lineNum">     512 </span>            :    int keep, discard;
+<span class="lineNum">     513 </span>            : 
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :    if (chunk &lt; 0) /* not one in our list, so not a known chunk */</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :       keep = d-&gt;keep;</span>
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            :    else
+<span class="lineNum">     518 </span>            :    {
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :       keep = chunk_info[chunk].keep;</span>
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :       if (keep == PNG_HANDLE_CHUNK_AS_DEFAULT)</span>
+<span class="lineNum">     521 </span>            :       {
+<span class="lineNum">     522 </span>            :          /* See the comments in png.h - use the default for unknown chunks,
+<span class="lineNum">     523 </span>            :           * do not keep known chunks.
+<span class="lineNum">     524 </span>            :           */
+<span class="lineNum">     525 </span><span class="lineNoCov">          0 :          if (chunk_info[chunk].unknown)</span>
+<span class="lineNum">     526 </span><span class="lineNoCov">          0 :             keep = d-&gt;keep;</span>
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            :          else
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :             keep = PNG_HANDLE_CHUNK_NEVER;</span>
+<span class="lineNum">     530 </span>            :       }
+<span class="lineNum">     531 </span>            :    }
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :    switch (keep)</span>
+<span class="lineNum">     534 </span>            :    {
+<span class="lineNum">     535 </span>            :       default:
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;%s(%s): %d: unrecognized chunk option\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     537 </span>            :             d-&gt;test, chunk_info[chunk].keep);
+<span class="lineNum">     538 </span><span class="lineNoCov">          0 :          display_exit(d);</span>
+<span class="lineNum">     539 </span>            : 
+<span class="lineNum">     540 </span>            :       case PNG_HANDLE_CHUNK_AS_DEFAULT:
+<span class="lineNum">     541 </span>            :       case PNG_HANDLE_CHUNK_NEVER:
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :          discard = 1/*handled; discard*/;</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     544 </span>            : 
+<span class="lineNum">     545 </span>            :       case PNG_HANDLE_CHUNK_IF_SAFE:
+<span class="lineNum">     546 </span>            :       case PNG_HANDLE_CHUNK_ALWAYS:
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :          discard = 0/*not handled; keep*/;</span>
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     549 </span>            :    }
+<span class="lineNum">     550 </span>            : 
+<span class="lineNum">     551 </span>            :    /* Also store information about this chunk in the display, the relevant flag
+<span class="lineNum">     552 </span>            :     * is set if the chunk is to be kept ('not handled'.)
+<span class="lineNum">     553 </span>            :     */
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :    if (chunk &gt;= 0) if (!discard) /* stupidity to stop a GCC warning */</span>
+<span class="lineNum">     555 </span>            :    {
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :       png_uint_32 flag = chunk_info[chunk].flag;</span>
+<span class="lineNum">     557 </span>            : 
+<span class="lineNum">     558 </span><span class="lineNoCov">          0 :       if (pc-&gt;location &amp; PNG_AFTER_IDAT)</span>
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :          d-&gt;after_IDAT |= flag;</span>
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span>            :       else
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :          d-&gt;before_IDAT |= flag;</span>
+<span class="lineNum">     563 </span>            :    }
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span>            :    /* However if there is no support to store unknown chunks don't ask libpng to
+<span class="lineNum">     566 </span>            :     * do it; there will be an png_error.
+<span class="lineNum">     567 </span>            :     */
+<span class="lineNum">     568 </span>            : #  ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :       return discard;</span>
+<span class="lineNum">     570 </span>            : #  else
+<span class="lineNum">     571 </span>            :       return 1; /*handled; discard*/
+<span class="lineNum">     572 </span>            : #  endif
+<span class="lineNum">     573 </span>            : }
+<span class="lineNum">     574 </span>            : #endif /* READ_USER_CHUNKS_SUPPORTED */
+<span class="lineNum">     575 </span>            : 
+<a name="576"><span class="lineNum">     576 </span>            : #ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED</a>
+<span class="lineNum">     577 </span>            : static png_uint_32
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 : get_unknown(display *d, png_infop info_ptr, int after_IDAT)</span>
+<span class="lineNum">     579 </span>            : {
+<span class="lineNum">     580 </span>            :    /* Create corresponding 'unknown' flags */
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :    png_uint_32 flags = 0;</span>
+<span class="lineNum">     582 </span>            : 
+<span class="lineNum">     583 </span>            :    UNUSED(after_IDAT)
+<span class="lineNum">     584 </span>            : 
+<span class="lineNum">     585 </span>            :    {
+<span class="lineNum">     586 </span>            :       png_unknown_chunkp unknown;
+<span class="lineNum">     587 </span><span class="lineNoCov">          0 :       int num_unknown = png_get_unknown_chunks(d-&gt;png_ptr, info_ptr, &amp;unknown);</span>
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span><span class="lineNoCov">          0 :       while (--num_unknown &gt;= 0)</span>
+<span class="lineNum">     590 </span>            :       {
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :          int chunk = findb(unknown[num_unknown].name);</span>
+<span class="lineNum">     592 </span>            : 
+<span class="lineNum">     593 </span>            :          /* Chunks not known to pngunknown must be validated here; since they
+<span class="lineNum">     594 </span>            :           * must also be unknown to libpng the 'display-&gt;keep' behavior should
+<span class="lineNum">     595 </span>            :           * have been used.
+<span class="lineNum">     596 </span>            :           */
+<span class="lineNum">     597 </span><span class="lineNoCov">          0 :          if (chunk &lt; 0) switch (d-&gt;keep)</span>
+<span class="lineNum">     598 </span>            :          {
+<span class="lineNum">     599 </span>            :             default: /* impossible */
+<span class="lineNum">     600 </span>            :             case PNG_HANDLE_CHUNK_AS_DEFAULT:
+<span class="lineNum">     601 </span>            :             case PNG_HANDLE_CHUNK_NEVER:
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :                fprintf(stderr, &quot;%s(%s): %s: %s: unknown chunk saved\n&quot;,</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :                   d-&gt;file, d-&gt;test, d-&gt;keep ? &quot;discard&quot; : &quot;default&quot;,</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :                   unknown[num_unknown].name);</span>
+<span class="lineNum">     605 </span><span class="lineNoCov">          0 :                ++(d-&gt;error_count);</span>
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     607 </span>            : 
+<span class="lineNum">     608 </span>            :             case PNG_HANDLE_CHUNK_IF_SAFE:
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :                if (!ancillaryb(unknown[num_unknown].name))</span>
+<span class="lineNum">     610 </span>            :                {
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :                   fprintf(stderr,</span>
+<span class="lineNum">     612 </span>            :                      &quot;%s(%s): if-safe: %s: unknown critical chunk saved\n&quot;,
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :                      d-&gt;file, d-&gt;test, unknown[num_unknown].name);</span>
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 :                   ++(d-&gt;error_count);</span>
+<span class="lineNum">     615 </span><span class="lineNoCov">          0 :                   break;</span>
+<span class="lineNum">     616 </span>            :                }
+<span class="lineNum">     617 </span>            :                /* FALLTHROUGH */ /* (safe) */
+<span class="lineNum">     618 </span>            :             case PNG_HANDLE_CHUNK_ALWAYS:
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     620 </span>            :          }
+<span class="lineNum">     621 </span>            : 
+<span class="lineNum">     622 </span>            :          else
+<span class="lineNum">     623 </span><span class="lineNoCov">          0 :             flags |= chunk_info[chunk].flag;</span>
+<span class="lineNum">     624 </span>            :       }
+<span class="lineNum">     625 </span>            :    }
+<span class="lineNum">     626 </span>            : 
+<span class="lineNum">     627 </span><span class="lineNoCov">          0 :    return flags;</span>
+<span class="lineNum">     628 </span>            : }
+<span class="lineNum">     629 </span>            : #else /* SAVE_UNKNOWN_CHUNKS */
+<span class="lineNum">     630 </span>            : static png_uint_32
+<span class="lineNum">     631 </span>            : get_unknown(display *d, png_infop info_ptr, int after_IDAT)
+<span class="lineNum">     632 </span>            :    /* Otherwise this will return the cached values set by any user callback */
+<span class="lineNum">     633 </span>            : {
+<span class="lineNum">     634 </span>            :    UNUSED(info_ptr);
+<span class="lineNum">     635 </span>            : 
+<span class="lineNum">     636 </span>            :    if (after_IDAT)
+<span class="lineNum">     637 </span>            :       return d-&gt;after_IDAT;
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span>            :    else
+<span class="lineNum">     640 </span>            :       return d-&gt;before_IDAT;
+<span class="lineNum">     641 </span>            : }
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span>            : #  ifndef PNG_READ_USER_CHUNKS_SUPPORTED
+<span class="lineNum">     644 </span>            :       /* The #defines above should mean this is never reached, it's just here as
+<span class="lineNum">     645 </span>            :        * a check to ensure the logic is correct.
+<span class="lineNum">     646 </span>            :        */
+<span class="lineNum">     647 </span>            : #     error No store support and no user chunk support, this will not work
+<span class="lineNum">     648 </span>            : #  endif /* READ_USER_CHUNKS */
+<span class="lineNum">     649 </span>            : #endif /* SAVE_UNKNOWN_CHUNKS */
+<a name="650"><span class="lineNum">     650 </span>            : </a>
+<span class="lineNum">     651 </span>            : static int
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 : check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,</span>
+<span class="lineNum">     653 </span>            :    display *d, int set_callback)
+<span class="lineNum">     654 </span>            : {
+<span class="lineNum">     655 </span>            :    int i, npasses, ipass;
+<span class="lineNum">     656 </span>            :    png_uint_32 height;
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span><span class="lineNoCov">          0 :    d-&gt;keep = PNG_HANDLE_CHUNK_AS_DEFAULT;</span>
+<span class="lineNum">     659 </span><span class="lineNoCov">          0 :    d-&gt;before_IDAT = 0;</span>
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :    d-&gt;after_IDAT = 0;</span>
+<span class="lineNum">     661 </span>            : 
+<span class="lineNum">     662 </span>            :    /* Some of these errors are permanently fatal and cause an exit here, others
+<span class="lineNum">     663 </span>            :     * are per-test and cause an error return.
+<span class="lineNum">     664 </span>            :     */
+<span class="lineNum">     665 </span><span class="lineNoCov">          0 :    d-&gt;png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, d, error,</span>
+<span class="lineNum">     666 </span>            :       warning);
+<span class="lineNum">     667 </span><span class="lineNoCov">          0 :    if (d-&gt;png_ptr == NULL)</span>
+<span class="lineNum">     668 </span>            :    {
+<span class="lineNum">     669 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s(%s): could not allocate png struct\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     670 </span>            :          d-&gt;test);
+<span class="lineNum">     671 </span>            :       /* Terminate here, this error is not test specific. */
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :       exit(1);</span>
+<span class="lineNum">     673 </span>            :    }
+<span class="lineNum">     674 </span>            : 
+<span class="lineNum">     675 </span><span class="lineNoCov">          0 :    d-&gt;info_ptr = png_create_info_struct(d-&gt;png_ptr);</span>
+<span class="lineNum">     676 </span><span class="lineNoCov">          0 :    d-&gt;end_ptr = png_create_info_struct(d-&gt;png_ptr);</span>
+<span class="lineNum">     677 </span><span class="lineNoCov">          0 :    if (d-&gt;info_ptr == NULL || d-&gt;end_ptr == NULL)</span>
+<span class="lineNum">     678 </span>            :    {
+<span class="lineNum">     679 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s(%s): could not allocate png info\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     680 </span>            :          d-&gt;test);
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :       clean_display(d);</span>
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :       exit(1);</span>
+<span class="lineNum">     683 </span>            :    }
+<span class="lineNum">     684 </span>            : 
+<span class="lineNum">     685 </span><span class="lineNoCov">          0 :    png_init_io(d-&gt;png_ptr, fp);</span>
+<span class="lineNum">     686 </span>            : 
+<span class="lineNum">     687 </span>            : #  ifdef PNG_READ_USER_CHUNKS_SUPPORTED
+<span class="lineNum">     688 </span>            :       /* This is only done if requested by the caller; it interferes with the
+<span class="lineNum">     689 </span>            :        * standard store/save mechanism.
+<span class="lineNum">     690 </span>            :        */
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :       if (set_callback)</span>
+<span class="lineNum">     692 </span><span class="lineNoCov">          0 :          png_set_read_user_chunk_fn(d-&gt;png_ptr, d, read_callback);</span>
+<span class="lineNum">     693 </span>            : #  else
+<span class="lineNum">     694 </span>            :       UNUSED(set_callback)
+<span class="lineNum">     695 </span>            : #  endif
+<span class="lineNum">     696 </span>            : 
+<span class="lineNum">     697 </span>            :    /* Handle each argument in turn; multiple settings are possible for the same
+<span class="lineNum">     698 </span>            :     * chunk and multiple calls will occur (the last one should override all
+<span class="lineNum">     699 </span>            :     * preceding ones).
+<span class="lineNum">     700 </span>            :     */
+<span class="lineNum">     701 </span><span class="lineNoCov">          0 :    for (i=0; i&lt;argc; ++i)</span>
+<span class="lineNum">     702 </span>            :    {
+<span class="lineNum">     703 </span><span class="lineNoCov">          0 :       const char *equals = strchr(argv[i], '=');</span>
+<span class="lineNum">     704 </span>            : 
+<span class="lineNum">     705 </span><span class="lineNoCov">          0 :       if (equals != NULL)</span>
+<span class="lineNum">     706 </span>            :       {
+<span class="lineNum">     707 </span>            :          int chunk, option;
+<span class="lineNum">     708 </span>            : 
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 :          if (strcmp(equals+1, &quot;default&quot;) == 0)</span>
+<span class="lineNum">     710 </span><span class="lineNoCov">          0 :             option = PNG_HANDLE_CHUNK_AS_DEFAULT;</span>
+<span class="lineNum">     711 </span><span class="lineNoCov">          0 :          else if (strcmp(equals+1, &quot;discard&quot;) == 0)</span>
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :             option = PNG_HANDLE_CHUNK_NEVER;</span>
+<span class="lineNum">     713 </span><span class="lineNoCov">          0 :          else if (strcmp(equals+1, &quot;if-safe&quot;) == 0)</span>
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :             option = PNG_HANDLE_CHUNK_IF_SAFE;</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :          else if (strcmp(equals+1, &quot;save&quot;) == 0)</span>
+<span class="lineNum">     716 </span><span class="lineNoCov">          0 :             option = PNG_HANDLE_CHUNK_ALWAYS;</span>
+<span class="lineNum">     717 </span>            :          else
+<span class="lineNum">     718 </span>            :          {
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;%s(%s): %s: unrecognized chunk option\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     720 </span><span class="lineNoCov">          0 :                d-&gt;test, argv[i]);</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :             display_exit(d);</span>
+<span class="lineNum">     722 </span>            :          }
+<span class="lineNum">     723 </span>            : 
+<span class="lineNum">     724 </span><span class="lineNoCov">          0 :          switch (equals - argv[i])</span>
+<span class="lineNum">     725 </span>            :          {
+<span class="lineNum">     726 </span>            :             case 4: /* chunk name */
+<span class="lineNum">     727 </span><span class="lineNoCov">          0 :                chunk = find(argv[i]);</span>
+<span class="lineNum">     728 </span>            : 
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :                if (chunk &gt;= 0)</span>
+<span class="lineNum">     730 </span>            :                {
+<span class="lineNum">     731 </span>            :                   /* These #if tests have the effect of skipping the arguments
+<span class="lineNum">     732 </span>            :                    * if SAVE support is unavailable - we can't do a useful test
+<span class="lineNum">     733 </span>            :                    * in this case, so we just check the arguments!  This could
+<span class="lineNum">     734 </span>            :                    * be improved in the future by using the read callback.
+<span class="lineNum">     735 </span>            :                    */
+<span class="lineNum">     736 </span>            : #                 if PNG_LIBPNG_VER &gt;= 10700 &amp;&amp;\
+<span class="lineNum">     737 </span>            :                      !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
+<span class="lineNum">     738 </span>            :                      if (option &lt; PNG_HANDLE_CHUNK_IF_SAFE)
+<span class="lineNum">     739 </span>            : #                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
+<span class="lineNum">     740 </span>            :                   {
+<span class="lineNum">     741 </span>            :                      png_byte name[5];
+<span class="lineNum">     742 </span>            : 
+<span class="lineNum">     743 </span><span class="lineNoCov">          0 :                      memcpy(name, chunk_info[chunk].name, 5);</span>
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :                      png_set_keep_unknown_chunks(d-&gt;png_ptr, option, name, 1);</span>
+<span class="lineNum">     745 </span><span class="lineNoCov">          0 :                      chunk_info[chunk].keep = option;</span>
+<span class="lineNum">     746 </span>            :                   }
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :                   continue;</span>
+<span class="lineNum">     748 </span>            :                }
+<span class="lineNum">     749 </span>            : 
+<span class="lineNum">     750 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     751 </span>            : 
+<span class="lineNum">     752 </span>            :             case 7: /* default */
+<span class="lineNum">     753 </span><span class="lineNoCov">          0 :                if (memcmp(argv[i], &quot;default&quot;, 7) == 0)</span>
+<span class="lineNum">     754 </span>            :                {
+<span class="lineNum">     755 </span>            : #                 if PNG_LIBPNG_VER &gt;= 10700 &amp;&amp;\
+<span class="lineNum">     756 </span>            :                      !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
+<span class="lineNum">     757 </span>            :                      if (option &lt; PNG_HANDLE_CHUNK_IF_SAFE)
+<span class="lineNum">     758 </span>            : #                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :                      png_set_keep_unknown_chunks(d-&gt;png_ptr, option, NULL, 0);</span>
+<span class="lineNum">     760 </span>            : 
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :                   d-&gt;keep = option;</span>
+<span class="lineNum">     762 </span><span class="lineNoCov">          0 :                   continue;</span>
+<span class="lineNum">     763 </span>            :                }
+<span class="lineNum">     764 </span>            : 
+<span class="lineNum">     765 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     766 </span>            : 
+<span class="lineNum">     767 </span>            :             case 3: /* all */
+<span class="lineNum">     768 </span><span class="lineNoCov">          0 :                if (memcmp(argv[i], &quot;all&quot;, 3) == 0)</span>
+<span class="lineNum">     769 </span>            :                {
+<span class="lineNum">     770 </span>            : #                 if PNG_LIBPNG_VER &gt;= 10700 &amp;&amp;\
+<span class="lineNum">     771 </span>            :                      !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
+<span class="lineNum">     772 </span>            :                      if (option &lt; PNG_HANDLE_CHUNK_IF_SAFE)
+<span class="lineNum">     773 </span>            : #                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
+<span class="lineNum">     774 </span><span class="lineNoCov">          0 :                      png_set_keep_unknown_chunks(d-&gt;png_ptr, option, NULL, -1);</span>
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span><span class="lineNoCov">          0 :                   d-&gt;keep = option;</span>
+<span class="lineNum">     777 </span>            : 
+<span class="lineNum">     778 </span><span class="lineNoCov">          0 :                   for (chunk = 0; chunk &lt; NINFO; ++chunk)</span>
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :                      if (chunk_info[chunk].all)</span>
+<span class="lineNum">     780 </span><span class="lineNoCov">          0 :                         chunk_info[chunk].keep = option;</span>
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :                   continue;</span>
+<span class="lineNum">     782 </span>            :                }
+<span class="lineNum">     783 </span>            : 
+<span class="lineNum">     784 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     785 </span>            : 
+<span class="lineNum">     786 </span>            :             default: /* some misplaced = */
+<span class="lineNum">     787 </span>            : 
+<span class="lineNum">     788 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     789 </span>            :          }
+<span class="lineNum">     790 </span>            :       }
+<span class="lineNum">     791 </span>            : 
+<span class="lineNum">     792 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s(%s): %s: unrecognized chunk argument\n&quot;, d-&gt;file,</span>
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :          d-&gt;test, argv[i]);</span>
+<span class="lineNum">     794 </span><span class="lineNoCov">          0 :       display_exit(d);</span>
+<span class="lineNum">     795 </span>            :    }
+<span class="lineNum">     796 </span>            : 
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 :    png_read_info(d-&gt;png_ptr, d-&gt;info_ptr);</span>
+<span class="lineNum">     798 </span>            : 
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :    switch (png_get_interlace_type(d-&gt;png_ptr, d-&gt;info_ptr))</span>
+<span class="lineNum">     800 </span>            :    {
+<span class="lineNum">     801 </span>            :       case PNG_INTERLACE_NONE:
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 :          npasses = 1;</span>
+<span class="lineNum">     803 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     804 </span>            : 
+<span class="lineNum">     805 </span>            :       case PNG_INTERLACE_ADAM7:
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :          npasses = PNG_INTERLACE_ADAM7_PASSES;</span>
+<span class="lineNum">     807 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">     808 </span>            : 
+<span class="lineNum">     809 </span>            :       default:
+<span class="lineNum">     810 </span>            :          /* Hard error because it is not test specific */
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;%s(%s): invalid interlace type\n&quot;, d-&gt;file, d-&gt;test);</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :          clean_display(d);</span>
+<span class="lineNum">     813 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     814 </span>            :    }
+<span class="lineNum">     815 </span>            : 
+<span class="lineNum">     816 </span>            :    /* Skip the image data, if IDAT is not being handled then don't do this
+<span class="lineNum">     817 </span>            :     * because it will cause a CRC error.
+<span class="lineNum">     818 </span>            :     */
+<span class="lineNum">     819 </span><span class="lineNoCov">          0 :    if (chunk_info[0/*IDAT*/].keep == PNG_HANDLE_CHUNK_AS_DEFAULT)</span>
+<span class="lineNum">     820 </span>            :    {
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :       png_start_read_image(d-&gt;png_ptr);</span>
+<span class="lineNum">     822 </span><span class="lineNoCov">          0 :       height = png_get_image_height(d-&gt;png_ptr, d-&gt;info_ptr);</span>
+<span class="lineNum">     823 </span>            : 
+<span class="lineNum">     824 </span><span class="lineNoCov">          0 :       if (npasses &gt; 1)</span>
+<span class="lineNum">     825 </span>            :       {
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :          png_uint_32 width = png_get_image_width(d-&gt;png_ptr, d-&gt;info_ptr);</span>
+<span class="lineNum">     827 </span>            : 
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :          for (ipass=0; ipass&lt;npasses; ++ipass)</span>
+<span class="lineNum">     829 </span>            :          {
+<span class="lineNum">     830 </span><span class="lineNoCov">          0 :             png_uint_32 wPass = PNG_PASS_COLS(width, ipass);</span>
+<span class="lineNum">     831 </span>            : 
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :             if (wPass &gt; 0)</span>
+<span class="lineNum">     833 </span>            :             {
+<span class="lineNum">     834 </span>            :                png_uint_32 y;
+<span class="lineNum">     835 </span>            : 
+<span class="lineNum">     836 </span><span class="lineNoCov">          0 :                for (y=0; y&lt;height; ++y) if (PNG_ROW_IN_INTERLACE_PASS(y, ipass))</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :                   png_read_row(d-&gt;png_ptr, NULL, NULL);</span>
+<span class="lineNum">     838 </span>            :             }
+<span class="lineNum">     839 </span>            :          }
+<span class="lineNum">     840 </span>            :       } /* interlaced */
+<span class="lineNum">     841 </span>            : 
+<span class="lineNum">     842 </span>            :       else /* not interlaced */
+<span class="lineNum">     843 </span>            :       {
+<span class="lineNum">     844 </span>            :          png_uint_32 y;
+<span class="lineNum">     845 </span>            : 
+<span class="lineNum">     846 </span><span class="lineNoCov">          0 :          for (y=0; y&lt;height; ++y)</span>
+<span class="lineNum">     847 </span><span class="lineNoCov">          0 :             png_read_row(d-&gt;png_ptr, NULL, NULL);</span>
+<span class="lineNum">     848 </span>            :       }
+<span class="lineNum">     849 </span>            :    }
+<span class="lineNum">     850 </span>            : 
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :    png_read_end(d-&gt;png_ptr, d-&gt;end_ptr);</span>
+<span class="lineNum">     852 </span>            : 
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :    flags[0] = get_valid(d, d-&gt;info_ptr);</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :    flags[1] = get_unknown(d, d-&gt;info_ptr, 0/*before IDAT*/);</span>
+<span class="lineNum">     855 </span>            : 
+<span class="lineNum">     856 </span>            :    /* Only png_read_png sets PNG_INFO_IDAT! */
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :    flags[chunk_info[0/*IDAT*/].keep != PNG_HANDLE_CHUNK_AS_DEFAULT] |=</span>
+<span class="lineNum">     858 </span>            :       PNG_INFO_IDAT;
+<span class="lineNum">     859 </span>            : 
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :    flags[2] = get_valid(d, d-&gt;end_ptr);</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :    flags[3] = get_unknown(d, d-&gt;end_ptr, 1/*after IDAT*/);</span>
+<span class="lineNum">     862 </span>            : 
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :    clean_display(d);</span>
+<span class="lineNum">     864 </span>            : 
+<span class="lineNum">     865 </span><span class="lineNoCov">          0 :    return d-&gt;keep;</span>
+<span class="lineNum">     866 </span>            : }
+<a name="867"><span class="lineNum">     867 </span>            : </a>
+<span class="lineNum">     868 </span>            : static void
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 : check_error(display *d, png_uint_32 flags, const char *message)</span>
+<span class="lineNum">     870 </span>            : {
+<span class="lineNum">     871 </span><span class="lineNoCov">          0 :    while (flags)</span>
+<span class="lineNum">     872 </span>            :    {
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :       png_uint_32 flag = flags &amp; -(png_int_32)flags;</span>
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 :       int i = find_by_flag(flag);</span>
+<span class="lineNum">     875 </span>            : 
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s(%s): chunk %s: %s\n&quot;, d-&gt;file, d-&gt;test,</span>
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :          chunk_info[i].name, message);</span>
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :       ++(d-&gt;error_count);</span>
+<span class="lineNum">     879 </span>            : 
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :       flags &amp;= ~flag;</span>
+<span class="lineNum">     881 </span>            :    }
+<span class="lineNum">     882 </span><span class="lineNoCov">          0 : }</span>
+<a name="883"><span class="lineNum">     883 </span>            : </a>
+<span class="lineNum">     884 </span>            : static void
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 : check_handling(display *d, int def, png_uint_32 chunks, png_uint_32 known,</span>
+<span class="lineNum">     886 </span>            :    png_uint_32 unknown, const char *position, int set_callback)
+<span class="lineNum">     887 </span>            : {
+<span class="lineNum">     888 </span><span class="lineNoCov">          0 :    while (chunks)</span>
+<span class="lineNum">     889 </span>            :    {
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :       png_uint_32 flag = chunks &amp; -(png_int_32)chunks;</span>
+<span class="lineNum">     891 </span><span class="lineNoCov">          0 :       int i = find_by_flag(flag);</span>
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :       int keep = chunk_info[i].keep;</span>
+<span class="lineNum">     893 </span>            :       const char *type;
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 :       const char *errorx = NULL;</span>
+<span class="lineNum">     895 </span>            : 
+<span class="lineNum">     896 </span><span class="lineNoCov">          0 :       if (chunk_info[i].unknown)</span>
+<span class="lineNum">     897 </span>            :       {
+<span class="lineNum">     898 </span><span class="lineNoCov">          0 :          if (keep == PNG_HANDLE_CHUNK_AS_DEFAULT)</span>
+<span class="lineNum">     899 </span>            :          {
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :             type = &quot;UNKNOWN (default)&quot;;</span>
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 :             keep = def;</span>
+<span class="lineNum">     902 </span>            :          }
+<span class="lineNum">     903 </span>            : 
+<span class="lineNum">     904 </span>            :          else
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :             type = &quot;UNKNOWN (specified)&quot;;</span>
+<span class="lineNum">     906 </span>            : 
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :          if (flag &amp; known)</span>
+<span class="lineNum">     908 </span><span class="lineNoCov">          0 :             errorx = &quot;chunk processed&quot;;</span>
+<span class="lineNum">     909 </span>            : 
+<span class="lineNum">     910 </span><span class="lineNoCov">          0 :          else switch (keep)</span>
+<span class="lineNum">     911 </span>            :          {
+<span class="lineNum">     912 </span>            :             case PNG_HANDLE_CHUNK_AS_DEFAULT:
+<span class="lineNum">     913 </span><span class="lineNoCov">          0 :                if (flag &amp; unknown)</span>
+<span class="lineNum">     914 </span><span class="lineNoCov">          0 :                   errorx = &quot;DEFAULT: unknown chunk saved&quot;;</span>
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     916 </span>            : 
+<span class="lineNum">     917 </span>            :             case PNG_HANDLE_CHUNK_NEVER:
+<span class="lineNum">     918 </span><span class="lineNoCov">          0 :                if (flag &amp; unknown)</span>
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :                   errorx = &quot;DISCARD: unknown chunk saved&quot;;</span>
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     921 </span>            : 
+<span class="lineNum">     922 </span>            :             case PNG_HANDLE_CHUNK_IF_SAFE:
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :                if (ancillary(chunk_info[i].name))</span>
+<span class="lineNum">     924 </span>            :                {
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :                   if (!(flag &amp; unknown))</span>
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :                      errorx = &quot;IF-SAFE: unknown ancillary chunk lost&quot;;</span>
+<span class="lineNum">     927 </span>            :                }
+<span class="lineNum">     928 </span>            : 
+<span class="lineNum">     929 </span><span class="lineNoCov">          0 :                else if (flag &amp; unknown)</span>
+<span class="lineNum">     930 </span><span class="lineNoCov">          0 :                   errorx = &quot;IF-SAFE: unknown critical chunk saved&quot;;</span>
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     932 </span>            : 
+<span class="lineNum">     933 </span>            :             case PNG_HANDLE_CHUNK_ALWAYS:
+<span class="lineNum">     934 </span><span class="lineNoCov">          0 :                if (!(flag &amp; unknown))</span>
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :                   errorx = &quot;SAVE: unknown chunk lost&quot;;</span>
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     937 </span>            : 
+<span class="lineNum">     938 </span>            :             default:
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :                errorx = &quot;internal error: bad keep&quot;;</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     941 </span>            :          }
+<span class="lineNum">     942 </span>            :       } /* unknown chunk */
+<span class="lineNum">     943 </span>            : 
+<span class="lineNum">     944 </span>            :       else /* known chunk */
+<span class="lineNum">     945 </span>            :       {
+<span class="lineNum">     946 </span><span class="lineNoCov">          0 :          type = &quot;KNOWN&quot;;</span>
+<span class="lineNum">     947 </span>            : 
+<span class="lineNum">     948 </span><span class="lineNoCov">          0 :          if (flag &amp; known)</span>
+<span class="lineNum">     949 </span>            :          {
+<span class="lineNum">     950 </span>            :             /* chunk was processed, it won't have been saved because that is
+<span class="lineNum">     951 </span>            :              * caught below when checking for inconsistent processing.
+<span class="lineNum">     952 </span>            :              */
+<span class="lineNum">     953 </span><span class="lineNoCov">          0 :             if (keep != PNG_HANDLE_CHUNK_AS_DEFAULT)</span>
+<span class="lineNum">     954 </span><span class="lineNoCov">          0 :                errorx = &quot;!DEFAULT: known chunk processed&quot;;</span>
+<span class="lineNum">     955 </span>            :          }
+<span class="lineNum">     956 </span>            : 
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :          else /* not processed */ switch (keep)</span>
+<span class="lineNum">     958 </span>            :          {
+<span class="lineNum">     959 </span>            :             case PNG_HANDLE_CHUNK_AS_DEFAULT:
+<span class="lineNum">     960 </span><span class="lineNoCov">          0 :                errorx = &quot;DEFAULT: known chunk not processed&quot;;</span>
+<span class="lineNum">     961 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     962 </span>            : 
+<span class="lineNum">     963 </span>            :             case PNG_HANDLE_CHUNK_NEVER:
+<span class="lineNum">     964 </span><span class="lineNoCov">          0 :                if (flag &amp; unknown)</span>
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :                   errorx = &quot;DISCARD: known chunk saved&quot;;</span>
+<span class="lineNum">     966 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     967 </span>            : 
+<span class="lineNum">     968 </span>            :             case PNG_HANDLE_CHUNK_IF_SAFE:
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :                if (ancillary(chunk_info[i].name))</span>
+<span class="lineNum">     970 </span>            :                {
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :                   if (!(flag &amp; unknown))</span>
+<span class="lineNum">     972 </span><span class="lineNoCov">          0 :                      errorx = &quot;IF-SAFE: known ancillary chunk lost&quot;;</span>
+<span class="lineNum">     973 </span>            :                }
+<span class="lineNum">     974 </span>            : 
+<span class="lineNum">     975 </span><span class="lineNoCov">          0 :                else if (flag &amp; unknown)</span>
+<span class="lineNum">     976 </span><span class="lineNoCov">          0 :                   errorx = &quot;IF-SAFE: known critical chunk saved&quot;;</span>
+<span class="lineNum">     977 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     978 </span>            : 
+<span class="lineNum">     979 </span>            :             case PNG_HANDLE_CHUNK_ALWAYS:
+<span class="lineNum">     980 </span><span class="lineNoCov">          0 :                if (!(flag &amp; unknown))</span>
+<span class="lineNum">     981 </span><span class="lineNoCov">          0 :                   errorx = &quot;SAVE: known chunk lost&quot;;</span>
+<span class="lineNum">     982 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     983 </span>            : 
+<span class="lineNum">     984 </span>            :             default:
+<span class="lineNum">     985 </span><span class="lineNoCov">          0 :                errorx = &quot;internal error: bad keep (2)&quot;;</span>
+<span class="lineNum">     986 </span><span class="lineNoCov">          0 :                break;</span>
+<span class="lineNum">     987 </span>            :          }
+<span class="lineNum">     988 </span>            :       }
+<span class="lineNum">     989 </span>            : 
+<span class="lineNum">     990 </span><span class="lineNoCov">          0 :       if (errorx != NULL)</span>
+<span class="lineNum">     991 </span>            :       {
+<span class="lineNum">     992 </span><span class="lineNoCov">          0 :          ++(d-&gt;error_count);</span>
+<span class="lineNum">     993 </span><span class="lineNoCov">          0 :          fprintf(stderr, &quot;%s(%s%s): %s %s %s: %s\n&quot;, d-&gt;file, d-&gt;test,</span>
+<span class="lineNum">     994 </span>            :             set_callback ? &quot;,callback&quot; : &quot;&quot;,
+<span class="lineNum">     995 </span><span class="lineNoCov">          0 :             type, chunk_info[i].name, position, errorx);</span>
+<span class="lineNum">     996 </span>            :       }
+<span class="lineNum">     997 </span>            : 
+<span class="lineNum">     998 </span><span class="lineNoCov">          0 :       chunks &amp;= ~flag;</span>
+<span class="lineNum">     999 </span>            :    }
+<span class="lineNum">    1000 </span><span class="lineNoCov">          0 : }</span>
+<a name="1001"><span class="lineNum">    1001 </span>            : </a>
+<span class="lineNum">    1002 </span>            : static void
+<span class="lineNum">    1003 </span><span class="lineNoCov">          0 : perform_one_test(FILE *fp, int argc, const char **argv,</span>
+<span class="lineNum">    1004 </span>            :    png_uint_32 *default_flags, display *d, int set_callback)
+<span class="lineNum">    1005 </span>            : {
+<span class="lineNum">    1006 </span>            :    int def;
+<span class="lineNum">    1007 </span>            :    png_uint_32 flags[2][4];
+<span class="lineNum">    1008 </span>            : 
+<span class="lineNum">    1009 </span><span class="lineNoCov">          0 :    rewind(fp);</span>
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :    clear_keep();</span>
+<span class="lineNum">    1011 </span><span class="lineNoCov">          0 :    memcpy(flags[0], default_flags, sizeof flags[0]);</span>
+<span class="lineNum">    1012 </span>            : 
+<span class="lineNum">    1013 </span><span class="lineNoCov">          0 :    def = check(fp, argc, argv, flags[1], d, set_callback);</span>
+<span class="lineNum">    1014 </span>            : 
+<span class="lineNum">    1015 </span>            :    /* If IDAT is being handled as unknown the image read is skipped and all the
+<span class="lineNum">    1016 </span>            :     * IDATs after the first end up in the end info struct, so in this case add
+<span class="lineNum">    1017 </span>            :     * IDAT to the list of unknowns.  (Do this after 'check' above sets the
+<span class="lineNum">    1018 </span>            :     * chunk_info 'keep' fields.)
+<span class="lineNum">    1019 </span>            :     *
+<span class="lineNum">    1020 </span>            :     * Note that the flag setting has to be in the 'known' field to avoid
+<span class="lineNum">    1021 </span>            :     * triggering the consistency check below and the flag must only be set if
+<span class="lineNum">    1022 </span>            :     * there are multiple IDATs, so if the check above did find an unknown IDAT
+<span class="lineNum">    1023 </span>            :     * after IDAT.
+<span class="lineNum">    1024 </span>            :     */
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 :    if (chunk_info[0/*IDAT*/].keep != PNG_HANDLE_CHUNK_AS_DEFAULT &amp;&amp;</span>
+<span class="lineNum">    1026 </span><span class="lineNoCov">          0 :        (flags[1][3] &amp; PNG_INFO_IDAT) != 0)</span>
+<span class="lineNum">    1027 </span><span class="lineNoCov">          0 :       flags[0][2] |= PNG_INFO_IDAT;</span>
+<span class="lineNum">    1028 </span>            : 
+<span class="lineNum">    1029 </span>            :    /* Chunks should either be known or unknown, never both and this should apply
+<span class="lineNum">    1030 </span>            :     * whether the chunk is before or after the IDAT (actually, the app can
+<span class="lineNum">    1031 </span>            :     * probably change this by swapping the handling after the image, but this
+<span class="lineNum">    1032 </span>            :     * test does not do that.)
+<span class="lineNum">    1033 </span>            :     */
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :    check_error(d, (flags[0][0]|flags[0][2]) &amp; (flags[0][1]|flags[0][3]),</span>
+<span class="lineNum">    1035 </span>            :       &quot;chunk handled inconsistently in count tests&quot;);
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :    check_error(d, (flags[1][0]|flags[1][2]) &amp; (flags[1][1]|flags[1][3]),</span>
+<span class="lineNum">    1037 </span>            :       &quot;chunk handled inconsistently in option tests&quot;);
+<span class="lineNum">    1038 </span>            : 
+<span class="lineNum">    1039 </span>            :    /* Now find out what happened to each chunk before and after the IDAT and
+<span class="lineNum">    1040 </span>            :     * determine if the behavior was correct.  First some basic sanity checks,
+<span class="lineNum">    1041 </span>            :     * any known chunk should be known in the original count, any unknown chunk
+<span class="lineNum">    1042 </span>            :     * should be either known or unknown in the original.
+<span class="lineNum">    1043 </span>            :     */
+<span class="lineNum">    1044 </span>            :    {
+<span class="lineNum">    1045 </span>            :       png_uint_32 test;
+<span class="lineNum">    1046 </span>            : 
+<span class="lineNum">    1047 </span><span class="lineNoCov">          0 :       test = flags[1][0] &amp; ~flags[0][0];</span>
+<span class="lineNum">    1048 </span><span class="lineNoCov">          0 :       check_error(d, test, &quot;new known chunk before IDAT&quot;);</span>
+<span class="lineNum">    1049 </span><span class="lineNoCov">          0 :       test = flags[1][1] &amp; ~(flags[0][0] | flags[0][1]);</span>
+<span class="lineNum">    1050 </span><span class="lineNoCov">          0 :       check_error(d, test, &quot;new unknown chunk before IDAT&quot;);</span>
+<span class="lineNum">    1051 </span><span class="lineNoCov">          0 :       test = flags[1][2] &amp; ~flags[0][2];</span>
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :       check_error(d, test, &quot;new known chunk after IDAT&quot;);</span>
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :       test = flags[1][3] &amp; ~(flags[0][2] | flags[0][3]);</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :       check_error(d, test, &quot;new unknown chunk after IDAT&quot;);</span>
+<span class="lineNum">    1055 </span>            :    }
+<span class="lineNum">    1056 </span>            : 
+<span class="lineNum">    1057 </span>            :    /* Now each chunk in the original list should have been handled according to
+<span class="lineNum">    1058 </span>            :     * the options set for that chunk, regardless of whether libpng knows about
+<span class="lineNum">    1059 </span>            :     * it or not.
+<span class="lineNum">    1060 </span>            :     */
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :    check_handling(d, def, flags[0][0] | flags[0][1], flags[1][0], flags[1][1],</span>
+<span class="lineNum">    1062 </span>            :       &quot;before IDAT&quot;, set_callback);
+<span class="lineNum">    1063 </span><span class="lineNoCov">          0 :    check_handling(d, def, flags[0][2] | flags[0][3], flags[1][2], flags[1][3],</span>
+<span class="lineNum">    1064 </span>            :       &quot;after IDAT&quot;, set_callback);
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 : }</span>
+<a name="1066"><span class="lineNum">    1066 </span>            : </a>
+<span class="lineNum">    1067 </span>            : static void
+<span class="lineNum">    1068 </span><span class="lineNoCov">          0 : perform_one_test_safe(FILE *fp, int argc, const char **argv,</span>
+<span class="lineNum">    1069 </span>            :    png_uint_32 *default_flags, display *d, const char *test)
+<span class="lineNum">    1070 </span>            : {
+<span class="lineNum">    1071 </span><span class="lineNoCov">          0 :    if (setjmp(d-&gt;error_return) == 0)</span>
+<span class="lineNum">    1072 </span>            :    {
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :       d-&gt;test = test; /* allow use of d-&gt;error_return */</span>
+<span class="lineNum">    1074 </span>            : #     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
+<span class="lineNum">    1075 </span><span class="lineNoCov">          0 :          perform_one_test(fp, argc, argv, default_flags, d, 0);</span>
+<span class="lineNum">    1076 </span>            : #     endif
+<span class="lineNum">    1077 </span>            : #     ifdef PNG_READ_USER_CHUNKS_SUPPORTED
+<span class="lineNum">    1078 </span><span class="lineNoCov">          0 :          perform_one_test(fp, argc, argv, default_flags, d, 1);</span>
+<span class="lineNum">    1079 </span>            : #     endif
+<span class="lineNum">    1080 </span><span class="lineNoCov">          0 :       d-&gt;test = init; /* prevent use of d-&gt;error_return */</span>
+<span class="lineNum">    1081 </span>            :    }
+<span class="lineNum">    1082 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1083 </span>            : 
+<span class="lineNum">    1084 </span>            : static const char *standard_tests[] =
+<span class="lineNum">    1085 </span>            : {
+<span class="lineNum">    1086 </span>            :  &quot;discard&quot;, &quot;default=discard&quot;, 0,
+<span class="lineNum">    1087 </span>            :  &quot;save&quot;, &quot;default=save&quot;, 0,
+<span class="lineNum">    1088 </span>            :  &quot;if-safe&quot;, &quot;default=if-safe&quot;, 0,
+<span class="lineNum">    1089 </span>            :  &quot;vpAg&quot;, &quot;vpAg=if-safe&quot;, 0,
+<span class="lineNum">    1090 </span>            :  &quot;sTER&quot;, &quot;sTER=if-safe&quot;, 0,
+<span class="lineNum">    1091 </span>            :  &quot;IDAT&quot;, &quot;default=discard&quot;, &quot;IDAT=save&quot;, 0,
+<span class="lineNum">    1092 </span>            :  &quot;sAPI&quot;, &quot;bKGD=save&quot;, &quot;cHRM=save&quot;, &quot;gAMA=save&quot;, &quot;all=discard&quot;, &quot;iCCP=save&quot;,
+<span class="lineNum">    1093 </span>            :    &quot;sBIT=save&quot;, &quot;sRGB=save&quot;, 0,
+<span class="lineNum">    1094 </span>            :  0/*end*/
+<span class="lineNum">    1095 </span>            : };
+<a name="1096"><span class="lineNum">    1096 </span>            : </a>
+<span class="lineNum">    1097 </span>            : static PNG_NORETURN void
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 : usage(const char *program, const char *reason)</span>
+<span class="lineNum">    1099 </span>            : {
+<span class="lineNum">    1100 </span><span class="lineNoCov">          0 :    fprintf(stderr, &quot;pngunknown: %s: usage:\n %s [--strict] &quot;</span>
+<span class="lineNum">    1101 </span>            :       &quot;--default|{(CHNK|default|all)=(default|discard|if-safe|save)} &quot;
+<span class="lineNum">    1102 </span>            :       &quot;testfile.png\n&quot;, reason, program);
+<span class="lineNum">    1103 </span><span class="lineNoCov">          0 :    exit(99);</span>
+<span class="lineNum">    1104 </span>            : }
+<a name="1105"><span class="lineNum">    1105 </span>            : </a>
+<span class="lineNum">    1106 </span>            : int
+<span class="lineNum">    1107 </span><span class="lineNoCov">          0 : main(int argc, const char **argv)</span>
+<span class="lineNum">    1108 </span>            : {
+<span class="lineNum">    1109 </span>            :    FILE *fp;
+<span class="lineNum">    1110 </span>            :    png_uint_32 default_flags[4/*valid,unknown{before,after}*/];
+<span class="lineNum">    1111 </span><span class="lineNoCov">          0 :    int strict = 0, default_tests = 0;</span>
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :    const char *count_argv = &quot;default=save&quot;;</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :    const char *touch_file = NULL;</span>
+<span class="lineNum">    1114 </span>            :    display d;
+<span class="lineNum">    1115 </span>            : 
+<span class="lineNum">    1116 </span><span class="lineNoCov">          0 :    init_display(&amp;d, argv[0]);</span>
+<span class="lineNum">    1117 </span>            : 
+<span class="lineNum">    1118 </span><span class="lineNoCov">          0 :    while (++argv, --argc &gt; 0)</span>
+<span class="lineNum">    1119 </span>            :    {
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :       if (strcmp(*argv, &quot;--strict&quot;) == 0)</span>
+<span class="lineNum">    1121 </span><span class="lineNoCov">          0 :          strict = 1;</span>
+<span class="lineNum">    1122 </span>            : 
+<span class="lineNum">    1123 </span><span class="lineNoCov">          0 :       else if (strcmp(*argv, &quot;--default&quot;) == 0)</span>
+<span class="lineNum">    1124 </span><span class="lineNoCov">          0 :          default_tests = 1;</span>
+<span class="lineNum">    1125 </span>            : 
+<span class="lineNum">    1126 </span><span class="lineNoCov">          0 :       else if (strcmp(*argv, &quot;--touch&quot;) == 0)</span>
+<span class="lineNum">    1127 </span>            :       {
+<span class="lineNum">    1128 </span><span class="lineNoCov">          0 :          if (argc &gt; 1)</span>
+<span class="lineNum">    1129 </span><span class="lineNoCov">          0 :             touch_file = *++argv, --argc;</span>
+<span class="lineNum">    1130 </span>            : 
+<span class="lineNum">    1131 </span>            :          else
+<span class="lineNum">    1132 </span><span class="lineNoCov">          0 :             usage(d.program, &quot;--touch: missing file name&quot;);</span>
+<span class="lineNum">    1133 </span>            :       }
+<span class="lineNum">    1134 </span>            : 
+<span class="lineNum">    1135 </span>            :       else
+<span class="lineNum">    1136 </span><span class="lineNoCov">          0 :          break;</span>
+<span class="lineNum">    1137 </span>            :    }
+<span class="lineNum">    1138 </span>            : 
+<span class="lineNum">    1139 </span>            :    /* A file name is required, but there should be no other arguments if
+<span class="lineNum">    1140 </span>            :     * --default was specified.
+<span class="lineNum">    1141 </span>            :     */
+<span class="lineNum">    1142 </span><span class="lineNoCov">          0 :    if (argc &lt;= 0)</span>
+<span class="lineNum">    1143 </span><span class="lineNoCov">          0 :       usage(d.program, &quot;missing test file&quot;);</span>
+<span class="lineNum">    1144 </span>            : 
+<span class="lineNum">    1145 </span>            :    /* GCC BUG: if (default_tests &amp;&amp; argc != 1) triggers some weird GCC argc
+<span class="lineNum">    1146 </span>            :     * optimization which causes warnings with -Wstrict-overflow!
+<span class="lineNum">    1147 </span>            :     */
+<span class="lineNum">    1148 </span><span class="lineNoCov">          0 :    else if (default_tests) if (argc != 1)</span>
+<span class="lineNum">    1149 </span><span class="lineNoCov">          0 :       usage(d.program, &quot;extra arguments&quot;);</span>
+<span class="lineNum">    1150 </span>            : 
+<span class="lineNum">    1151 </span>            :    /* The name of the test file is the last argument; remove it. */
+<span class="lineNum">    1152 </span><span class="lineNoCov">          0 :    d.file = argv[--argc];</span>
+<span class="lineNum">    1153 </span>            : 
+<span class="lineNum">    1154 </span><span class="lineNoCov">          0 :    fp = fopen(d.file, &quot;rb&quot;);</span>
+<span class="lineNum">    1155 </span><span class="lineNoCov">          0 :    if (fp == NULL)</span>
+<span class="lineNum">    1156 </span>            :    {
+<span class="lineNum">    1157 </span><span class="lineNoCov">          0 :       perror(d.file);</span>
+<span class="lineNum">    1158 </span><span class="lineNoCov">          0 :       exit(99);</span>
+<span class="lineNum">    1159 </span>            :    }
+<span class="lineNum">    1160 </span>            : 
+<span class="lineNum">    1161 </span>            :    /* First find all the chunks, known and unknown, in the test file, a failure
+<span class="lineNum">    1162 </span>            :     * here aborts the whole test.
+<span class="lineNum">    1163 </span>            :     *
+<span class="lineNum">    1164 </span>            :     * If 'save' is supported then the normal saving method should happen,
+<span class="lineNum">    1165 </span>            :     * otherwise if 'read' is supported then the read callback will do the
+<span class="lineNum">    1166 </span>            :     * same thing.  If both are supported the 'read' callback won't be
+<span class="lineNum">    1167 </span>            :     * instantiated by default.  If 'save' is *not* supported then a user
+<span class="lineNum">    1168 </span>            :     * callback is required even though we can call png_get_unknown_chunks.
+<span class="lineNum">    1169 </span>            :     */
+<span class="lineNum">    1170 </span><span class="lineNoCov">          0 :    if (check(fp, 1, &amp;count_argv, default_flags, &amp;d,</span>
+<span class="lineNum">    1171 </span>            : #     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
+<span class="lineNum">    1172 </span>            :          0
+<span class="lineNum">    1173 </span>            : #     else
+<span class="lineNum">    1174 </span>            :          1
+<span class="lineNum">    1175 </span>            : #     endif
+<span class="lineNum">    1176 </span>            :       ) != PNG_HANDLE_CHUNK_ALWAYS)
+<span class="lineNum">    1177 </span>            :    {
+<span class="lineNum">    1178 </span><span class="lineNoCov">          0 :       fprintf(stderr, &quot;%s: %s: internal error\n&quot;, d.program, d.file);</span>
+<span class="lineNum">    1179 </span><span class="lineNoCov">          0 :       exit(99);</span>
+<span class="lineNum">    1180 </span>            :    }
+<span class="lineNum">    1181 </span>            : 
+<span class="lineNum">    1182 </span>            :    /* Now find what the various supplied options cause to change: */
+<span class="lineNum">    1183 </span><span class="lineNoCov">          0 :    if (!default_tests)</span>
+<span class="lineNum">    1184 </span>            :    {
+<span class="lineNum">    1185 </span><span class="lineNoCov">          0 :       d.test = cmd; /* acts as a flag to say exit, do not longjmp */</span>
+<span class="lineNum">    1186 </span>            : #     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
+<span class="lineNum">    1187 </span><span class="lineNoCov">          0 :          perform_one_test(fp, argc, argv, default_flags, &amp;d, 0);</span>
+<span class="lineNum">    1188 </span>            : #     endif
+<span class="lineNum">    1189 </span>            : #     ifdef PNG_READ_USER_CHUNKS_SUPPORTED
+<span class="lineNum">    1190 </span><span class="lineNoCov">          0 :          perform_one_test(fp, argc, argv, default_flags, &amp;d, 1);</span>
+<span class="lineNum">    1191 </span>            : #     endif
+<span class="lineNum">    1192 </span><span class="lineNoCov">          0 :       d.test = init;</span>
+<span class="lineNum">    1193 </span>            :    }
+<span class="lineNum">    1194 </span>            : 
+<span class="lineNum">    1195 </span>            :    else
+<span class="lineNum">    1196 </span>            :    {
+<span class="lineNum">    1197 </span><span class="lineNoCov">          0 :       const char **test = standard_tests;</span>
+<span class="lineNum">    1198 </span>            : 
+<span class="lineNum">    1199 </span>            :       /* Set the exit_test pointer here so we can continue after a libpng error.
+<span class="lineNum">    1200 </span>            :        * NOTE: this leaks memory because the png_struct data from the failing
+<span class="lineNum">    1201 </span>            :        * test is never freed.
+<span class="lineNum">    1202 </span>            :        */
+<span class="lineNum">    1203 </span><span class="lineNoCov">          0 :       while (*test)</span>
+<span class="lineNum">    1204 </span>            :       {
+<span class="lineNum">    1205 </span><span class="lineNoCov">          0 :          const char *this_test = *test++;</span>
+<span class="lineNum">    1206 </span><span class="lineNoCov">          0 :          const char **next = test;</span>
+<span class="lineNum">    1207 </span><span class="lineNoCov">          0 :          int count = display_rc(&amp;d, strict), new_count;</span>
+<span class="lineNum">    1208 </span>            :          const char *result;
+<span class="lineNum">    1209 </span><span class="lineNoCov">          0 :          int arg_count = 0;</span>
+<span class="lineNum">    1210 </span>            : 
+<span class="lineNum">    1211 </span><span class="lineNoCov">          0 :          while (*next) ++next, ++arg_count;</span>
+<span class="lineNum">    1212 </span>            : 
+<span class="lineNum">    1213 </span><span class="lineNoCov">          0 :          perform_one_test_safe(fp, arg_count, test, default_flags, &amp;d,</span>
+<span class="lineNum">    1214 </span>            :             this_test);
+<span class="lineNum">    1215 </span>            : 
+<span class="lineNum">    1216 </span><span class="lineNoCov">          0 :          new_count = display_rc(&amp;d, strict);</span>
+<span class="lineNum">    1217 </span>            : 
+<span class="lineNum">    1218 </span><span class="lineNoCov">          0 :          if (new_count == count)</span>
+<span class="lineNum">    1219 </span><span class="lineNoCov">          0 :             result = &quot;PASS&quot;;</span>
+<span class="lineNum">    1220 </span>            : 
+<span class="lineNum">    1221 </span>            :          else
+<span class="lineNum">    1222 </span><span class="lineNoCov">          0 :             result = &quot;FAIL&quot;;</span>
+<span class="lineNum">    1223 </span>            : 
+<span class="lineNum">    1224 </span><span class="lineNoCov">          0 :          printf(&quot;%s: %s %s\n&quot;, result, d.program, this_test);</span>
+<span class="lineNum">    1225 </span>            : 
+<span class="lineNum">    1226 </span><span class="lineNoCov">          0 :          test = next+1;</span>
+<span class="lineNum">    1227 </span>            :       }
+<span class="lineNum">    1228 </span>            :    }
+<span class="lineNum">    1229 </span>            : 
+<span class="lineNum">    1230 </span><span class="lineNoCov">          0 :    fclose(fp);</span>
+<span class="lineNum">    1231 </span>            : 
+<span class="lineNum">    1232 </span><span class="lineNoCov">          0 :    if (display_rc(&amp;d, strict) == 0)</span>
+<span class="lineNum">    1233 </span>            :    {
+<span class="lineNum">    1234 </span>            :       /* Success, touch the success file if appropriate */
+<span class="lineNum">    1235 </span><span class="lineNoCov">          0 :       if (touch_file != NULL)</span>
+<span class="lineNum">    1236 </span>            :       {
+<span class="lineNum">    1237 </span><span class="lineNoCov">          0 :          FILE *fsuccess = fopen(touch_file, &quot;wt&quot;);</span>
+<span class="lineNum">    1238 </span>            : 
+<span class="lineNum">    1239 </span><span class="lineNoCov">          0 :          if (fsuccess != NULL)</span>
+<span class="lineNum">    1240 </span>            :          {
+<span class="lineNum">    1241 </span><span class="lineNoCov">          0 :             int err = 0;</span>
+<span class="lineNum">    1242 </span><span class="lineNoCov">          0 :             fprintf(fsuccess, &quot;PNG unknown tests succeeded\n&quot;);</span>
+<span class="lineNum">    1243 </span><span class="lineNoCov">          0 :             fflush(fsuccess);</span>
+<span class="lineNum">    1244 </span><span class="lineNoCov">          0 :             err = ferror(fsuccess);</span>
+<span class="lineNum">    1245 </span>            : 
+<span class="lineNum">    1246 </span><span class="lineNoCov">          0 :             if (fclose(fsuccess) || err)</span>
+<span class="lineNum">    1247 </span>            :             {
+<span class="lineNum">    1248 </span><span class="lineNoCov">          0 :                fprintf(stderr, &quot;%s: write failed\n&quot;, touch_file);</span>
+<span class="lineNum">    1249 </span><span class="lineNoCov">          0 :                exit(99);</span>
+<span class="lineNum">    1250 </span>            :             }
+<span class="lineNum">    1251 </span>            :          }
+<span class="lineNum">    1252 </span>            : 
+<span class="lineNum">    1253 </span>            :          else
+<span class="lineNum">    1254 </span>            :          {
+<span class="lineNum">    1255 </span><span class="lineNoCov">          0 :             fprintf(stderr, &quot;%s: open failed\n&quot;, touch_file);</span>
+<span class="lineNum">    1256 </span><span class="lineNoCov">          0 :             exit(99);</span>
+<span class="lineNum">    1257 </span>            :          }
+<span class="lineNum">    1258 </span>            :       }
+<span class="lineNum">    1259 </span>            : 
+<span class="lineNum">    1260 </span><span class="lineNoCov">          0 :       return 0;</span>
+<span class="lineNum">    1261 </span>            :    }
+<span class="lineNum">    1262 </span>            : 
+<span class="lineNum">    1263 </span><span class="lineNoCov">          0 :    return 1;</span>
+<span class="lineNum">    1264 </span>            : }
+<span class="lineNum">    1265 </span>            : 
+<span class="lineNum">    1266 </span>            : #else /* !(READ_USER_CHUNKS || SAVE_UNKNOWN_CHUNKS) */
+<span class="lineNum">    1267 </span>            : int
+<span class="lineNum">    1268 </span>            : main(void)
+<span class="lineNum">    1269 </span>            : {
+<span class="lineNum">    1270 </span>            :    fprintf(stderr,
+<span class="lineNum">    1271 </span>            :       &quot; test ignored: no support to find out about unknown chunks\n&quot;);
+<span class="lineNum">    1272 </span>            :    /* So the test is skipped: */
+<span class="lineNum">    1273 </span>            :    return SKIP;
+<span class="lineNum">    1274 </span>            : }
+<span class="lineNum">    1275 </span>            : #endif /* READ_USER_CHUNKS || SAVE_UNKNOWN_CHUNKS */
+<span class="lineNum">    1276 </span>            : 
+<span class="lineNum">    1277 </span>            : #else /* !(SET_UNKNOWN_CHUNKS &amp;&amp; READ) */
+<span class="lineNum">    1278 </span>            : int
+<span class="lineNum">    1279 </span>            : main(void)
+<span class="lineNum">    1280 </span>            : {
+<span class="lineNum">    1281 </span>            :    fprintf(stderr,
+<span class="lineNum">    1282 </span>            :       &quot; test ignored: no support to modify unknown chunk handling\n&quot;);
+<span class="lineNum">    1283 </span>            :    /* So the test is skipped: */
+<span class="lineNum">    1284 </span>            :    return SKIP;
+<span class="lineNum">    1285 </span>            : }
+<span class="lineNum">    1286 </span>            : #endif /* SET_UNKNOWN_CHUNKS &amp;&amp; READ*/
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
