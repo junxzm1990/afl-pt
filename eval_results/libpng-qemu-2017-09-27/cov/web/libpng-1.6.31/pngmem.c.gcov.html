@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - trace.lcov_info_final - libpng-1.6.31/pngmem.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">libpng-1.6.31</a> - pngmem.c<span style="font-size: 80%;"> (source / <a href="pngmem.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">trace.lcov_info_final</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">57</td>
+            <td class="headerCovTableEntry">81</td>
+            <td class="headerCovTableEntryLo">70.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-09-28</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryMed">76.9 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : </a>
+<span class="lineNum">       2 </span>            : /* pngmem.c - stub functions for memory allocation
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * Last changed in libpng 1.6.26 [October 20, 2016]
+<span class="lineNum">       5 </span>            :  * Copyright (c) 1998-2002,2004,2006-2014,2016 Glenn Randers-Pehrson
+<span class="lineNum">       6 </span>            :  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
+<span class="lineNum">       7 </span>            :  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  * This code is released under the libpng license.
+<span class="lineNum">      10 </span>            :  * For conditions of distribution and use, see the disclaimer
+<span class="lineNum">      11 </span>            :  * and license in png.h
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * This file provides a location for all memory allocation.  Users who
+<span class="lineNum">      14 </span>            :  * need special memory handling are expected to supply replacement
+<span class="lineNum">      15 </span>            :  * functions for png_malloc() and png_free(), and to use
+<span class="lineNum">      16 </span>            :  * png_create_read_struct_2() and png_create_write_struct_2() to
+<span class="lineNum">      17 </span>            :  * identify the replacement functions.
+<span class="lineNum">      18 </span>            :  */
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;pngpriv.h&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #if defined(PNG_READ_SUPPORTED) || defined(PNG_WRITE_SUPPORTED)
+<a name="23"><span class="lineNum">      23 </span>            : /* Free a png_struct */</a>
+<span class="lineNum">      24 </span>            : void /* PRIVATE */
+<span class="lineNum">      25 </span><span class="lineCov">       1626 : png_destroy_png_struct(png_structrp png_ptr)</span>
+<span class="lineNum">      26 </span>            : {
+<span class="lineNum">      27 </span><span class="lineCov">       1626 :    if (png_ptr != NULL)</span>
+<span class="lineNum">      28 </span>            :    {
+<span class="lineNum">      29 </span>            :       /* png_free might call png_error and may certainly call
+<span class="lineNum">      30 </span>            :        * png_get_mem_ptr, so fake a temporary png_struct to support this.
+<span class="lineNum">      31 </span>            :        */
+<span class="lineNum">      32 </span><span class="lineCov">       1626 :       png_struct dummy_struct = *png_ptr;</span>
+<span class="lineNum">      33 </span><span class="lineCov">       1626 :       memset(png_ptr, 0, (sizeof *png_ptr));</span>
+<span class="lineNum">      34 </span><span class="lineCov">       1626 :       png_free(&amp;dummy_struct, png_ptr);</span>
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #     ifdef PNG_SETJMP_SUPPORTED
+<span class="lineNum">      37 </span>            :          /* We may have a jmp_buf left to deallocate. */
+<span class="lineNum">      38 </span><span class="lineCov">       1626 :          png_free_jmpbuf(&amp;dummy_struct);</span>
+<span class="lineNum">      39 </span>            : #     endif
+<span class="lineNum">      40 </span>            :    }
+<span class="lineNum">      41 </span><span class="lineCov">       1626 : }</span>
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : /* Allocate memory.  For reasonable files, size should never exceed
+<span class="lineNum">      44 </span>            :  * 64K.  However, zlib may allocate more than 64K if you don't tell
+<span class="lineNum">      45 </span>            :  * it not to.  See zconf.h and png.h for more information.  zlib does
+<span class="lineNum">      46 </span>            :  * need to allocate exactly 64K, so whatever you call here must
+<a name="47"><span class="lineNum">      47 </span>            :  * have the ability to do that.</a>
+<span class="lineNum">      48 </span>            :  */
+<span class="lineNum">      49 </span><span class="lineCov">       1133 : PNG_FUNCTION(png_voidp,PNGAPI</span>
+<span class="lineNum">      50 </span>            : png_calloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
+<span class="lineNum">      51 </span>            : {
+<span class="lineNum">      52 </span>            :    png_voidp ret;
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span><span class="lineCov">       1133 :    ret = png_malloc(png_ptr, size);</span>
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span><span class="lineCov">       1133 :    if (ret != NULL)</span>
+<span class="lineNum">      57 </span><span class="lineCov">       1133 :       memset(ret, 0, size);</span>
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span><span class="lineCov">       1133 :    return ret;</span>
+<span class="lineNum">      60 </span>            : }
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : /* png_malloc_base, an internal function added at libpng 1.6.0, does the work of
+<span class="lineNum">      63 </span>            :  * allocating memory, taking into account limits and PNG_USER_MEM_SUPPORTED.
+<span class="lineNum">      64 </span>            :  * Checking and error handling must happen outside this routine; it returns NULL
+<a name="65"><span class="lineNum">      65 </span>            :  * if the allocation cannot be done (for any reason.)</a>
+<span class="lineNum">      66 </span>            :  */
+<span class="lineNum">      67 </span><span class="lineCov">      14201 : PNG_FUNCTION(png_voidp /* PRIVATE */,</span>
+<span class="lineNum">      68 </span>            : png_malloc_base,(png_const_structrp png_ptr, png_alloc_size_t size),
+<span class="lineNum">      69 </span>            :     PNG_ALLOCATED)
+<span class="lineNum">      70 </span>            : {
+<span class="lineNum">      71 </span>            :    /* Moved to png_malloc_base from png_malloc_default in 1.6.0; the DOS
+<span class="lineNum">      72 </span>            :     * allocators have also been removed in 1.6.0, so any 16-bit system now has
+<span class="lineNum">      73 </span>            :     * to implement a user memory handler.  This checks to be sure it isn't
+<span class="lineNum">      74 </span>            :     * called with big numbers.
+<span class="lineNum">      75 </span>            :     */
+<span class="lineNum">      76 </span>            : #ifndef PNG_USER_MEM_SUPPORTED
+<span class="lineNum">      77 </span>            :    PNG_UNUSED(png_ptr)
+<span class="lineNum">      78 </span>            : #endif
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :    /* Some compilers complain that this is always true.  However, it
+<span class="lineNum">      81 </span>            :     * can be false when integer overflow happens.
+<span class="lineNum">      82 </span>            :     */
+<span class="lineNum">      83 </span><span class="lineCov">      14201 :    if (size &gt; 0 &amp;&amp; size &lt;= PNG_SIZE_MAX</span>
+<span class="lineNum">      84 </span>            : #     ifdef PNG_MAX_MALLOC_64K
+<span class="lineNum">      85 </span>            :          &amp;&amp; size &lt;= 65536U
+<span class="lineNum">      86 </span>            : #     endif
+<span class="lineNum">      87 </span>            :       )
+<span class="lineNum">      88 </span>            :    {
+<span class="lineNum">      89 </span>            : #ifdef PNG_USER_MEM_SUPPORTED
+<span class="lineNum">      90 </span><span class="lineCov">      14196 :       if (png_ptr != NULL &amp;&amp; png_ptr-&gt;malloc_fn != NULL)</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :          return png_ptr-&gt;malloc_fn(png_constcast(png_structrp,png_ptr), size);</span>
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            :       else
+<span class="lineNum">      94 </span>            : #endif
+<span class="lineNum">      95 </span><span class="lineCov">      14196 :          return malloc((size_t)size); /* checked for truncation above */</span>
+<span class="lineNum">      96 </span>            :    }
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            :    else
+<span class="lineNum">      99 </span><span class="lineCov">          5 :       return NULL;</span>
+<span class="lineNum">     100 </span>            : }
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : #if defined(PNG_TEXT_SUPPORTED) || defined(PNG_sPLT_SUPPORTED) ||\
+<span class="lineNum">     103 </span>            :    defined(PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED)
+<span class="lineNum">     104 </span>            : /* This is really here only to work round a spurious warning in GCC 4.6 and 4.7
+<span class="lineNum">     105 </span>            :  * that arises because of the checks in png_realloc_array that are repeated in
+<span class="lineNum">     106 </span>            :  * png_malloc_array.
+<a name="107"><span class="lineNum">     107 </span>            :  */</a>
+<span class="lineNum">     108 </span>            : static png_voidp
+<span class="lineNum">     109 </span><span class="lineCov">       1530 : png_malloc_array_checked(png_const_structrp png_ptr, int nelements,</span>
+<span class="lineNum">     110 </span>            :     size_t element_size)
+<span class="lineNum">     111 </span>            : {
+<span class="lineNum">     112 </span><span class="lineCov">       1530 :    png_alloc_size_t req = (png_alloc_size_t)nelements; /* known to be &gt; 0 */</span>
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span><span class="lineCov">       1530 :    if (req &lt;= PNG_SIZE_MAX/element_size)</span>
+<span class="lineNum">     115 </span><span class="lineCov">       1530 :       return png_malloc_base(png_ptr, req * element_size);</span>
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :    /* The failure case when the request is too large */
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :    return NULL;</span>
+<a name="119"><span class="lineNum">     119 </span>            : }</a>
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : PNG_FUNCTION(png_voidp /* PRIVATE */,</span>
+<span class="lineNum">     122 </span>            : png_malloc_array,(png_const_structrp png_ptr, int nelements,
+<span class="lineNum">     123 </span>            :     size_t element_size),PNG_ALLOCATED)
+<span class="lineNum">     124 </span>            : {
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :    if (nelements &lt;= 0 || element_size == 0)</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :       png_error(png_ptr, &quot;internal error: array alloc&quot;);</span>
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :    return png_malloc_array_checked(png_ptr, nelements, element_size);</span>
+<a name="129"><span class="lineNum">     129 </span>            : }</a>
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span><span class="lineCov">       1530 : PNG_FUNCTION(png_voidp /* PRIVATE */,</span>
+<span class="lineNum">     132 </span>            : png_realloc_array,(png_const_structrp png_ptr, png_const_voidp old_array,
+<span class="lineNum">     133 </span>            :     int old_elements, int add_elements, size_t element_size),PNG_ALLOCATED)
+<span class="lineNum">     134 </span>            : {
+<span class="lineNum">     135 </span>            :    /* These are internal errors: */
+<span class="lineNum">     136 </span><span class="lineCov">       1530 :    if (add_elements &lt;= 0 || element_size == 0 || old_elements &lt; 0 ||</span>
+<span class="lineNum">     137 </span><span class="lineCov">       1039 :       (old_array == NULL &amp;&amp; old_elements &gt; 0))</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :       png_error(png_ptr, &quot;internal error: array realloc&quot;);</span>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :    /* Check for overflow on the elements count (so the caller does not have to
+<span class="lineNum">     141 </span>            :     * check.)
+<span class="lineNum">     142 </span>            :     */
+<span class="lineNum">     143 </span><span class="lineCov">       1530 :    if (add_elements &lt;= INT_MAX - old_elements)</span>
+<span class="lineNum">     144 </span>            :    {
+<span class="lineNum">     145 </span><span class="lineCov">       1530 :       png_voidp new_array = png_malloc_array_checked(png_ptr,</span>
+<span class="lineNum">     146 </span>            :           old_elements+add_elements, element_size);
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineCov">       1530 :       if (new_array != NULL)</span>
+<span class="lineNum">     149 </span>            :       {
+<span class="lineNum">     150 </span>            :          /* Because png_malloc_array worked the size calculations below cannot
+<span class="lineNum">     151 </span>            :           * overflow.
+<span class="lineNum">     152 </span>            :           */
+<span class="lineNum">     153 </span><span class="lineCov">       1530 :          if (old_elements &gt; 0)</span>
+<span class="lineNum">     154 </span><span class="lineCov">        491 :             memcpy(new_array, old_array, element_size*(unsigned)old_elements);</span>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineCov">       1530 :          memset((char*)new_array + element_size*(unsigned)old_elements, 0,</span>
+<span class="lineNum">     157 </span><span class="lineCov">       1530 :              element_size*(unsigned)add_elements);</span>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span><span class="lineCov">       1530 :          return new_array;</span>
+<span class="lineNum">     160 </span>            :       }
+<span class="lineNum">     161 </span>            :    }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :    return NULL; /* error */</span>
+<span class="lineNum">     164 </span>            : }
+<span class="lineNum">     165 </span>            : #endif /* TEXT || sPLT || STORE_UNKNOWN_CHUNKS */
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : /* Various functions that have different error handling are derived from this.
+<span class="lineNum">     168 </span>            :  * png_malloc always exists, but if PNG_USER_MEM_SUPPORTED is defined a separate
+<a name="169"><span class="lineNum">     169 </span>            :  * function png_malloc_default is also provided.</a>
+<span class="lineNum">     170 </span>            :  */
+<span class="lineNum">     171 </span><span class="lineCov">       2407 : PNG_FUNCTION(png_voidp,PNGAPI</span>
+<span class="lineNum">     172 </span>            : png_malloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
+<span class="lineNum">     173 </span>            : {
+<span class="lineNum">     174 </span>            :    png_voidp ret;
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span><span class="lineCov">       2407 :    if (png_ptr == NULL)</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :       return NULL;</span>
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span><span class="lineCov">       2407 :    ret = png_malloc_base(png_ptr, size);</span>
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span><span class="lineCov">       2407 :    if (ret == NULL)</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :        png_error(png_ptr, &quot;Out of memory&quot;); /* 'm' means png_malloc */</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span><span class="lineCov">       2407 :    return ret;</span>
+<span class="lineNum">     185 </span>            : }
+<a name="186"><span class="lineNum">     186 </span>            : </a>
+<span class="lineNum">     187 </span>            : #ifdef PNG_USER_MEM_SUPPORTED
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 : PNG_FUNCTION(png_voidp,PNGAPI</span>
+<span class="lineNum">     189 </span>            : png_malloc_default,(png_const_structrp png_ptr, png_alloc_size_t size),
+<span class="lineNum">     190 </span>            :     PNG_ALLOCATED PNG_DEPRECATED)
+<span class="lineNum">     191 </span>            : {
+<span class="lineNum">     192 </span>            :    png_voidp ret;
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :    if (png_ptr == NULL)</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :       return NULL;</span>
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :    /* Passing 'NULL' here bypasses the application provided memory handler. */
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :    ret = png_malloc_base(NULL/*use malloc*/, size);</span>
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :    if (ret == NULL)</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :       png_error(png_ptr, &quot;Out of Memory&quot;); /* 'M' means png_malloc_default */</span>
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :    return ret;</span>
+<span class="lineNum">     204 </span>            : }
+<span class="lineNum">     205 </span>            : #endif /* USER_MEM */
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            : /* This function was added at libpng version 1.2.3.  The png_malloc_warn()
+<span class="lineNum">     208 </span>            :  * function will issue a png_warning and return NULL instead of issuing a
+<a name="209"><span class="lineNum">     209 </span>            :  * png_error, if it fails to allocate the requested memory.</a>
+<span class="lineNum">     210 </span>            :  */
+<span class="lineNum">     211 </span><span class="lineCov">       4662 : PNG_FUNCTION(png_voidp,PNGAPI</span>
+<span class="lineNum">     212 </span>            : png_malloc_warn,(png_const_structrp png_ptr, png_alloc_size_t size),
+<span class="lineNum">     213 </span>            :     PNG_ALLOCATED)
+<span class="lineNum">     214 </span>            : {
+<span class="lineNum">     215 </span><span class="lineCov">       4662 :    if (png_ptr != NULL)</span>
+<span class="lineNum">     216 </span>            :    {
+<span class="lineNum">     217 </span><span class="lineCov">       4662 :       png_voidp ret = png_malloc_base(png_ptr, size);</span>
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span><span class="lineCov">       4662 :       if (ret != NULL)</span>
+<span class="lineNum">     220 </span><span class="lineCov">       4662 :          return ret;</span>
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :       png_warning(png_ptr, &quot;Out of memory&quot;);</span>
+<span class="lineNum">     223 </span>            :    }
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :    return NULL;</span>
+<span class="lineNum">     226 </span>            : }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : /* Free a pointer allocated by png_malloc().  If ptr is NULL, return
+<span class="lineNum">     229 </span>            :  * without taking any action.
+<a name="230"><span class="lineNum">     230 </span>            :  */</a>
+<span class="lineNum">     231 </span>            : void PNGAPI
+<span class="lineNum">     232 </span><span class="lineCov">      31996 : png_free(png_const_structrp png_ptr, png_voidp ptr)</span>
+<span class="lineNum">     233 </span>            : {
+<span class="lineNum">     234 </span><span class="lineCov">      31996 :    if (png_ptr == NULL || ptr == NULL)</span>
+<span class="lineNum">     235 </span><span class="lineCov">      49796 :       return;</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : #ifdef PNG_USER_MEM_SUPPORTED
+<span class="lineNum">     238 </span><span class="lineCov">      14196 :    if (png_ptr-&gt;free_fn != NULL)</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :       png_ptr-&gt;free_fn(png_constcast(png_structrp,png_ptr), ptr);</span>
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            :    else
+<span class="lineNum">     242 </span><span class="lineCov">      14196 :       png_free_default(png_ptr, ptr);</span>
+<a name="243"><span class="lineNum">     243 </span>            : }</a>
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span><span class="lineCov">      14196 : PNG_FUNCTION(void,PNGAPI</span>
+<span class="lineNum">     246 </span>            : png_free_default,(png_const_structrp png_ptr, png_voidp ptr),PNG_DEPRECATED)
+<span class="lineNum">     247 </span>            : {
+<span class="lineNum">     248 </span><span class="lineCov">      14196 :    if (png_ptr == NULL || ptr == NULL)</span>
+<span class="lineNum">     249 </span><span class="lineCov">      14196 :       return;</span>
+<span class="lineNum">     250 </span>            : #endif /* USER_MEM */
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span><span class="lineCov">      14196 :    free(ptr);</span>
+<span class="lineNum">     253 </span>            : }
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            : #ifdef PNG_USER_MEM_SUPPORTED
+<span class="lineNum">     256 </span>            : /* This function is called when the application wants to use another method
+<span class="lineNum">     257 </span>            :  * of allocating and freeing memory.
+<a name="258"><span class="lineNum">     258 </span>            :  */</a>
+<span class="lineNum">     259 </span>            : void PNGAPI
+<span class="lineNum">     260 </span><span class="lineCov">       1626 : png_set_mem_fn(png_structrp png_ptr, png_voidp mem_ptr, png_malloc_ptr</span>
+<span class="lineNum">     261 </span>            :   malloc_fn, png_free_ptr free_fn)
+<span class="lineNum">     262 </span>            : {
+<span class="lineNum">     263 </span><span class="lineCov">       1626 :    if (png_ptr != NULL)</span>
+<span class="lineNum">     264 </span>            :    {
+<span class="lineNum">     265 </span><span class="lineCov">       1626 :       png_ptr-&gt;mem_ptr = mem_ptr;</span>
+<span class="lineNum">     266 </span><span class="lineCov">       1626 :       png_ptr-&gt;malloc_fn = malloc_fn;</span>
+<span class="lineNum">     267 </span><span class="lineCov">       1626 :       png_ptr-&gt;free_fn = free_fn;</span>
+<span class="lineNum">     268 </span>            :    }
+<span class="lineNum">     269 </span><span class="lineCov">       1626 : }</span>
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            : /* This function returns a pointer to the mem_ptr associated with the user
+<span class="lineNum">     272 </span>            :  * functions.  The application should free any memory associated with this
+<span class="lineNum">     273 </span>            :  * pointer before png_write_destroy and png_read_destroy are called.
+<a name="274"><span class="lineNum">     274 </span>            :  */</a>
+<span class="lineNum">     275 </span>            : png_voidp PNGAPI
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 : png_get_mem_ptr(png_const_structrp png_ptr)</span>
+<span class="lineNum">     277 </span>            : {
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :    if (png_ptr == NULL)</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :       return NULL;</span>
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :    return png_ptr-&gt;mem_ptr;</span>
+<span class="lineNum">     282 </span>            : }
+<span class="lineNum">     283 </span>            : #endif /* USER_MEM */
+<span class="lineNum">     284 </span>            : #endif /* READ || WRITE */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

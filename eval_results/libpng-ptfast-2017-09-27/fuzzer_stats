@@ -1,0 +1,27 @@
+start_time        : 1506528147
+last_update       : 1506615047
+fuzzer_pid        : 5927
+cycles_done       : 31
+execs_done        : 212034442
+execs_per_sec     : 4881.08
+paths_total       : 33262
+paths_favored     : 15001
+paths_found       : 33258
+paths_imported    : 0
+max_depth         : 55
+cur_path          : 5994
+pending_favs      : 947
+pending_total     : 12096
+variable_paths    : 10
+stability         : 99.71%
+bitmap_cvg        : 31.79%
+unique_crashes    : 0
+unique_hangs      : 0
+last_path         : 1506615042
+last_crash        : 0
+last_hang         : 0
+execs_since_crash : 212034442
+exec_timeout      : 20
+afl_banner        : pt-fast
+afl_version       : 2.42b
+command_line      : ./pt-fuzz-fast -T pt-fast -P -d -i testcases/images/png/ -o /tmp/afl-ramdisk/libpng-ptfast-2017-09-27 /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/obj-pt/readpng

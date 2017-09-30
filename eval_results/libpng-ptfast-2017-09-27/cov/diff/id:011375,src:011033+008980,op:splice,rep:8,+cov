@@ -1,0 +1,15 @@
+diff id:011374,src:011033,op:havoc,rep:4,+cov -> id:011375,src:011033+008980,op:splice,rep:8,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngread.c
+  New 'line' coverage: 250
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'function' coverage: png_handle_iTXt()
+  New 'line' coverage: 2658
+  New 'line' coverage: 2660
+  New 'line' coverage: 2667
+  New 'line' coverage: 2669
+  New 'line' coverage: 2675
+  New 'line' coverage: 2684
+  New 'line' coverage: 2687
+  New 'line' coverage: 2690
+  New 'line' coverage: 2692
+  New 'line' coverage: 2699

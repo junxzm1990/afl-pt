@@ -1,0 +1,8 @@
+diff id:000672,src:000219,op:havoc,rep:2,+cov -> id:000673,src:000219+000458,op:splice,rep:8,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 1990
+  New 'line' coverage: 1992
+  New 'line' coverage: 1993
+  New 'line' coverage: 1994
+  New 'line' coverage: 1995
+  New 'line' coverage: 1996

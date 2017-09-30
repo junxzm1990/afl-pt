@@ -1,0 +1,9 @@
+diff id:000218,src:000001,op:havoc,rep:2,+cov -> id:000219,src:000001,op:havoc,rep:8,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'line' coverage: 1844
+  New 'line' coverage: 1845
+  New 'line' coverage: 1846
+  New 'line' coverage: 1944
+  New 'line' coverage: 1948
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngset.c
+  New 'line' coverage: 1025

@@ -1,0 +1,58 @@
+diff id:000001,orig:not_kitty_alpha.png -> id:000002,orig:not_kitty_gamma.png
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrtran.c
+  New 'line' coverage: 1305
+  New 'line' coverage: 1313
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngread.c
+  New 'line' coverage: 180
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'function' coverage: png_get_fixed_point()
+  New 'function' coverage: png_handle_gAMA()
+  New 'line' coverage: 1116
+  New 'line' coverage: 1123
+  New 'line' coverage: 1126
+  New 'line' coverage: 1133
+  New 'line' coverage: 1140
+  New 'line' coverage: 1142
+  New 'line' coverage: 1145
+  New 'line' coverage: 1147
+  New 'line' coverage: 1148
+  New 'line' coverage: 41
+  New 'line' coverage: 43
+  New 'line' coverage: 45
+  New 'line' coverage: 46
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/png.c
+  New 'function' coverage: png_colorspace_check_gamma()
+  New 'function' coverage: png_colorspace_set_gamma()
+  New 'function' coverage: png_colorspace_sync()
+  New 'function' coverage: png_colorspace_sync_info()
+  New 'function' coverage: png_reciprocal()
+  New 'line' coverage: 1066
+  New 'line' coverage: 1080
+  New 'line' coverage: 1106
+  New 'line' coverage: 1110
+  New 'line' coverage: 1126
+  New 'line' coverage: 1131
+  New 'line' coverage: 1132
+  New 'line' coverage: 1137
+  New 'line' coverage: 1142
+  New 'line' coverage: 1146
+  New 'line' coverage: 1147
+  New 'line' coverage: 1156
+  New 'line' coverage: 1165
+  New 'line' coverage: 1167
+  New 'line' coverage: 1188
+  New 'line' coverage: 1192
+  New 'line' coverage: 1194
+  New 'line' coverage: 1198
+  New 'line' coverage: 1201
+  New 'line' coverage: 1202
+  New 'line' coverage: 1207
+  New 'line' coverage: 1211
+  New 'line' coverage: 1213
+  New 'line' coverage: 1214
+  New 'line' coverage: 1216
+  New 'line' coverage: 1217
+  New 'line' coverage: 3484
+  New 'line' coverage: 3487
+  New 'line' coverage: 3489
+  New 'line' coverage: 3490

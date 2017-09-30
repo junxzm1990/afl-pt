@@ -1,0 +1,64 @@
+diff id:000010,src:000000,op:havoc,rep:2,+cov -> id:000011,src:000000,op:havoc,rep:16,+cov
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngread.c
+  New 'line' coverage: 244
+  New 'line' coverage: 249
+  New 'line' coverage: 254
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
+  New 'function' coverage: png_cache_unknown_chunk()
+  New 'function' coverage: png_handle_unknown()
+  New 'line' coverage: 2808
+  New 'line' coverage: 2810
+  New 'line' coverage: 2812
+  New 'line' coverage: 2819
+  New 'line' coverage: 2820
+  New 'line' coverage: 2821
+  New 'line' coverage: 2828
+  New 'line' coverage: 2830
+  New 'line' coverage: 2832
+  New 'line' coverage: 2834
+  New 'line' coverage: 2836
+  New 'line' coverage: 2842
+  New 'line' coverage: 2847
+  New 'line' coverage: 2857
+  New 'line' coverage: 2858
+  New 'line' coverage: 2859
+  New 'line' coverage: 2860
+  New 'line' coverage: 2867
+  New 'line' coverage: 2870
+  New 'line' coverage: 2900
+  New 'line' coverage: 2972
+  New 'line' coverage: 2973
+  New 'line' coverage: 2975
+  New 'line' coverage: 2979
+  New 'line' coverage: 3009
+  New 'line' coverage: 3014
+  New 'line' coverage: 3027
+  New 'line' coverage: 3034
+  New 'line' coverage: 3035
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngset.c
+  New 'function' coverage: check_location()
+  New 'function' coverage: png_set_unknown_chunks()
+  New 'line' coverage: 1149
+  New 'line' coverage: 1151
+  New 'line' coverage: 1157
+  New 'line' coverage: 1170
+  New 'line' coverage: 1171
+  New 'line' coverage: 1186
+  New 'line' coverage: 1191
+  New 'line' coverage: 1225
+  New 'line' coverage: 1229
+  New 'line' coverage: 1237
+  New 'line' coverage: 1238
+  New 'line' coverage: 1239
+  New 'line' coverage: 1241
+  New 'line' coverage: 1246
+  New 'line' coverage: 1248
+  New 'line' coverage: 1249
+  New 'line' coverage: 1250
+Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/png.c
+  New 'line' coverage: 596
+  New 'line' coverage: 598
+  New 'line' coverage: 608
+  New 'line' coverage: 611
+  New 'line' coverage: 612
+  New 'line' coverage: 613
