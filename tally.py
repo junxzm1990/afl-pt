@@ -28,7 +28,14 @@ def show_cov_line(cov_list, interval):
     start_time = cov_list[0][0]
     cnt = 1
 
-    for log in cov_list:
+    for index in range(0, len(cov_list)):
+        log = cov_list[index]
+        prev_log = cov_list[index-1 if index>1 else index]
+        next_log = cov_list[index+1 if index<(len(cov_list)-1) else index]
+
+        if log[0] < prev_log[0] or log[0] > next_log[0]:
+            continue
+
         if (log[0] > (start_time + cnt * interval * 3600)) and (log[0] < (start_time + (cnt+1) * interval *3600)):
             print "-- ", cnt * interval, " hour function coverage ", log[1], " line coverage ", log[2]     
             print "\n"    
@@ -71,11 +78,11 @@ if __name__ == "__main__":
             cov_list.append([ftime, fcov, lcov])
 
 
-    total_time = cov_list[-1][0]-cov_list[0][0]
-    print "total fuzzing time %d hr"%(total_time/3600)
+    # total_time = cov_list[-1][0]-cov_list[0][0]
+    # print "total fuzzing time %d hr"%(total_time/3600)
     #we need to reassign the time, as the modify time will mess up our tally
-    for i in range(0, len(cov_list)):
-        cov_list[i][0] = cov_list[-1][0]+ int(total_time * float(i)/len(cov_list))
+    # for i in range(0, len(cov_list)):
+    #     cov_list[i][0] = cov_list[-1][0]+ int(total_time * float(i)/len(cov_list))
 
         
 
