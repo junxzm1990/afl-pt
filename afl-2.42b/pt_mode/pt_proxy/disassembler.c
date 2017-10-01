@@ -146,6 +146,14 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 	disassembler->max_addr = 0;
 	disassembler->cfg_cache = 0;
 
+	//init the tip info
+	disassembler->tip_info_map.prev_tip = 0;
+	disassembler->tip_info_map.cur_tip = 0;
+
+	//init the tnt cache
+	disassembler->tnt_cache_map.counter = 0;
+	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);
+
 	elffd = open(elfpath, O_RDONLY);
 
 	if(elffd <= 0){
@@ -287,6 +295,7 @@ out:
 #endif
 	return ret; 
 }
+
 
 #endif
 

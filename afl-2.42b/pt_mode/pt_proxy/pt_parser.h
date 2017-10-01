@@ -7,7 +7,9 @@
 #include <string.h>
 #include <stdio.h>
 
-
+#ifdef KAFL_MODE
+#include "disassembler.h"
+#endif
 
 // #define LPS
 #define HPS
@@ -368,6 +370,120 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 }
 
 //#define DEBUG_PACKET
+
+#ifdef KAFL_MODE
+
+void update_tnt_bit(disassembler_t *disassembler, int bit){
+
+	int byteindex, bitindex; 
+
+	//index of the byte	
+	byteindex = disassembler->tnt_cache_map.counter / 8;
+	//index of the bit
+	bitindex =  disassembler->tnt_cache_map.counter % 8;  	
+
+	//set a bit
+	if(bit)
+		disassembler->tnt_cache_map.tnt[byteindex] |= ~(1 << bitindex); 
+	//clear a bit
+	else
+		disassembler->tnt_cache_map.tnt[byteindex] &= ~(1 << bitindex); 
+	
+	disassembler->tnt_cache_map.counter++;
+}
+
+void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembler){
+
+	u8 *packet;
+	s64 bytes_remained;
+	u64 packet_len;
+	enum pt_packet_kind kind;
+	packet = buffer;
+	bytes_remained = size;
+
+	while (bytes_remained > 0) {
+		//get the type of the current packet
+		kind = pt_get_packet(packet, bytes_remained, &packet_len);
+		switch(kind){
+			//cache the tnt sequence
+			case PT_PACKET_TNTSHORT:
+				ctx_tnt_short = (u8)*packet;
+				ctx_bit_selector = 1 << ((32 - __builtin_clz(ctx_tnt_short)) - 1);
+				ctx_tnt_counter += ((32 - __builtin_clz(ctx_tnt_short)) - 1) - 1;
+				do {
+					//cache the tnt result
+					if((ctx_tnt_short & (ctx_bit_selector >>= 1)))
+						update_tnt_bit(disassembler, 1);
+					else
+						update_tnt_bit(disassembler, 0);
+				} while (ctx_bit_selector != 2);
+				break;
+
+				//cache the tnt sequence
+			case PT_PACKET_TNTLONG:
+				//did not process long tnt yet
+				assert(0);
+				break;
+
+				//encounter a tip, update the bitmap and the cache map 
+			case PT_PACKET_TIP:
+				ctx_tnt_go=1;
+				ctx_last_ip = ctx_curr_ip;
+				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				UPDATE_TRACEBITS_IDX();
+				break;
+
+
+			case PT_PACKET_TIPPGE:
+				ctx_last_ip = ctx_curr_ip;
+				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				break;
+
+			case PT_PACKET_TIPPGD:
+				ctx_last_ip = ctx_curr_ip;
+				pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				break;
+
+			case PT_PACKET_FUP:
+				ctx_last_ip = ctx_curr_ip;
+				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				break;
+
+			case PT_PACKET_PSB:
+				ctx_last_ip = 0;
+				do {
+					NEXT_PACKET();
+					if (kind == PT_PACKET_FUP){
+						ctx_last_ip = ctx_curr_ip;
+						ctx_curr_ip=pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+						/* UPDATE_TRACEBITS_IDX(); */
+					}
+				} while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
+
+				break;
+			case PT_PACKET_OVF:
+				do {
+					NEXT_PACKET();
+				} while (kind != PT_PACKET_FUP);
+				ctx_last_ip = ctx_curr_ip;
+				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				break;
+
+			default:
+				break;
+
+
+
+		}
+
+	}
+
+}
+
+#endif
+
+
+
 
 inline void
 pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
