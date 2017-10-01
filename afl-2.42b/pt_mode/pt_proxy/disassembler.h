@@ -1,11 +1,8 @@
 #ifdef KAFL_MODE
-
 #ifndef DISASSEMBLER_H
 #define DISASSEMBLER_H
 
-
-
-
+#include<stdbool.h>
 
 #ifdef ARCH_32
 typedef uint64_t addr_t; 
@@ -28,10 +25,12 @@ typedef struct disassembler_s{
 	//maximal address of code
 	uint64_t max_addr;
 	
-	cfg_target_t *cfg_cache; 
+	cft_target_t *cfg_cache; 
 	
 	//khash_t(ADDR0) *map;
 } disassembler_t;
+
+bool init_disassembler(char* elfpath, disassembler_t *disassembler);
 
 #endif
 

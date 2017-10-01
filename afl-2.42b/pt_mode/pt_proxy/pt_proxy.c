@@ -384,9 +384,7 @@ static void *pt_parse_worker(void *arg)
 			if(bound_snapshot > cursor_pos){
 
 				#ifdef KAFL_MODE
-					parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), 
-						bound_snapshot-cursor_pos,
-						&disassembler);
+					//parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, &disassembler);
 				#else
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				#endif
@@ -404,9 +402,7 @@ static void *pt_parse_worker(void *arg)
 
 				if(bound_snapshot > cursor_pos ){
 				#ifdef KAFL_MODE
-					parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), 
-						bound_snapshot-cursor_pos,
-						&disassembler);
+				//	parse_and_disassemble((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, &disassembler);
 				#else
 					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				#endif
