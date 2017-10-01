@@ -26,27 +26,27 @@ def get_line_cov(covline):
 
 def show_cov_line(cov_list, interval):
     start_time = cov_list[0][0]
-    cnt = 1
+    cov_winner_pool = {}
 
     for index in range(0, len(cov_list)):
         log = cov_list[index]
-        prev_log = cov_list[index-1 if index>1 else index]
-        next_log = cov_list[index+1 if index<(len(cov_list)-1) else index]
+        time_slot = (log[0]-start_time)/3600/interval
 
-        if log[0] < prev_log[0] or log[0] > next_log[0]:
-            continue
+        if time_slot not in cov_winner_pool.keys():
+            cov_winner_pool[time_slot] = [log[1],log[2], log[3]]
+        else:
+            if cov_winner_pool[time_slot][0] < log[1]:
+                cov_winner_pool[time_slot][0] = log[1]
+                cov_winner_pool[time_slot][2] = log[3]
+            if cov_winner_pool[time_slot][1] < log[2]:
+                cov_winner_pool[time_slot][1] = log[2]
+                cov_winner_pool[time_slot][2] = log[3]
 
-        if (log[0] > (start_time + cnt * interval * 3600)) and (log[0] < (start_time + (cnt+1) * interval *3600)):
-            print "-- ", cnt * interval, " hour function coverage ", log[1], " line coverage ", log[2]     
-            print "\n"    
-            cnt += 1
-    print "-- ", (cov_list[-1][0]-start_time)/3600, " hour function coverage ", cov_list[-1][1], " line coverage ", cov_list[-1][2]     
 
-    # while cnt <= 24 / interval:
-    #     log = cov_list[-1]
-    #     print "-- ", cnt * 4, " hour function coverage ", log[1], " line coverage ", log[2]     
-    #     print "\n"
-    #     cnt += 1
+    for i, v in cov_winner_pool.items():
+        print "-- ", interval * (i+1), " hour function coverage ", v[0], " line coverage ", v[1]     
+        print "\n"    
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
@@ -75,15 +75,9 @@ if __name__ == "__main__":
                 if 'lines' in lines[index+i]:
                     lcov = get_line_cov(lines[index+i])
                     break
-            cov_list.append([ftime, fcov, lcov])
+            cov_list.append([ftime, fcov, lcov, case_path+"/"+fname])
 
 
-    # total_time = cov_list[-1][0]-cov_list[0][0]
-    # print "total fuzzing time %d hr"%(total_time/3600)
-    #we need to reassign the time, as the modify time will mess up our tally
-    # for i in range(0, len(cov_list)):
-    #     cov_list[i][0] = cov_list[-1][0]+ int(total_time * float(i)/len(cov_list))
 
-        
 
     show_cov_line(cov_list, interval)    
