@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <capstone/capstone.h>
+#include <capstone/x86.h>
+
 #include "disassembler.h"
 
 #define LOOKUP_TABLES		5
@@ -16,7 +19,6 @@
 #define MODRM_AND			0b00111000
 
 
-#if 0 
 /* http://stackoverflow.com/questions/29600668/what-meaning-if-any-does-the-mod-r-m-byte-carry-for-the-unconditional-jump-ins */
 /* conditional branch */
 cofi_ins cb_lookup[] = {
@@ -116,9 +118,6 @@ uint8_t lookup_table_sizes[] = {
 	2,
 	19
 };
-
-#endif
-
 
 //initialize the disassembler based on the elf file
 bool init_disassembler(char* elfpath,  disassembler_t *disassembler){

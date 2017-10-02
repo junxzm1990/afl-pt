@@ -427,7 +427,6 @@ void update_bit_map(disassembler_t *disassembler){
 		index++; 
 	}
 	//update_map(cur, disassembler->tnt_cache_map.counter);
-
 }
 
 

@@ -16,6 +16,13 @@ typedef uint64_t addr_t;
 typedef uint32_t addr_t;
 #endif
 
+
+typedef struct{
+	uint16_t opcode;
+	uint8_t modrm;
+	uint8_t opcode_prefix;
+} cofi_ins;
+
 typedef struct cft_target{
 	addr_t true_br;
 	addr_t false_br; 
