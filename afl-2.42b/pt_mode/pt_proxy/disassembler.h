@@ -23,6 +23,7 @@ typedef struct cft_target{
 
 typedef struct tip_info{
 	addr_t prev_tip;
+	addr_t prev_ip;
 	addr_t cur_tip; 
 }tip_info_t; 
 

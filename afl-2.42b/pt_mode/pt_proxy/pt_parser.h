@@ -373,6 +373,8 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 
 #ifdef KAFL_MODE
 
+
+//cache the TNT sequence between two tip
 void update_tnt_bit(disassembler_t *disassembler, int bit){
 
 	int byteindex, bitindex; 
@@ -392,6 +394,43 @@ void update_tnt_bit(disassembler_t *disassembler, int bit){
 	disassembler->tnt_cache_map.counter++;
 }
 
+static inline bool  __attribute__((optimize("O0"))) get_tnt_bit(disassembler_t *disassembler, size_t index){
+
+	int byteindex, bitindex; 
+	
+	byteindex = index / 8; 		
+	bitindex = index % 8; 	
+
+	return  (disassembler->tnt_cache_map.tnt[byteindex] >> bitindex ) & 1; 
+}
+
+void update_bit_map(disassembler_t *disassembler){
+
+	//start with the prev_tip
+	//prev_tip -> tnt0 -> tnt1 -> tnt2 -> tnt3 -> ... -> curr_tip 
+	//from one basic block to another block, we first search the cache
+	//if no hit, then we perform online disassembling, and then refill the cache.  	
+	
+	addr_t cur, next;
+	size_t index;
+	bool tnt; 
+
+	cur = disassembler->tip_info_map.prev_tip;  
+	index = 0;
+
+	while(index <  disassembler->tnt_cache_map.counter){
+		
+		tnt = get_tnt_bit(disassembler, index);		
+		next = get_next_target(disassembler, cur, tnt);	
+		//update_map(cur, next);
+		cur = next; 
+		index++; 
+	}
+	//update_map(cur, disassembler->tnt_cache_map.counter);
+
+}
+
+
 void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembler){
 
 	u8 *packet;
@@ -401,9 +440,17 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 	packet = buffer;
 	bytes_remained = size;
 
+#define NEXT_PACKET()                                                \
+	do {                                                             \
+		bytes_remained -= packet_len;                                \
+		packet += packet_len;                                        \
+		kind = pt_get_packet(packet, bytes_remained, &packet_len);   \
+	} while (0)
+
 	while (bytes_remained > 0) {
 		//get the type of the current packet
 		kind = pt_get_packet(packet, bytes_remained, &packet_len);
+
 		switch(kind){
 			//cache the tnt sequence
 			case PT_PACKET_TNTSHORT:
@@ -427,57 +474,59 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 
 				//encounter a tip, update the bitmap and the cache map 
 			case PT_PACKET_TIP:
-				ctx_tnt_go=1;
-				ctx_last_ip = ctx_curr_ip;
-				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
-				UPDATE_TRACEBITS_IDX();
+				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip; 
+				disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+				//update the bitmap
+				update_bit_map(disassembler);
+
 				break;
 
 
 			case PT_PACKET_TIPPGE:
-				ctx_last_ip = ctx_curr_ip;
-				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
+                                disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 				break;
 
 			case PT_PACKET_TIPPGD:
-				ctx_last_ip = ctx_curr_ip;
-				pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
+                                disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 				break;
 
 			case PT_PACKET_FUP:
-				ctx_last_ip = ctx_curr_ip;
-				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
+                                disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 				break;
 
 			case PT_PACKET_PSB:
-				ctx_last_ip = 0;
+				//Next IP should be present in full value
+				//instead of offset
+				disassembler->tip_info_map.prev_ip = 0;
 				do {
 					NEXT_PACKET();
 					if (kind == PT_PACKET_FUP){
-						ctx_last_ip = ctx_curr_ip;
-						ctx_curr_ip=pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
-						/* UPDATE_TRACEBITS_IDX(); */
+						disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
+						disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 					}
 				} while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
-
 				break;
+
 			case PT_PACKET_OVF:
 				do {
 					NEXT_PACKET();
 				} while (kind != PT_PACKET_FUP);
-				ctx_last_ip = ctx_curr_ip;
-				ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
+
+				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
+                                disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+
 				break;
 
 			default:
 				break;
-
-
-
 		}
 
+		bytes_remained -= packet_len;
+		packet += packet_len;
 	}
-
 }
 
 #endif

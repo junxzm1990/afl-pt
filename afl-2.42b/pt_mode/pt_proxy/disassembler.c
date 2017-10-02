@@ -148,6 +148,7 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 
 	//init the tip info
 	disassembler->tip_info_map.prev_tip = 0;
+	disassembler->tip_info_map.prev_ip = 0;
 	disassembler->tip_info_map.cur_tip = 0;
 
 	//init the tnt cache
@@ -296,6 +297,10 @@ out:
 	return ret; 
 }
 
+addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 
+
+	return 0;
+}
 #endif
 
