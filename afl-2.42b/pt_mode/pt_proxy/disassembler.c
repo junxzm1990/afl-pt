@@ -298,6 +298,16 @@ out:
 
 addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 
+	//start with the beginning address, 
+	//linear scan until encounter of conditional jump 
+	//Fucked up cases: 
+		//Encountered indirect jump...
+		//Linear scan error
+
+
+	
+
+
 
 	return 0;
 }
