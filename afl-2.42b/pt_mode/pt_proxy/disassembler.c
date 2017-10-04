@@ -119,6 +119,23 @@ uint8_t lookup_table_sizes[] = {
 	19
 };
 
+//Convert digital string into unsigned 64 int
+static inline uint64_t fast_strtoull(const char *hexstring){
+	uint64_t result = 0;
+	uint8_t i = 0;
+	if (hexstring[1] == 'x' || hexstring[1] == 'X')
+		i = 2;
+	for (; hexstring[i]; i++)
+		result = (result << 4) + (9 * (hexstring[i] >> 6) + (hexstring[i] & 017));
+	return result;
+}
+
+static inline uint64_t hex_to_bin(char* str){
+	//return (uint64_t)strtoull(str, NULL, 16);
+	return fast_strtoull(str);
+}
+
+
 //initialize the disassembler based on the elf file
 bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 	int elffd; 
@@ -296,6 +313,28 @@ out:
 	return ret; 
 }
 
+static cofi_type opcode_analyzer(cs_insn *ins){
+	uint8_t i, j;
+	cs_x86 details = ins->detail->x86;
+	
+	for (i = 0; i < LOOKUP_TABLES; i++){
+		for (j = 0; j < lookup_table_sizes[i]; j++){
+			if (ins->id == lookup_tables[i][j].opcode){
+				
+				/* check MOD R/M */
+				if (lookup_tables[i][j].modrm != IGN_MOD_RM && lookup_tables[i][j].modrm != (details.modrm & MODRM_AND))
+						continue;	
+						
+				/* check opcode prefix byte */
+				if (lookup_tables[i][j].opcode_prefix != IGN_OPODE_PREFIX && lookup_tables[i][j].opcode_prefix != details.opcode[0])
+						continue;
+				return i;
+			}
+		}
+	}
+	return NO_COFI_TYPE;
+}
+
 addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 
 	//start with the beginning address, 
@@ -303,13 +342,90 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	//Fucked up cases: 
 		//Encountered indirect jump...
 		//Linear scan error
+	addr_t offset;
+	addr_t retaddr; 
+	const uint8_t* code;	// = self->code + (base_address-self->min_addr);
+	size_t code_size;	// = (self->max_addr-base_address);
+	uint64_t address;	// = base_address;
+	csh handle;
+	cs_insn *insn;
+	cofi_type type;
 
+	if(offset < disassembler->min_addr || offset > disassembler->max_addr)
+		return 0;
+
+	offset = start  - disassembler->min_addr; 	
+	
+	//check cache at first 	
+	if(tnt){
+		if(disassembler->cfg_cache[offset].true_br)
+			return disassembler->cfg_cache[offset].true_br;	
+	}else{
+		if(disassembler->cfg_cache[offset].false_br)
+			return disassembler->cfg_cache[offset].false_br;	
+	}	
+	//cache missed
+	//starting raw disassembling
+
+	if (cs_open(CS_ARCH_X86, 
+#ifdef	ARCH_32	
+	CS_MODE_32, 
+#else
+	CS_MODE_64,	
+#endif
+	&handle) != CS_ERR_OK)
+		return false;
+
+	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
+	insn = cs_malloc(handle);
+	
+	code = disassembler->code + offset;
+	code_size = disassembler->max_addr - start; 
+	address = start; 
+
+	while(cs_disasm_iter(handle, &code, &code_size, &address, insn)){
+
+		type = opcode_analyzer(insn);	
+
+		if(type == NO_COFI_TYPE) //not control flow transfer
+			continue; 	
+		
+		//direct jump: adjust the target and continue; 
+		if(type == COFI_TYPE_UNCONDITIONAL_DIRECT_BRANCH){
+			address =  hex_to_bin(insn->op_str);
+			code_size = disassembler->max_addr - address; 
+			code =  disassembler->code + address - disassembler->min_addr; 
+			continue;
+		}	
 
 	
 
+		//conditional jump 
+		//True branch: the target
+		//False branch: the next branch
+		if(type == COFI_TYPE_CONDITIONAL_BRANCH){
+			addr_t toffset = insn->address - disassembler->min_addr;
+		
+			disassembler->cfg_cache[toffset].true_br = hex_to_bin(insn->op_str);
+			disassembler->cfg_cache[toffset].false_br = insn->address + insn->size;
+			
+			if(tnt)
+				retaddr = disassembler->cfg_cache[toffset].true_br;
+			else
+				retaddr = disassembler->cfg_cache[toffset].false_br;
+			
+			break;
+		}
 
+		//Other cases? Must be indirect jump. Right?
+		retaddr = 0;
+		break; 	
+	}	
+		
+	cs_free(insn, 1);
+	cs_close(&handle);
 
-	return 0;
+	return retaddr;
 }
 #endif
 

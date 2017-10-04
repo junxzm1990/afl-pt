@@ -17,6 +17,15 @@ typedef uint32_t addr_t;
 #endif
 
 
+typedef enum cofi_types{
+	COFI_TYPE_CONDITIONAL_BRANCH, 
+	COFI_TYPE_UNCONDITIONAL_DIRECT_BRANCH, 
+	COFI_TYPE_INDIRECT_BRANCH, 
+	COFI_TYPE_NEAR_RET, 
+	COFI_TYPE_FAR_TRANSFERS,
+	NO_COFI_TYPE
+} cofi_type;
+
 typedef struct{
 	uint16_t opcode;
 	uint8_t modrm;

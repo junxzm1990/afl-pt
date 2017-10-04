@@ -405,21 +405,21 @@ static inline bool  __attribute__((optimize("O0"))) get_tnt_bit(disassembler_t *
 }
 
 void update_bit_map(disassembler_t *disassembler){
-
 	//start with the prev_tip
 	//prev_tip -> tnt0 -> tnt1 -> tnt2 -> tnt3 -> ... -> curr_tip 
 	//from one basic block to another block, we first search the cache
 	//if no hit, then we perform online disassembling, and then refill the cache.  	
-	
 	addr_t cur, next;
 	size_t index;
 	bool tnt; 
 
-	cur = disassembler->tip_info_map.prev_tip;  
 	index = 0;
+	cur = disassembler->tip_info_map.prev_tip;  
+
+	if(cur == 0)
+		goto cleanup;
 
 	while(index <  disassembler->tnt_cache_map.counter){
-		
 		tnt = get_tnt_bit(disassembler, index);		
 		next = get_next_target(disassembler, cur, tnt);	
 		//update_map(cur, next);
@@ -427,8 +427,12 @@ void update_bit_map(disassembler_t *disassembler){
 		index++; 
 	}
 	//update_map(cur, disassembler->tnt_cache_map.counter);
-}
 
+cleanup:
+	disassembler->tip_info_map.prev_tip = disassembler->tip_info_map.cur_tip;
+	disassembler->tnt_cache_map.counter = 0;
+	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);		
+}
 
 void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembler){
 
