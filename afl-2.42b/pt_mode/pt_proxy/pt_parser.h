@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #ifdef KAFL_MODE
 #include "disassembler.h"
@@ -375,7 +376,7 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 
 
 //cache the TNT sequence between two tip
-void update_tnt_bit(disassembler_t *disassembler, int bit){
+static inline void update_tnt_bit(disassembler_t *disassembler, int bit){
 
 	int byteindex, bitindex; 
 
@@ -418,30 +419,51 @@ void update_bit_map(disassembler_t *disassembler){
 	//from one basic block to another block, we first search the cache
 	//if no hit, then we perform online disassembling, and then refill the cache.  	
 	addr_t cur, next;
-	size_t index;
 	bool tnt; 
+	int dbgfd; 
+	size_t index = 0;
+#ifdef DEBUGMSG
+	char msg[256];
 
-	index = 0;
+	dbgfd = open("/tmp/dbg1.log", O_WRONLY | O_APPEND);
+#endif
+
+#ifdef DEBUGMSG
+	snprintf(msg,256, "Start a new round of slicing %llx and %llx and tnt size %d\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip, disassembler->tnt_cache_map.counter);
+	write(dbgfd, msg, strlen(msg));
+#endif	
+
 	cur = disassembler->tip_info_map.prev_tip;  
 
+	//This is possible only on the first update
 	if(cur == 0)
 		goto cleanup;
 
 	while(index <  disassembler->tnt_cache_map.counter){
 		tnt = get_tnt_bit(disassembler, index);		
-		next = get_next_target(disassembler, cur, tnt);	
-
-		if(next)
+		next = get_next_target(disassembler, cur, tnt, dbgfd);	
+		//This is actually very strange... cause it means something went wrong during disassembling ...
+		if(next){
 			update_map(cur, next);
-	
-		cur = next; 
+			cur = next; 
+		}else{
+#ifdef DEBUGMSG
+			snprintf(msg,256, "Disassembling runs into problem at TIP %llx with TNT %d\n",cur, tnt);
+			write(dbgfd, msg, strlen(msg));
+#endif	
+			break;
+		}
 		index++; 
 	}
 
-	if(disassembler->tip_info_map.cur_tip)
+	if(next && disassembler->tip_info_map.cur_tip)
 		update_map(cur, disassembler->tip_info_map.cur_tip);
 
 cleanup:
+
+#ifdef DEBUGMSG
+	close(dbgfd);
+#endif
 	disassembler->tip_info_map.prev_tip = disassembler->tip_info_map.cur_tip;
 	disassembler->tnt_cache_map.counter = 0;
 	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);		
@@ -472,7 +494,7 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 			case PT_PACKET_TNTSHORT:
 				ctx_tnt_short = (u8)*packet;
 				ctx_bit_selector = 1 << ((32 - __builtin_clz(ctx_tnt_short)) - 1);
-				ctx_tnt_counter += ((32 - __builtin_clz(ctx_tnt_short)) - 1) - 1;
+		//		ctx_tnt_counter += ((32 - __builtin_clz(ctx_tnt_short)) - 1) - 1;
 				do {
 					//cache the tnt result
 					if((ctx_tnt_short & (ctx_bit_selector >>= 1)))
@@ -505,7 +527,7 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 
 			case PT_PACKET_TIPPGD:
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
-                                disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+                                pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 				break;
 
 			case PT_PACKET_FUP:

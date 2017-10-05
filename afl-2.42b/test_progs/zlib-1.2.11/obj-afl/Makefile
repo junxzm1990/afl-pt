@@ -16,11 +16,7 @@
 # To install in $HOME instead of /usr/local, use:
 #    make install prefix=$HOME
 
-<<<<<<< HEAD
 CC=/home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast
-=======
-CC=/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast
->>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 
 CFLAGS=-O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 #CFLAGS=-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7
@@ -31,13 +27,8 @@ CFLAGS=-O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 SFLAGS=-O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 LDFLAGS=
 TEST_LDFLAGS=-L. libz.a
-<<<<<<< HEAD
 LDSHARED=/home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
 CPP=/home/mdl/jun/afl-pt/afl-2.42b/afl-clang-fast -E
-=======
-LDSHARED=/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
-CPP=/home/pt/workspace/afl-pt/afl-2.42b/afl-clang-fast -E
->>>>>>> cd38fb469ed7d1fa5d2c2278aed0a567cb5b3b8f
 
 STATICLIB=libz.a
 SHAREDLIB=libz.so

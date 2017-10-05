@@ -6,6 +6,7 @@
 #include <elf.h>
 #include <unistd.h>
 #include <string.h>
+#include <assert.h>
 
 #include <capstone/capstone.h>
 #include <capstone/x86.h>
@@ -338,7 +339,7 @@ static cofi_type opcode_analyzer(cs_insn *ins){
 	return NO_COFI_TYPE;
 }
 
-addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
+addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt, int dbgfd){
 
 	//start with the beginning address, 
 	//linear scan until encounter of conditional jump 
@@ -354,6 +355,10 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	cs_insn *insn;
 	cofi_type type;
 
+#ifdef DEBUGMSG
+	char msg[256];
+#endif
+
 	if(start < disassembler->min_addr || start > disassembler->max_addr)
 		return 0;
 
@@ -361,11 +366,24 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	
 	//check cache at first 	
 	if(tnt){
-		if(disassembler->cfg_cache[offset].true_br)
+		if(disassembler->cfg_cache[offset].true_br){
+
+#ifdef DEBUGMSG
+			snprintf(msg,256, "------ Cache hit at true branch with TNT %d and next address %llx\n ", tnt, disassembler->cfg_cache[offset].true_br);
+			write(dbgfd, msg, strlen(msg));
+#endif	
+
 			return disassembler->cfg_cache[offset].true_br;	
+		}
 	}else{
-		if(disassembler->cfg_cache[offset].false_br)
+		if(disassembler->cfg_cache[offset].false_br){
+	
+#ifdef DEBUGMSG
+			snprintf(msg,256, "------ Cache hit at false branch with TNT %d and next address %llx\n ", tnt, disassembler->cfg_cache[offset].false_br);
+			write(dbgfd, msg, strlen(msg));
+#endif	
 			return disassembler->cfg_cache[offset].false_br;	
+		}
 	}	
 	//cache missed
 	//starting raw disassembling
@@ -379,19 +397,14 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	&handle) != CS_ERR_OK)
 		return false;
 
+
+		
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 	insn = cs_malloc(handle);
 	
 	code = disassembler->code + offset;
 	code_size = disassembler->max_addr - start; 
 	address = start; 
-
-#ifdef DEBUGMSG
-	int dbgfd; 
-	char msg[256];
-	dbgfd = open("/tmp/dbg.log", O_WRONLY | O_APPEND);
-#endif
-
 	#ifdef DEBUGMSG
 		snprintf(msg,256, "------ Start point %llx with tnt %d\n",start, tnt);
 		write(dbgfd, msg, strlen(msg));
@@ -421,19 +434,13 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 		//True branch: the target
 		//False branch: the next branch
 		if(type == COFI_TYPE_CONDITIONAL_BRANCH){
-			addr_t toffset = insn->address - disassembler->min_addr;
-		
-			disassembler->cfg_cache[toffset].true_br = hex_to_bin(insn->op_str);
-			disassembler->cfg_cache[toffset].false_br = insn->address + insn->size;
-			
-			if(tnt)
-				retaddr = disassembler->cfg_cache[toffset].true_br;
-			else
-				retaddr = disassembler->cfg_cache[toffset].false_br;
-			
+			disassembler->cfg_cache[offset].true_br = hex_to_bin(insn->op_str);
+			disassembler->cfg_cache[offset].false_br = insn->address + insn->size;
+
+			retaddr  = tnt ? disassembler->cfg_cache[offset].true_br : disassembler->cfg_cache[offset].false_br;
+
 			break;
 		}
-
 		//Other cases? Must be indirect jump. Right?
 		retaddr = 0;
 		break; 	
@@ -444,9 +451,6 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	#endif	
 	cs_free(insn, 1);
 	cs_close(&handle);
-#ifdef DEBUGMSG
-	close(dbgfd);
-#endif
 
 	return retaddr;
 }
