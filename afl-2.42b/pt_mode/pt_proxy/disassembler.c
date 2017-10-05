@@ -146,7 +146,7 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 #ifdef DEBUGMSG
 	int dbgfd; 
 	char msg[256];
-	dbgfd = open("/tmp/dbg.log", O_RDWR | O_CREAT, 0777);
+	dbgfd = open("/tmp/dbg.log", O_WRONLY | O_APPEND);
 #endif
 
 #ifdef ARCH_32
@@ -284,6 +284,9 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 	disassembler->min_addr = phdrs[index].p_vaddr; 
 	disassembler->max_addr = phdrs[index].p_vaddr + phdrs[index].p_memsz; 
 
+#ifdef DEBUGMSG
+	snprintf(msg, 256, "Starting address %x and ending address %x\n", disassembler->min_addr, disassembler->max_addr);
+#endif
 
 	 disassembler->cfg_cache =(cft_target_t *)malloc(phdrs[index].p_memsz * sizeof(cft_target_t));
 
@@ -351,7 +354,7 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	cs_insn *insn;
 	cofi_type type;
 
-	if(offset < disassembler->min_addr || offset > disassembler->max_addr)
+	if(start < disassembler->min_addr || start > disassembler->max_addr)
 		return 0;
 
 	offset = start  - disassembler->min_addr; 	
@@ -383,7 +386,23 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 	code_size = disassembler->max_addr - start; 
 	address = start; 
 
+#ifdef DEBUGMSG
+	int dbgfd; 
+	char msg[256];
+	dbgfd = open("/tmp/dbg.log", O_WRONLY | O_APPEND);
+#endif
+
+	#ifdef DEBUGMSG
+		snprintf(msg,256, "------ Start point %x with tnt %d\n",start, tnt);
+		write(dbgfd, msg, strlen(msg));
+	#endif
+
 	while(cs_disasm_iter(handle, &code, &code_size, &address, insn)){
+
+	#ifdef DEBUGMSG
+		snprintf(msg, 256, "Address of current instruction %x\n", insn->address);
+		write(dbgfd, msg, strlen(msg));
+	#endif
 
 		type = opcode_analyzer(insn);	
 
@@ -421,9 +440,15 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 		retaddr = 0;
 		break; 	
 	}	
-		
+	#ifdef DEBUGMSG
+		snprintf(msg,256, "------ End point %x\n",retaddr);
+		write(dbgfd, msg, strlen(msg));
+	#endif	
 	cs_free(insn, 1);
 	cs_close(&handle);
+#ifdef DEBUGMSG
+	close(dbgfd);
+#endif
 
 	return retaddr;
 }

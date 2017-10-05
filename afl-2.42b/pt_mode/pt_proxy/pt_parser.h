@@ -413,6 +413,7 @@ void update_bit_map(disassembler_t *disassembler){
 	size_t index;
 	bool tnt; 
 
+
 	index = 0;
 	cur = disassembler->tip_info_map.prev_tip;  
 
@@ -422,7 +423,9 @@ void update_bit_map(disassembler_t *disassembler){
 	while(index <  disassembler->tnt_cache_map.counter){
 		tnt = get_tnt_bit(disassembler, index);		
 		next = get_next_target(disassembler, cur, tnt);	
+
 		//update_map(cur, next);
+	
 		cur = next; 
 		index++; 
 	}
@@ -432,6 +435,7 @@ cleanup:
 	disassembler->tip_info_map.prev_tip = disassembler->tip_info_map.cur_tip;
 	disassembler->tnt_cache_map.counter = 0;
 	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);		
+
 }
 
 void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembler){
