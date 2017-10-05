@@ -1,7 +1,7 @@
 CC  		= gcc
 OBJS 		= ../../afl-pt-proxy ../../pt-proxy-fast 
 LIBS		= 
-CFLAGS	= -O3 ${LIBS} -g -DKAFL_MODE -DDEBUGMSG
+CFLAGS	= -O3 ${LIBS} -g -DKAFL_MODE #-DDEBUGMSG
 LDFLAGS		= -lpthread -lcapstone
 
 all: $(OBJS)

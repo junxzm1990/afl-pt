@@ -285,7 +285,7 @@ bool init_disassembler(char* elfpath,  disassembler_t *disassembler){
 	disassembler->max_addr = phdrs[index].p_vaddr + phdrs[index].p_memsz; 
 
 #ifdef DEBUGMSG
-	snprintf(msg, 256, "Starting address %x and ending address %x\n", disassembler->min_addr, disassembler->max_addr);
+	snprintf(msg, 256, "Starting address %llx and ending address %llx\n", disassembler->min_addr, disassembler->max_addr);
 #endif
 
 	 disassembler->cfg_cache =(cft_target_t *)malloc(phdrs[index].p_memsz * sizeof(cft_target_t));
@@ -393,14 +393,14 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 #endif
 
 	#ifdef DEBUGMSG
-		snprintf(msg,256, "------ Start point %x with tnt %d\n",start, tnt);
+		snprintf(msg,256, "------ Start point %llx with tnt %d\n",start, tnt);
 		write(dbgfd, msg, strlen(msg));
 	#endif
 
 	while(cs_disasm_iter(handle, &code, &code_size, &address, insn)){
 
 	#ifdef DEBUGMSG
-		snprintf(msg, 256, "Address of current instruction %x\n", insn->address);
+		snprintf(msg, 256, "Address of current instruction %llx\n", insn->address);
 		write(dbgfd, msg, strlen(msg));
 	#endif
 
@@ -416,8 +416,6 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 			code =  disassembler->code + address - disassembler->min_addr; 
 			continue;
 		}	
-
-	
 
 		//conditional jump 
 		//True branch: the target
@@ -441,7 +439,7 @@ addr_t get_next_target(disassembler_t* disassembler, addr_t start, bool tnt){
 		break; 	
 	}	
 	#ifdef DEBUGMSG
-		snprintf(msg,256, "------ End point %x\n",retaddr);
+		snprintf(msg,256, "------ End point %llx\n",retaddr);
 		write(dbgfd, msg, strlen(msg));
 	#endif	
 	cs_free(insn, 1);

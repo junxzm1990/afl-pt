@@ -404,6 +404,14 @@ static inline bool  __attribute__((optimize("O0"))) get_tnt_bit(disassembler_t *
 	return  (disassembler->tnt_cache_map.tnt[byteindex] >> bitindex ) & 1; 
 }
 
+static inline void update_map(addr_t prev, addr_t next){
+	
+	prev = map_64(prev) >> 1; 
+	next = map_64(next);
+
+	__afl_area_ptr[prev ^ next] ++;
+}
+
 void update_bit_map(disassembler_t *disassembler){
 	//start with the prev_tip
 	//prev_tip -> tnt0 -> tnt1 -> tnt2 -> tnt3 -> ... -> curr_tip 
@@ -412,7 +420,6 @@ void update_bit_map(disassembler_t *disassembler){
 	addr_t cur, next;
 	size_t index;
 	bool tnt; 
-
 
 	index = 0;
 	cur = disassembler->tip_info_map.prev_tip;  
@@ -424,18 +431,20 @@ void update_bit_map(disassembler_t *disassembler){
 		tnt = get_tnt_bit(disassembler, index);		
 		next = get_next_target(disassembler, cur, tnt);	
 
-		//update_map(cur, next);
+		if(next)
+			update_map(cur, next);
 	
 		cur = next; 
 		index++; 
 	}
-	//update_map(cur, disassembler->tnt_cache_map.counter);
+
+	if(disassembler->tip_info_map.cur_tip)
+		update_map(cur, disassembler->tip_info_map.cur_tip);
 
 cleanup:
 	disassembler->tip_info_map.prev_tip = disassembler->tip_info_map.cur_tip;
 	disassembler->tnt_cache_map.counter = 0;
 	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);		
-
 }
 
 void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembler){
