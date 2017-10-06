@@ -374,6 +374,15 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 
 #ifdef KAFL_MODE
 
+static inline bool  __attribute__((optimize("O0"))) get_tnt_bit(disassembler_t *disassembler, size_t index){
+
+	int byteindex, bitindex; 
+	
+	byteindex = index / 8; 		
+	bitindex = index % 8; 	
+
+	return  (disassembler->tnt_cache_map.tnt[byteindex] >> bitindex ) & 1; 
+}
 
 //cache the TNT sequence between two tip
 static inline void update_tnt_bit(disassembler_t *disassembler, int bit){
@@ -387,23 +396,15 @@ static inline void update_tnt_bit(disassembler_t *disassembler, int bit){
 
 	//set a bit
 	if(bit)
-		disassembler->tnt_cache_map.tnt[byteindex] |= ~(1 << bitindex); 
+		disassembler->tnt_cache_map.tnt[byteindex] |= (1 << bitindex); 
 	//clear a bit
 	else
 		disassembler->tnt_cache_map.tnt[byteindex] &= ~(1 << bitindex); 
 	
+	
 	disassembler->tnt_cache_map.counter++;
 }
 
-static inline bool  __attribute__((optimize("O0"))) get_tnt_bit(disassembler_t *disassembler, size_t index){
-
-	int byteindex, bitindex; 
-	
-	byteindex = index / 8; 		
-	bitindex = index % 8; 	
-
-	return  (disassembler->tnt_cache_map.tnt[byteindex] >> bitindex ) & 1; 
-}
 
 static inline void update_map(addr_t prev, addr_t next){
 	
@@ -413,22 +414,17 @@ static inline void update_map(addr_t prev, addr_t next){
 	__afl_area_ptr[prev ^ next] ++;
 }
 
-void update_bit_map(disassembler_t *disassembler){
+void update_bit_map(disassembler_t *disassembler, int dbgfd){
 	//start with the prev_tip
 	//prev_tip -> tnt0 -> tnt1 -> tnt2 -> tnt3 -> ... -> curr_tip 
 	//from one basic block to another block, we first search the cache
 	//if no hit, then we perform online disassembling, and then refill the cache.  	
 	addr_t cur, next;
 	bool tnt; 
-	int dbgfd; 
 	size_t index = 0;
+
 #ifdef DEBUGMSG
 	char msg[256];
-
-	dbgfd = open("/tmp/dbg1.log", O_WRONLY | O_APPEND);
-#endif
-
-#ifdef DEBUGMSG
 	snprintf(msg,256, "Start a new round of slicing %llx and %llx and tnt size %d\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip, disassembler->tnt_cache_map.counter);
 	write(dbgfd, msg, strlen(msg));
 #endif	
@@ -461,9 +457,6 @@ void update_bit_map(disassembler_t *disassembler){
 
 cleanup:
 
-#ifdef DEBUGMSG
-	close(dbgfd);
-#endif
 	disassembler->tip_info_map.prev_tip = disassembler->tip_info_map.cur_tip;
 	disassembler->tnt_cache_map.counter = 0;
 	memset(disassembler->tnt_cache_map.tnt, 0, MAX_TNT_SIZE);		
@@ -485,6 +478,13 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 		kind = pt_get_packet(packet, bytes_remained, &packet_len);   \
 	} while (0)
 
+
+#ifdef DEBUGMSG
+	char msg[256];
+	int dbgfd;
+	dbgfd = open("/tmp/dbg1.log", O_WRONLY | O_APPEND);
+#endif
+
 	while (bytes_remained > 0) {
 		//get the type of the current packet
 		kind = pt_get_packet(packet, bytes_remained, &packet_len);
@@ -497,10 +497,32 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 		//		ctx_tnt_counter += ((32 - __builtin_clz(ctx_tnt_short)) - 1) - 1;
 				do {
 					//cache the tnt result
-					if((ctx_tnt_short & (ctx_bit_selector >>= 1)))
+					if((ctx_tnt_short & (ctx_bit_selector >>= 1))){
+#ifdef DEBUGMSG
+						snprintf(msg,256, "TNT true branch\n");
+						write(dbgfd, msg, strlen(msg));
+#endif	
 						update_tnt_bit(disassembler, 1);
-					else
+
+#ifdef DEBUGMSG
+						snprintf(msg,256, "Retrieve the updated tnt %d\n", get_tnt_bit(disassembler, disassembler->tnt_cache_map.counter-1));
+						write(dbgfd, msg, strlen(msg));
+#endif	
+
+					}
+					else{
+#ifdef DEBUGMSG
+						snprintf(msg,256, "TNT false branch\n");
+						write(dbgfd, msg, strlen(msg));
+#endif
 						update_tnt_bit(disassembler, 0);
+
+#ifdef DEBUGMSG
+						snprintf(msg,256, "Retrieve the updated tnt %d\n", get_tnt_bit(disassembler, disassembler->tnt_cache_map.counter-1));
+						write(dbgfd, msg, strlen(msg));
+#endif	
+					}
+
 				} while (ctx_bit_selector != 2);
 				break;
 
@@ -512,10 +534,22 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 
 				//encounter a tip, update the bitmap and the cache map 
 			case PT_PACKET_TIP:
+		
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip; 
 				disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+
+#ifdef DEBUGMSG
+				snprintf(msg,256, "TIP encountered with prev %llx and next %llx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
+
+
+#ifdef DEBUGMSG
 				//update the bitmap
-				update_bit_map(disassembler);
+				update_bit_map(disassembler, dbgfd);
+#else
+				update_bit_map(disassembler, 1);
+#endif
 
 				break;
 
@@ -549,6 +583,13 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 				break;
 
 			case PT_PACKET_OVF:
+#ifdef DEBUGMSG
+				snprintf(msg,256, "Overflow packet\n");
+				write(dbgfd, msg, strlen(msg));
+#endif
+
+
+
 				do {
 					NEXT_PACKET();
 				} while (kind != PT_PACKET_FUP);
@@ -565,6 +606,11 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 		bytes_remained -= packet_len;
 		packet += packet_len;
 	}
+
+#ifdef DEBUGMSG
+	close(dbgfd);
+#endif
+
 }
 
 #endif
