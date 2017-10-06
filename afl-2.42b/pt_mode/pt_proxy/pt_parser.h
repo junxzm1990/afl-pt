@@ -159,7 +159,7 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 /* #define DEBUG_PACKET */
 /* #define DEBUG */
 
-#define DEBUG_PACKET
+//#define DEBUG_PACKET
 static inline enum pt_packet_kind
 pt_get_packet(u8 *buffer, u64 size, u64 *len)
 {
