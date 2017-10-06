@@ -11,9 +11,9 @@
 
 
 #ifdef ARCH_32
-typedef uint64_t addr_t; 
+typedef uint32_t addr_t; 
 #else
-typedef uint32_t addr_t;
+typedef uint64_t addr_t;
 #endif
 
 

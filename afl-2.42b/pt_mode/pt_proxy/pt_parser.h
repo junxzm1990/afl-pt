@@ -158,6 +158,8 @@ pt_get_and_update_ip(u8 *packet, u32 len, u64 *last_ip)
 //   and the input fd > 0, packets will be written to /tmp/packet.log
 /* #define DEBUG_PACKET */
 /* #define DEBUG */
+
+#define DEBUG_PACKET
 static inline enum pt_packet_kind
 pt_get_packet(u8 *buffer, u64 size, u64 *len)
 {
@@ -485,6 +487,19 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 	dbgfd = open("/tmp/dbg1.log", O_WRONLY | O_APPEND);
 #endif
 
+/*
+#ifdef DEBUGMSG
+	snprintf(msg,256, "=========================\n");
+	write(dbgfd, msg, strlen(msg));
+	write(dbgfd, packet, size);
+#endif
+
+#ifdef DEBUGMSG
+	snprintf(msg,256, "=========================\n");
+	write(dbgfd, msg, strlen(msg));
+#endif
+*/
+
 	while (bytes_remained > 0) {
 		//get the type of the current packet
 		kind = pt_get_packet(packet, bytes_remained, &packet_len);
@@ -539,7 +554,7 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 				disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 
 #ifdef DEBUGMSG
-				snprintf(msg,256, "TIP encountered with prev %llx and next %llx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				snprintf(msg,256, "TIP encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
 				write(dbgfd, msg, strlen(msg));
 #endif
 
@@ -557,19 +572,35 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 			case PT_PACKET_TIPPGE:
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
                                 disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+
+#ifdef DEBUGMSG
+				snprintf(msg,256, "TIP.PGE encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
+
 				break;
 
 			case PT_PACKET_TIPPGD:
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
                                 pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+#ifdef DEBUGMSG
+				snprintf(msg,256, "TIP.PGD encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
 				break;
 
 			case PT_PACKET_FUP:
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
                                 disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
+#ifdef DEBUGMSG
+				snprintf(msg,256, "FUP encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
 				break;
 
 			case PT_PACKET_PSB:
+
+
 				//Next IP should be present in full value
 				//instead of offset
 				disassembler->tip_info_map.prev_ip = 0;
@@ -580,6 +611,11 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 						disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
 					}
 				} while (kind != PT_PACKET_PSBEND && kind != PT_PACKET_OVF);
+
+#ifdef DEBUGMSG
+				snprintf(msg,256, "PSB encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
 				break;
 
 			case PT_PACKET_OVF:
@@ -596,7 +632,10 @@ void parse_and_disassemble(char* buffer, size_t size, disassembler_t *disassembl
 
 				disassembler->tip_info_map.prev_ip = disassembler->tip_info_map.cur_tip;
                                 disassembler->tip_info_map.cur_tip = pt_get_and_update_ip(packet, packet_len, (u64*)&disassembler->tip_info_map.prev_ip);
-
+#ifdef DEBUGMSG
+				snprintf(msg,256, "OVF encountered with prev %lx and next %lx\n", disassembler->tip_info_map.prev_tip, disassembler->tip_info_map.cur_tip);
+				write(dbgfd, msg, strlen(msg));
+#endif
 				break;
 
 			default:

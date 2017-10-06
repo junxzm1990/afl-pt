@@ -434,9 +434,9 @@ static bool setup_target_thread(struct task_struct *target){
 		}
 	}
 
-	printk(KERN_INFO "Exe start %lx and end %lx\n", (unsigned long)ptm->targets[ptm->target_num].addr_range_a, (unsigned long)ptm->targets[ptm->target_num].addr_range_b);
 
 	ptm->targets[ptm->target_num] = INIT_TARGET(target->pid, target, topa, TSTART, vma->vm_start, 0, 0, vpoo, vpoc, exestart, exeend, 0);
+	printk(KERN_INFO "Determined exe start %lx and end %lx\n", (unsigned long)ptm->targets[ptm->target_num].addr_range_a, (unsigned long)ptm->targets[ptm->target_num].addr_range_b);
 
 	//clear up contents in the topa buffers
 	clear_topa(ptm->targets[ptm->target_num].topa);	
