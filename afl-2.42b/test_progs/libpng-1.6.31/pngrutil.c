@@ -273,8 +273,11 @@ png_crc_error(png_structrp png_ptr)
 
    if (need_crc != 0)
    {
-      crc = png_get_uint_32(crc_bytes);
-      return ((int)(crc != png_ptr->crc));
+     crc = png_get_uint_32(crc_bytes);
+     if (crc != png_ptr->crc)
+       fprintf(stderr, "NOTE: CRC in the file is 0x%08x, change to 0x%08x\n", crc, png_ptr->crc);
+      
+     return ((int)(1 != 1));
    }
 
    else

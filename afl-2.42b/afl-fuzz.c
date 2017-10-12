@@ -4738,25 +4738,13 @@ static u32 calculate_score(struct queue_entry* q) {
      global average. Multiplier ranges from 0.1x to 3x. Fast inputs are
      less expensive to fuzz, so we're giving them more air time. */
 
-  if (pt_mode){
-      /* pt mode is more harsh on the execution time*/
-      if (q->exec_us * 0.1 > avg_exec_us) perf_score = 5;
-      else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 10;
-      else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 25;
-      else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 30;
-      else if (q->exec_us * 4 < avg_exec_us) perf_score = 600;
-      else if (q->exec_us * 3 < avg_exec_us) perf_score = 400;
-      else if (q->exec_us * 2 < avg_exec_us) perf_score = 300;
-      
-  }else{
-      if (q->exec_us * 0.1 > avg_exec_us) perf_score = 10;
-      else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 25;
-      else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 50;
-      else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 75;
-      else if (q->exec_us * 4 < avg_exec_us) perf_score = 300;
-      else if (q->exec_us * 3 < avg_exec_us) perf_score = 200;
-      else if (q->exec_us * 2 < avg_exec_us) perf_score = 150;
-  }
+  if (q->exec_us * 0.1 > avg_exec_us) perf_score = 10;
+  else if (q->exec_us * 0.25 > avg_exec_us) perf_score = 25;
+  else if (q->exec_us * 0.5 > avg_exec_us) perf_score = 50;
+  else if (q->exec_us * 0.75 > avg_exec_us) perf_score = 75;
+  else if (q->exec_us * 4 < avg_exec_us) perf_score = 300;
+  else if (q->exec_us * 3 < avg_exec_us) perf_score = 200;
+  else if (q->exec_us * 2 < avg_exec_us) perf_score = 150;
 
 
   /* Adjust score based on bitmap size. The working theory is that better
