@@ -384,7 +384,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     bytes_remained = size;
 
 
-#define MAX_TNT_LEN 64
+#define MAX_TNT_LEN 65536
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
