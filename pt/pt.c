@@ -450,7 +450,7 @@ static bool setup_target_thread(struct task_struct *target){
 }
 
 
-
+//TODO: since hr_timer is executing in hardirq context, current can be any process
 static struct hrtimer hr_timer;
  
 enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
