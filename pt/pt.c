@@ -338,6 +338,7 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 	struct vm_area_struct *vma;
 	char binpath[PMAX];
 	char *path;
+	char *tpath;
 
 	mm = target->mm;	
 
@@ -349,7 +350,10 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 			memset(binpath, 0, PMAX);
 			if((vma->vm_flags & VM_EXEC)  &&  vma->vm_file){
 				path = dentry_path_raw(vma->vm_file->f_path.dentry, binpath, PMAX);
-				if(path && strstr(path, ptm->target_path))
+
+				tpath = kbasename(ptm->target_path);	
+
+				if(path && strstr(path, tpath))
 					return vma; 
 			}
 			vma = vma->vm_next;
@@ -446,7 +450,7 @@ static bool setup_target_thread(struct task_struct *target){
 }
 
 
-
+//TODO: since hr_timer is executing in hardirq context, current can be any process
 static struct hrtimer hr_timer;
  
 enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){

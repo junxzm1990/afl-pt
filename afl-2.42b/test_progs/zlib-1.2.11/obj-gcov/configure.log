@@ -511,3 +511,168 @@ uname = Linux
 --------------------
 
 
+--------------------
+../configure
+Tue Sep 26 15:01:17 EDT 2017
+Checking for gcc...
+=== ztest18338.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest18338.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest18338.c ===
+int foo() { return 0; }
+===
+gcc -c -fprofile-arcs -ftest-coverage ztest18338.c
+
+Checking for shared library support...
+=== ztest18338.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -w -c -fprofile-arcs -ftest-coverage -fPIC ztest18338.c
+gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map -fprofile-arcs -ftest-coverage -fPIC -o ztest18338.so ztest18338.o
+Building shared library libz.so.1.2.11 with gcc.
+
+=== ztest18338.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+gcc -c -fprofile-arcs -ftest-coverage ztest18338.c
+Checking for size_t... Yes.
+
+
+=== ztest18338.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking for off64_t... Yes.
+Checking for fseeko... Yes.
+
+=== ztest18338.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+gcc -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 -o ztest18338 ztest18338.c
+Checking for strerror... Yes.
+
+=== ztest18338.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking for unistd.h... Yes.
+
+=== ztest18338.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking for stdarg.h... Yes.
+
+=== ztest18338.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest18338.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 -o ztest18338 ztest18338.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest18338.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest18338.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+gcc -c -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 ztest18338.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static shared all64
+AR = ar
+ARFLAGS = rc
+CC = gcc
+CFLAGS = -fprofile-arcs -ftest-coverage -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+CPP = gcc -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = gcc -shared -Wl,-soname,libz.so.1,--version-script,../zlib.map
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -fprofile-arcs -ftest-coverage -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+SHAREDLIB = libz.so
+SHAREDLIBM = libz.so.1
+SHAREDLIBV = libz.so.1.2.11
+STATICLIB = libz.a
+TEST = all teststatic testshared test64
+VER = 1.2.11
+Z_U4 =
+SRCDIR = ../
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+

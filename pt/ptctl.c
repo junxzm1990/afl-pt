@@ -87,7 +87,7 @@ void record_pt(int tx){
 	u64 mask; 
 
 	if(pt_enabled())
-		pt_pause();	
+		pt_pause();
 
 	index = pt_topa_index();
 	offset = pt_topa_offset();
