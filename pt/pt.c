@@ -338,6 +338,7 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 	struct vm_area_struct *vma;
 	char binpath[PMAX];
 	char *path;
+	char *tpath;
 
 	mm = target->mm;	
 
@@ -349,7 +350,10 @@ static struct vm_area_struct * find_bintext_vma(struct task_struct * target){
 			memset(binpath, 0, PMAX);
 			if((vma->vm_flags & VM_EXEC)  &&  vma->vm_file){
 				path = dentry_path_raw(vma->vm_file->f_path.dentry, binpath, PMAX);
-				if(path && strstr(path, ptm->target_path))
+
+				tpath = kbasename(ptm->target_path);	
+
+				if(path && strstr(path, tpath))
 					return vma; 
 			}
 			vma = vma->vm_next;
