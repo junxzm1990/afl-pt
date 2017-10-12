@@ -393,7 +393,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
               ctx_curr_tnt_prod *= 16777619;                        \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
-              if(ctx_tnt_counter == MAX_TNT_LEN){                   \
+              if(ctx_tnt_counter >= MAX_TNT_LEN){                   \
                 ctx_tnt_lock = 1;                                   \
               }                                                     \
             }                                                       \
