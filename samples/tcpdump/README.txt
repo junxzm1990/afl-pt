@@ -1,17 +1,9 @@
-Command line used to find this crash:
+run with ASAN + (LD_PRELOAD libdislocator.so)
 
-./afl-fuzz -m 8G -i /home/eric/work/afl-pt/afl-2.42b/test_progs/tcpdump_dir/in/ -o /tmp/afl-ramdisk/tcpdump-afl-9-22 /home/eric/work/afl-pt/afl-2.42b/test_progs/tcpdump_dir/obj-afl/tcpdump -r-
+cmd option: ./tcpdump -r CRASH_CASE
 
-If you can't reproduce a bug outside of afl-fuzz, be sure to set the same
-memory limit. The limit used for this fuzzing session was 8.00 GB.
+download link: http://www.tcpdump.org/#latest-releases
+   download both tcpdump and libpcap, the latest version
+   compile libpcap first, then tcpdump
 
-Need a tool to minimize test cases before investigating the crashes or sending
-them to a vendor? Check out the afl-tmin that comes with the fuzzer!
 
-Found any cool bugs in open-source tools using afl-fuzz? If yes, please drop
-me a mail at <lcamtuf@coredump.cx> once the issues are fixed - I'd love to
-add your finds to the gallery at:
-
-  http://lcamtuf.coredump.cx/afl/
-
-Thanks :-)
