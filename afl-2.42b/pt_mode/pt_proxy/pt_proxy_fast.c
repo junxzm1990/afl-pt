@@ -246,43 +246,60 @@ static void bind_to_free_core(void) {
 
   while ((de = readdir(d))) {
 
-    u8* fn;
-    FILE* f;
-    u8 tmp[MAX_LINE];
-    u8 has_vmsize = 0;
+    DIR *d2;
+    struct dirent *de2;
+    u8 *fn2;
 
     if (!isdigit(de->d_name[0])) continue;
+    fn2 = alloc_printf("/proc/%s/task", de->d_name);
+    d2 = opendir((const char * )fn2);
+    if (!d2) {
 
-    fn = alloc_printf("/proc/%s/status", de->d_name);
+      WARNF("Unable to access %s - can't scan for free CPU cores.", fn2);
+      return;
 
-    if (!(f = fopen(fn, "r"))) {
-      ck_free(fn);
-      continue;
     }
 
-    while (fgets(tmp, MAX_LINE, f)) {
+    while ((de2 = readdir(d2))) {
+      u8* fn;
+      FILE* f;
+      u8 tmp[MAX_LINE];
+      u8 has_vmsize = 0;
 
-      u32 hval;
+      if (!isdigit(de2->d_name[0])) continue;
 
-      /* Processes without VmSize are probably kernel tasks. */
+      fn = alloc_printf("/proc/%s/task/%s/status", de->d_name, de2->d_name);
 
-      if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+      if (!(f = fopen(fn, "r"))) {
+        ck_free(fn);
+        continue;
+      }
 
-      if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
-          !strchr(tmp, '-') && !strchr(tmp, ',') &&
-          sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
-          has_vmsize) {
+      while (fgets(tmp, MAX_LINE, f)) {
 
-        cpu_used[hval] = 1;
-        break;
+        u32 hval;
+
+        /* Processes without VmSize are probably kernel tasks. */
+
+        if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+
+        if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
+            !strchr(tmp, '-') && !strchr(tmp, ',') &&
+            sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
+            has_vmsize) {
+
+          cpu_used[hval] = 1;
+          break;
+
+        }
 
       }
 
+      ck_free(fn);
+      fclose(f);
     }
-
-    ck_free(fn);
-    fclose(f);
-
+    ck_free(fn2);
+    closedir(d2);
   }
 
   closedir(d);

@@ -8040,7 +8040,7 @@ int main(int argc, char** argv) {
   get_core_count();
 
 #ifdef HAVE_AFFINITY
-  bind_to_free_cpu();
+  /* bind_to_free_cpu(); */
 #endif /* HAVE_AFFINITY */
 
   check_crash_handling();

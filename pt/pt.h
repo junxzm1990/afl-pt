@@ -1,5 +1,9 @@
 #ifndef __PT_H__
 #define __PT_H__
+#include <linux/timer.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/list.h>
 
 #define MSR_IA32_RTIT_OUTPUT_BASE	0x00000560
 #define MSR_IA32_RTIT_OUTPUT_MASK_PTRS	0x00000561
@@ -154,10 +158,15 @@ typedef struct target_thread_struct{
 	//end address of executbale .text
 	u64 addr_range_b;
 
+  u64 timer_interval;
+
 
 }target_thread_t;
 
 typedef struct pt_manager_struct{
+
+  struct list_head next_ptm;//pointer for next ptm
+
 	enum proxy_status p_stat;
 
 	pid_t proxy_pid; //process id of proxy
@@ -173,16 +182,27 @@ typedef struct pt_manager_struct{
 	int target_num; //how many threads are in running
 	u64 run_cnt; 	
 	
+
+  struct hrtimer hr_timer;//since we bind target/proxy/fuzzer on one core, we can start timer on exec event
+
 	//if filtering based on address is enabled
 	bool addr_filter; 
 }pt_manager_t;
+
+
+//global singleton for mantaining pt module
+typedef struct pt_facotry_struct{
+  struct list_head ptm_list;//TODO: lock
+  bool trace_point_init; //TODO: lock
+  u64 ptm_num; //TODO: lock
+}pt_factory_t;
 
 typedef struct netlink_struct{
 	struct sock *nl_sk;
 	struct netlink_kernel_cfg cfg;  
 }netlink_t;
 
-extern pt_manager_t *ptm;
+extern pt_factory_t *pt_factory;
 
 extern unsigned long (*ksyms_func)(const char *name);
 
@@ -195,8 +215,8 @@ struct vm_area_struct *proxy_special_mapping(
 
 
 void * proxy_find_symbol(char * name);
-void record_pt(int tx);
-void resume_pt(int tx);
+void record_pt(pt_manager_t *, int tx);
+void resume_pt(pt_manager_t *, int tx);
 
 typedef int (*trace_probe_ptr_ty)(struct tracepoint *tp, void *probe, void *data);
 typedef int (*trace_release_ptr_ty)(struct tracepoint *tp, void *probe, void *data); 
