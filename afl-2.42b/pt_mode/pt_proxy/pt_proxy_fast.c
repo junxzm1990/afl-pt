@@ -228,7 +228,7 @@ static void bind_to_free_core(void) {
   if (!d) {
 
     WARNF("Unable to access /proc - can't scan for free CPU cores.");
-    continue;
+    return;
 
   }
 
@@ -256,7 +256,7 @@ static void bind_to_free_core(void) {
     if (!d2) {
 
       WARNF("Unable to access %s - can't scan for free CPU cores.", fn2);
-      return;
+      continue;
 
     }
 
