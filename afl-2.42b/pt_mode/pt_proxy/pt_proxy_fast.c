@@ -202,6 +202,9 @@ gen_rand_map(u32 entries, u32 max){
 /* Build a list of processes bound to specific cores. Returns -1 if nothing
    can be found. Assumes an upper bound of 4k CPUs. */
 
+/* NOTE: because of the per-core timer, core-binding is crutial here. so if
+   core binding fails. we do not proceed, as it might cause system crashes 
+ */
 static void bind_to_free_core(void) {
 
   DIR* d;
@@ -218,7 +221,7 @@ static void bind_to_free_core(void) {
 
   if (getenv("AFL_NO_AFFINITY")) {
 
-    WARNF("Not binding to a CPU core (AFL_NO_AFFINITY set).");
+    PFATAL("Not binding to a CPU core (AFL_NO_AFFINITY set).");
     return;
 
   }

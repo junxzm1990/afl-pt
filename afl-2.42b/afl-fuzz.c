@@ -395,6 +395,9 @@ static void shuffle_ptrs(void** ptrs, u32 cnt) {
 /* Build a list of processes bound to specific cores. Returns -1 if nothing
    can be found. Assumes an upper bound of 4k CPUs. */
 
+/* NOTE: because of the per-core timer, core-binding is crutial here. so if
+   core binding fails. we do not proceed, as it might cause system crashes 
+*/
 static void bind_to_free_cpu(void) {
 
   DIR* d;
@@ -408,6 +411,8 @@ static void bind_to_free_cpu(void) {
 
   if (getenv("AFL_NO_AFFINITY")) {
 
+    if (pt_mode)
+      PFATAL("Core binding is required for PT mode (AFL_NO_AFFINITY set).");
     WARNF("Not binding to a CPU core (AFL_NO_AFFINITY set).");
     return;
 
