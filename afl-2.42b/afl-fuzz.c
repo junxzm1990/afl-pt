@@ -441,12 +441,12 @@ static void bind_to_free_cpu(void) {
     u8 *fn2;
 
     if (!isdigit(de->d_name[0])) continue;
-    fn2 = alloc_printf("/proc/%s/task", de->d_name);
+    fn2 = alloc_printf("/proc/%s/task/", de->d_name);
     d2 = opendir((const char * )fn2);
     if (!d2) {
 
       WARNF("Unable to access %s - can't scan for free CPU cores.", fn2);
-      return;
+      continue;
 
     }
 
