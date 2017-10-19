@@ -85,7 +85,6 @@ static void release_trace_point(void);
 	.addr_range_a = _estart, \
 	.addr_range_b = _eend, \
 	.run_cnt = _run_cnt,\
-  .timer_interval = TIMER_INTERVAL,\
 }
 
 //the invoking context have ptm readily to use
@@ -111,6 +110,8 @@ netlink_t nlt ={
 
 
 pt_factory_t *pt_factory;
+struct hrtimer hr_timers[NR_CPUS];//per-cpu timer obj
+
 
 static struct tracepoint *exec_tp = NULL; 
 static struct tracepoint *switch_tp= NULL; 
@@ -119,7 +120,7 @@ static struct tracepoint *exit_tp= NULL;
 static struct tracepoint *syscall_tp = NULL; 
 
 
-pt_manager_t *
+inline pt_manager_t *
 find_ptm_by_proxyid(pid_t p){
   pt_manager_t *ret = 0;
   struct list_head *pos;
@@ -132,7 +133,7 @@ find_ptm_by_proxyid(pid_t p){
   return 0;
 }
 
-pt_manager_t *
+inline pt_manager_t *
 find_ptm_by_targetid(pid_t p){
   pt_manager_t *ret = 0;
   int tx;
@@ -420,7 +421,6 @@ static bool setup_target_thread(pt_manager_t *ptm, struct task_struct *target){
 			ptm->targets[tx].status = TSTART;
 			ptm->targets[tx].offset = 0;
 			ptm->targets[tx].outmask = 0;
-			ptm->targets[tx].timer_interval = TIMER_INTERVAL;
 			clear_topa(ptm->targets[tx].topa);	
 			return true; 
 		}		
@@ -486,6 +486,7 @@ enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
 	register u64 cur_off;
   pt_manager_t *ptm;
 
+  //target and proxy runs on the same core
 	preempt_disable();
   ptm = find_ptm_by_targetid(current->pid);
   if(ptm){
@@ -501,27 +502,27 @@ enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
         resume_pt(ptm, tx);
 
         if(cur_off > PT_OFF_UNIT){
-          if(ptm->targets[tx].timer_interval > TIMER_LOW)
-            ptm->targets[tx].timer_interval -= TIMER_UNIT; 
-          else	
-            ptm->targets[tx].timer_interval = TIMER_LOW;
+          if(ptm->timer_interval > TIMER_LOW)
+            ptm->timer_interval -= TIMER_UNIT;
+          else
+            ptm->timer_interval = TIMER_LOW;
         }else{
-          ptm->targets[tx].timer_interval += TIMER_UNIT; 
+          ptm->timer_interval += TIMER_UNIT;
         }
         break;
       }
+      /* printk("Call back of the high resolution %d\n", jiffies); */
     }
 
-
-    ktime = ktime_set(0, ptm->targets[tx].timer_interval); //measure is ns
-    currtime = ktime_get();
-
-    hrtimer_forward(&ptm->hr_timer, currtime, ktime);
-    //printk("Call back of the high resolution %d\n", jiffies);
+    ktime = ktime_set(0, ptm->timer_interval); //measure is ns
+  }else{
+    ktime = ktime_set(0, TIMER_INTERVAL); //set default interval
   }
+  currtime = ktime_get();
+  hrtimer_forward(&(hr_timers[smp_processor_id()]), currtime, ktime);
 
-	preempt_enable();
-	return HRTIMER_RESTART;
+  preempt_enable();
+  return HRTIMER_RESTART;
 }
 
 //Check if the forkserver is started by matching the target path
@@ -539,9 +540,9 @@ static void probe_trace_exec(void * arg, struct task_struct *p, pid_t old_pid, s
       printk(KERN_INFO "Fork server path %s and pid %d\n", bprm->filename, p->pid);
       ptm->fserver_pid = p->pid;	
       ptm->p_stat = PTARGET; 		
-      /* START_TIMER(ptm->hr_timer); */
 
       printk("The CPU ID for fork server is %d\n", smp_processor_id());
+      START_TIMER(hr_timers[smp_processor_id()]);
     }
   }
 
@@ -679,11 +680,11 @@ static void probe_trace_exit(void * ignore, struct task_struct *tsk){
 		}
 		
 		printk(KERN_INFO "In total %lx runs\n", (unsigned long)ptm->run_cnt);
+    hrtimer_try_to_cancel(&(hr_timers[smp_processor_id()]));
 
 		//reset target number
 		ptm->run_cnt = 0;
 		ptm->target_num = 0;
-    /* hrtimer_try_to_cancel(&ptm->hr_timer); */
     if(--pt_factory->ptm_num == 0){
       release_trace_point();
       pt_factory->trace_point_init = false;
@@ -904,6 +905,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
         ptm->target_num = 0;
         ptm->run_cnt = 0;
         ptm->addr_filter = true;
+        ptm->timer_interval = TIMER_INTERVAL;
         pt_factory->ptm_num++;
         /* ptm->p_stat = PSLEEP; *///TODO:confirm to remove SLEEP STATE
         //TODO: W lock
@@ -1060,17 +1062,6 @@ static int __init pt_init(void){
 }
 
 static void __exit pt_exit(void){
-
-  pt_manager_t *ptm;
-  struct list_head *pos;
-
-  //free ptm if any left
-  /* list_for_each(pos, &pt_factory->ptm_list){ */
-  /*   ptm = list_entry(pos, pt_manager_t, next_ptm); */
-  /*   /\* hrtimer_try_to_cancel(&ptm->hr_timer); *\/ */
-  /*   kfree((void*)ptm); */
-  /* } */
-
 
 	/* unregister_pmi_handler(); */
 

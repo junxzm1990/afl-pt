@@ -158,7 +158,6 @@ typedef struct target_thread_struct{
 	//end address of executbale .text
 	u64 addr_range_b;
 
-  u64 timer_interval;
 
 
 }target_thread_t;
@@ -183,12 +182,17 @@ typedef struct pt_manager_struct{
 	u64 run_cnt; 	
 	
 
-  struct hrtimer hr_timer;//since we bind target/proxy/fuzzer on one core, we can start timer on exec event
+  u64 timer_interval;
 
 	//if filtering based on address is enabled
 	bool addr_filter; 
 }pt_manager_t;
 
+
+// typedef struct reverse_map_st{
+//   pid_t target;
+
+// }
 
 //global singleton for mantaining pt module
 typedef struct pt_facotry_struct{
