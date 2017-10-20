@@ -89,6 +89,7 @@ u32 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used b
 u16 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
 u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
+u8  ctx_tnt_lock = 0;                                  /* u8 tnt val;flag stop tnt trace  */
 u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when reach 8   */
 
 s32  g_target_cpu = -1;                                /* place holder*/
@@ -121,6 +122,7 @@ get_next_pt_off(){
     ctx_tnt_short = 0;                         \
     ctx_tnt_go = 0;                            \
     ctx_curr_tnt_cnt = 0;                      \
+    ctx_tnt_lock = 0;                          \
   }while(0)                                    \
     
 /* Generate a random number (from 0 to limit - 1). This may have slight bias. */

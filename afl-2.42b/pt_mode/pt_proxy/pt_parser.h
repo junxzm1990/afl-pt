@@ -27,6 +27,7 @@ extern u32 ctx_curr_tnt_prod;
 extern u16 ctx_tnt_container;
 extern u8  ctx_tnt_short;
 extern u8  ctx_tnt_go;
+extern u8  ctx_tnt_lock;
 extern u8  ctx_curr_tnt_cnt;
 
 
@@ -382,38 +383,43 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     packet = buffer;
     bytes_remained = size;
 
-
+#define MAX_TNT_LEN 4096
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
-        if(likely(ctx_tnt_go)){                                     \
+      if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
             if(++ctx_curr_tnt_cnt % 8 == 0){                        \
-                ctx_curr_tnt_prod ^= map_8(ctx_tnt_container);      \
-                ctx_tnt_container = ctx_curr_tnt_cnt = 0;           \
+              ctx_curr_tnt_prod ^= ctx_tnt_container;               \
+              ctx_curr_tnt_prod *= 16777619;                        \
+              ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
+              if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
+                ctx_tnt_lock=1;                                     \
+              }                                                     \
             }                                                       \
-        }                                                           \
+      }                                                             \
     } while (0)
 
 
 
 #ifdef HPS
  
-    #define UPDATE_TRACEBITS_IDX()                                          \
-        do {                                                                \
-            if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
-            __afl_area_ptr[                                                 \
-                (map_64(ctx_curr_ip)                                        \
-                ^map_64(ctx_last_tip_ip)                                   \
-                ^map_8(ctx_curr_tnt_prod)                                  \
-                +log_map[ctx_tnt_counter]) % MAP_SIZE                      \
-                ]=1;                                                        \
-            ctx_curr_tnt_prod = 0;                                          \
-            ctx_last_tip_ip=ctx_curr_ip;                                    \
-            ctx_tnt_counter= 0;                                             \
-            ctx_tnt_container= 0;                                           \
-            ctx_curr_tnt_cnt= 0;                                            \
-                                                                            \
-        } while (0)
+#define UPDATE_TRACEBITS_IDX()                                          \
+    do {                                                                \
+    if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;        \
+        ctx_curr_tnt_prod *= 16777619;}                                 \
+      u32 idx= (map_64(ctx_curr_ip)                                     \
+                ^map_64(ctx_last_tip_ip)                                \
+                ^map_8(ctx_curr_tnt_prod)                               \
+                +log_map[ctx_tnt_counter % (1<<21)]) % MAP_SIZE;        \
+      __afl_area_ptr[idx] = 1;                                          \
+      ctx_curr_tnt_prod = 2166136261;                                   \
+      ctx_last_tip_ip=ctx_curr_ip;                                      \
+      ctx_tnt_counter= 0;                                               \
+      ctx_tnt_lock= 0;                                                  \
+      ctx_tnt_container= 0;                                             \
+      ctx_curr_tnt_cnt= 0;                                              \
+                                                                        \
+    } while (0)
 
 #endif
 
