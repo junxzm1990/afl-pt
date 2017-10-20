@@ -809,7 +809,7 @@ static void process_next_msg(char *msg_recvd, char*msg_send){
     //get next boundary
     //check if it is under interupt, if so, deal with interrupt
     u64 coff; 	
-    int tx; 
+    int tx = 0; //TODO: our current setup do not support threading 
     siginfo_t sgt;
     int (*force_sig_info)(int sig, struct siginfo *info, struct task_struct *t);
     pt_manager_t *ptm;
