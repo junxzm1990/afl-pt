@@ -7,7 +7,7 @@
 
 //What is the longest TNT sequence? 
 //Let's make it 100K? 
-#define MAX_TNT_SIZE 20000
+#define MAX_TNT_SIZE 200000
 
 
 #ifdef ARCH_32
