@@ -111,6 +111,9 @@ netlink_t nlt ={
 
 pt_factory_t *pt_factory;
 struct hrtimer hr_timers[NR_CPUS];//per-cpu timer obj
+u64 prev_timer_intervals[NR_CPUS] = {//for recording the last used interval instead of using the default one when ptm is not found.
+  [0 ... NR_CPUS-1] = TIMER_INTERVAL  
+};
 
 
 static struct tracepoint *exec_tp = NULL; 
@@ -515,8 +518,9 @@ enum hrtimer_restart pt_hrtimer_callback( struct hrtimer *timer ){
     }
 
     ktime = ktime_set(0, ptm->timer_interval); //measure is ns
+    prev_timer_intervals[smp_processor_id()] = ptm->timer_interval;//update prev timer interval
   }else{
-    ktime = ktime_set(0, TIMER_INTERVAL); //set default interval
+    ktime = ktime_set(0, prev_timer_intervals[smp_processor_id()]); //set as prev interval to avoid glitch
   }
   currtime = ktime_get();
   hrtimer_forward(&(hr_timers[smp_processor_id()]), currtime, ktime);
@@ -906,6 +910,7 @@ static void pt_recv_msg(struct sk_buff *skb) {
         ptm->run_cnt = 0;
         ptm->addr_filter = true;
         ptm->timer_interval = TIMER_INTERVAL;
+        prev_timer_intervals[smp_processor_id()] = ptm->timer_interval;//update prev timer interval
         pt_factory->ptm_num++;
         /* ptm->p_stat = PSLEEP; *///TODO:confirm to remove SLEEP STATE
         //TODO: W lock
