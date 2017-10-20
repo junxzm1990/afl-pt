@@ -397,7 +397,7 @@ static inline void update_tnt_bit(disassembler_t *disassembler, int bit){
 	bitindex =  disassembler->tnt_cache_map.counter % 8;  	
 
 	// in case the array for tnt overflows... 
-	if(byteinedx >= MAX_TNT_SIZE)
+	if(byteindex >= MAX_TNT_SIZE)
 		return; 
 
 	//set a bit
