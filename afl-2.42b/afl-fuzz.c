@@ -395,6 +395,9 @@ static void shuffle_ptrs(void** ptrs, u32 cnt) {
 /* Build a list of processes bound to specific cores. Returns -1 if nothing
    can be found. Assumes an upper bound of 4k CPUs. */
 
+/* NOTE: because of the per-core timer, core-binding is crutial here. so if
+   core binding fails. we do not proceed, as it might cause system crashes 
+*/
 static void bind_to_free_cpu(void) {
 
   DIR* d;
@@ -408,6 +411,8 @@ static void bind_to_free_cpu(void) {
 
   if (getenv("AFL_NO_AFFINITY")) {
 
+    if (pt_mode)
+      PFATAL("Core binding is required for PT mode (AFL_NO_AFFINITY set).");
     WARNF("Not binding to a CPU core (AFL_NO_AFFINITY set).");
     return;
 
@@ -429,49 +434,69 @@ static void bind_to_free_cpu(void) {
 
   usleep(R(1000) * 250);
 
-  /* Scan all /proc/<pid>/status entries, checking for Cpus_allowed_list.
+  /* Scan all /proc/<pid>/tasks/<pid>/status entries, checking for Cpus_allowed_list.
      Flag all processes bound to a specific CPU using cpu_used[]. This will
      fail for some exotic binding setups, but is likely good enough in almost
      all real-world use cases. */
 
   while ((de = readdir(d))) {
 
-    u8* fn;
-    FILE* f;
-    u8 tmp[MAX_LINE];
-    u8 has_vmsize = 0;
+    DIR *d2;
+    struct dirent *de2;
+    u8 *fn2;
 
     if (!isdigit(de->d_name[0])) continue;
+    fn2 = alloc_printf("/proc/%s/task/", de->d_name);
+    d2 = opendir((const char * )fn2);
+    if (!d2) {
 
-    fn = alloc_printf("/proc/%s/status", de->d_name);
-
-    if (!(f = fopen(fn, "r"))) {
-      ck_free(fn);
+      WARNF("Unable to access %s - can't scan for free CPU cores.", fn2);
       continue;
+
     }
 
-    while (fgets(tmp, MAX_LINE, f)) {
+    while ((de2 = readdir(d2))) {
 
-      u32 hval;
+      u8* fn;
+      FILE* f;
+      u8 tmp[MAX_LINE];
+      u8 has_vmsize = 0;
 
-      /* Processes without VmSize are probably kernel tasks. */
+      if (!isdigit(de2->d_name[0])) continue;
 
-      if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+      fn = alloc_printf("/proc/%s/task/%s/status", de->d_name, de2->d_name);
 
-      if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
-          !strchr(tmp, '-') && !strchr(tmp, ',') &&
-          sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
-          has_vmsize) {
+      if (!(f = fopen(fn, "r"))) {
+        ck_free(fn);
+        continue;
+      }
 
-        cpu_used[hval] = 1;
-        break;
+      while (fgets(tmp, MAX_LINE, f)) {
+
+        u32 hval;
+
+        /* Processes without VmSize are probably kernel tasks. */
+
+        if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+
+        if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
+            !strchr(tmp, '-') && !strchr(tmp, ',') &&
+            sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
+            has_vmsize) {
+
+          cpu_used[hval] = 1;
+          break;
+
+        }
 
       }
 
+      ck_free(fn);
+      fclose(f);
     }
 
-    ck_free(fn);
-    fclose(f);
+    ck_free(fn2);
+    closedir(d2);
 
   }
 

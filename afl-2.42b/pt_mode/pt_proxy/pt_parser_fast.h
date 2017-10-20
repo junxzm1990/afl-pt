@@ -406,7 +406,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
  
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
-      if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;      \
+    if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;        \
         ctx_curr_tnt_prod *= 16777619;}                                 \
       u32 idx= (map_64(ctx_curr_ip)                                     \
                 ^map_64(ctx_last_tip_ip)                                \

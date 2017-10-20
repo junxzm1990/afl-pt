@@ -45,7 +45,7 @@ static void pt_pause(void) {
 		wrmsrl(MSR_IA32_RTIT_CTL, native_read_msr(MSR_IA32_RTIT_CTL) & ~RTIT_CTL_TRACEEN);
 }
 
-static void pt_setup_msr(int tx)
+static void pt_setup_msr(pt_manager_t *ptm, int tx)
 //topa_t *topa, u64 mask)
 {
 	
@@ -81,7 +81,7 @@ static void pt_setup_msr(int tx)
 	wrmsrl(MSR_IA32_RTIT_CTL, ctl);
 }
 
-void record_pt(int tx){
+void record_pt(pt_manager_t *ptm, int tx){
 	unsigned index; 
 	unsigned offset;
 	u64 mask; 
@@ -98,11 +98,11 @@ void record_pt(int tx){
 	ptm->targets[tx].outmask = mask;
 }
 
-void resume_pt(int tx){
+void resume_pt(pt_manager_t *ptm, int tx){
 
 	if(pt_enabled())
 		pt_pause();
 
-	pt_setup_msr(tx);
+	pt_setup_msr(ptm, tx);
 }
 
