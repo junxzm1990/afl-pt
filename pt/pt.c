@@ -909,8 +909,8 @@ static void pt_recv_msg(struct sk_buff *skb) {
         ptm->target_num = 0;
         ptm->run_cnt = 0;
         ptm->addr_filter = true;
-        ptm->timer_interval = TIMER_INTERVAL;
-        prev_timer_intervals[smp_processor_id()] = ptm->timer_interval;//update prev timer interval
+        /* ptm->timer_interval = TIMER_INTERVAL; */
+        /* prev_timer_intervals[smp_processor_id()] = ptm->timer_interval;//update prev timer interval */
         pt_factory->ptm_num++;
         /* ptm->p_stat = PSLEEP; *///TODO:confirm to remove SLEEP STATE
         //TODO: W lock
