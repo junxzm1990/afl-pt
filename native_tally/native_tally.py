@@ -24,7 +24,7 @@ def get_edge_cov(show_map, seed_path, cov_cmd, tmp_out):
         cov_cmd = cov_cmd[cov_cmd.rindex('|')+1:]+' < '+ seed_path
     else:
         cov_cmd = cov_cmd.replace('AFL_FILE', seed_path)
-    g_cmd = [show_map, '-e', '-T', '-o', '-m','none', tmp_out, cov_cmd]
+    g_cmd = [show_map, '-e', '-T', '-m','none','-o',  tmp_out, cov_cmd]
     g_cmd = ' '.join(g_cmd)
     r = subprocess.call(g_cmd, shell=True)
     if r == SUCCESS:
