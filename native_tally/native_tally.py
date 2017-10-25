@@ -46,12 +46,20 @@ def partition(script, outdir, interval):
     print "created %s partitions"%r
     return int(r)
 
-def print_coverage_curve(curve):
+def print_coverage_curve(curve, edge_set=None, out_file=None):
     for k, l in curve.items():
         print "{0}hr: {1} edges".format(k, len(l))
 
+    if out_file is not None and edge_set is not None:
+        with open(out_file, 'w') as f:
+            f.write('\n'.join(list(edge_set)))
+            f.close()
+                
+
+
 def process_test_cases(args):
     time_cov_curve = {}
+    total_edge = set()
 
     #partition the target queue, return: par_num -- how many partition created
     par_num = partition(args.partition_script, args.afl_fuzzing_dir, args.interval) 
@@ -65,7 +73,7 @@ def process_test_cases(args):
     #2 update the curve_time_cov
     for p_time in range(args.interval, args.interval* (par_num +1), args.interval):
         edge_cov = set()
-        target_par = "{0}-{1}hr/queue".format(os.path.dirname(args.afl_fuzzing_dir), p_time)
+        target_par = "{0}-{1}hr/".format(os.path.dirname(args.afl_fuzzing_dir), p_time)
         if not os.path.exists(target_par):
             print target_par, "not exist"
             sys.exit(-1)
@@ -75,10 +83,12 @@ def process_test_cases(args):
             edge_cov |= set(r_list)
 
         time_cov_curve[p_time] = set(edge_cov)
+        total_edge |= set(edge_cov)
         bar_count += 1
         bar.update(bar_count)
     
-    print_coverage_curve(time_cov_curve)
+    outfile = "%s/.edge_cov"%(args.afl_fuzzing_dir)
+    print_coverage_curve(time_cov_curve,edge_set=edge_cov,out_file=outfile)
     os.remove(args.tmp_out)
 
 
