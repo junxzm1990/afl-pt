@@ -378,7 +378,7 @@ static void *pt_parse_worker(void *arg)
 			bound_snapshot = *p_pt_trace_off;
 #endif
 
-			if(bound_snapshot > cursor_pos){
+			if(0 && bound_snapshot > cursor_pos){
 				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot - cursor_pos);
 				//write(off_fd, msg, strlen(msg));
 				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);

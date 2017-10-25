@@ -1,5 +1,8 @@
 /*
    american fuzzy lop - map display utility
+
+
+   This is a modification based on afl-showmap
    ----------------------------------------
 
    Written and maintained by Michal Zalewski <lcamtuf@google.com>
@@ -63,6 +66,7 @@ static s32 shm_id;                    /* ID of the SHM region              */
 
 static u8  quiet_mode,                /* Hide non-essential messages?      */
            edges_only,                /* Ignore hit counts?                */
+           tally_mode,                /* only write out touched edges      */
            cmin_mode,                 /* Generate output in afl-cmin mode? */
            binary_mode;               /* Write output as a binary map      */
 
@@ -216,7 +220,8 @@ static u32 write_results(void) {
 
         fprintf(f, "%u%u\n", trace_bits[i], i);
 
-      } else fprintf(f, "%06u:%u\n", i, trace_bits[i]);
+      } else if(tally_mode)fprintf(f, "%06u\n", i);
+        else fprintf(f, "%06u:%u\n", i, trace_bits[i]);
 
     }
   
@@ -564,6 +569,7 @@ static void usage(u8* argv0) {
        "  -m megs       - memory limit for child process (%u MB)\n"
        "  -Q            - use binary-only instrumentation (QEMU mode)\n"
        "  -P            - use binary-only instrumentation (PT mode)\n\n"
+       "  -T            - write the hitted edges in out file\n\n"
 
        "Other settings:\n\n"
 
@@ -769,7 +775,7 @@ int main(int argc, char** argv) {
 
   doc_path = access(DOC_PATH, F_OK) ? "docs" : DOC_PATH;
 
-  while ((opt = getopt(argc,argv,"+o:m:t:A:eqZQPb")) > 0)
+  while ((opt = getopt(argc,argv,"+o:m:t:A:eqZQPbT")) > 0)
 
     switch (opt) {
 
@@ -777,6 +783,10 @@ int main(int argc, char** argv) {
 
         if (out_file) FATAL("Multiple -o options not supported");
         out_file = optarg;
+        break;
+      case 'T':
+        tally_mode = 1;
+        quiet_mode = 1; 
         break;
 
       case 'm': {
