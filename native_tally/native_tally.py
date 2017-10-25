@@ -7,7 +7,7 @@ import subprocess
 import progressbar
 
 def usage():
-    print "Usage: python {0} -b SHOWMAP -p PARTITION_SCRIPT -d OUTDIR -e CMD -t interval_(hour) [-o tmp_out]" % sys.argv[0]
+    print "Usage: python {0} -b SHOWMAP -p PARTITION_SCRIPT -d OUTDIR -e CMD -t interval_(hour) [-o tmp_out] [-T timeout(s)]" % sys.argv[0]
     print "do pip install progressbar2"
 
 def main():
@@ -16,7 +16,7 @@ def main():
     cargs = parse_cmdline()
     return not process_test_cases(cargs)
 
-def get_edge_cov(show_map, seed_path, cov_cmd, tmp_out):
+def get_edge_cov(show_map, seed_path, cov_cmd, tmp_out, timeout='3000'):
     #return a list of covered edge
     SUCCESS = 0
     cov = []
@@ -24,7 +24,7 @@ def get_edge_cov(show_map, seed_path, cov_cmd, tmp_out):
         cov_cmd = cov_cmd[cov_cmd.rindex('|')+1:]+' < '+ seed_path
     else:
         cov_cmd = cov_cmd.replace('AFL_FILE', seed_path)
-    g_cmd = [show_map, '-e', '-T', '-m','none','-o',  tmp_out, cov_cmd]
+    g_cmd = [show_map, '-e', '-T', '-m','none','-t',timeout, '-o',  tmp_out+'+', cov_cmd]
     g_cmd = ' '.join(g_cmd)
     r = subprocess.call(g_cmd, shell=True)
     if r == SUCCESS:
@@ -79,7 +79,7 @@ def process_test_cases(args):
             sys.exit(-1)
         for seed in os.listdir(target_par):
             seed_path = "%s/%s"%(target_par, seed)
-            r_list = get_edge_cov(args.show_map, seed_path, str(args.coverage_cmd), args.tmp_out)
+            r_list = get_edge_cov(args.show_map, seed_path, str(args.coverage_cmd), args.tmp_out, args.time_out)
             edge_cov |= set(r_list)
 
         time_cov_curve[p_time] = set(edge_cov)
@@ -109,6 +109,8 @@ def parse_cmdline():
             help="Partition target input based on how many hours")
     p.add_argument("-o", "--tmp_out", type=str, required=False,
                    help="temporary file to store per input edges (recommend to put in ramdisk)", default='/tmp/.outout')
+    p.add_argument("-T", "--time-out", type=str, required=False,
+                   help="time out for each input case", default='3000')
 
     return p.parse_args()
 
