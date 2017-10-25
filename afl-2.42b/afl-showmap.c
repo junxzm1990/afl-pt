@@ -786,6 +786,7 @@ int main(int argc, char** argv) {
         break;
       case 'T':
         tally_mode = 1;
+        
         quiet_mode = 1; 
         break;
 
