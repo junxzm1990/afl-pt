@@ -1,0 +1,228 @@
+.\" Copyright © 2002-2012 by Thomas Pircher (tehpeh at gmx dot net),
+.\" Dan Fandrich et. al.
+.\"
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" License.
+.\"
+.TH exif 1 "2012-06-27" "exif 0.6.21" "command line front-end to libexif"
+.SH "NAME"
+exif \- shows EXIF information in JPEG files
+.SH "SYNOPSIS"
+.BI "exif [ " "OPTION" " ] [ " "file..." " ]"
+.SH DESCRIPTION
+.B "exif"
+is a small command-line utility to show and change EXIF information in JPEG files.
+.PP
+Most digital cameras produce EXIF files, which are JPEG files with extra tags that contain information about the image. The
+.B "exif"
+command-line utility allows you to read EXIF information from and write EXIF information to those files.
+.B "exif"
+internally uses the
+.B "libexif"
+library.
+.PP
+Each input file given on the command line is acted upon in turn, using 
+all the options given. Execution will be aborted immediately if one
+file is not readable or does not contain EXIF tags.
+.PP
+As EXIF tags are read, any unknown ones are discarded and known ones are
+automatically converted into the correct format, if they aren't already.
+Corrupted MakerNote tags are also removed, but no format changes are made.
+.SH "OPTIONS"
+.TP
+.BI "\-v, \-\-version"
+Display the
+.B exif
+version number.
+.TP
+.BI "\-i, \-\-ids"
+Show ID numbers instead of tag names.
+.TP
+.BI "\-t, \-\-tag=" "TAG"
+Select only this
+.IR "TAG" .
+.I "TAG"
+is the tag title, the short tag name, or the tag number
+(hexadecimal numbers are prefixed with 0x), from the IFD specified
+with \-\-ifd.  The tag title is dependent on the current locale, whereas
+name and number are locale-independent.
+.TP
+.BI "\-\-ifd=" "IFD"
+Select a tag or tags from this
+.IR "IFD" .
+Valid IFDs are "0", "1", "EXIF", "GPS", and "Interoperability".
+Defaults to "0".
+.TP
+.BI "\-l, \-\-list\-tags"
+List all known EXIF tags and IFDs.  A JPEG image must be provided, and
+those tags which appear in the file are shown with an asterisk in the
+corresponding position in the list.
+.TP
+.BI "\-|, \-\-show\-mnote"
+Show the contents of the MakerNote tag.  The contents of this tag are nonstandard
+(and often undocumented) and may therefore not be recognized, or if they are
+recognized they may not necessarily be interpreted correctly.
+.TP
+.BI "\-\-remove"
+Remove the tag or (if no tag is specified) the entire IFD.
+.TP
+.BI "\-s, \-\-show\-description"
+Show description of tag.  The \-\-tag option must also be given.
+.TP
+.BI "\-e, \-\-extract\-thumbnail"
+Extract the thumbnail, writing the thumbnail image to the file specified
+with \-\-output.
+.TP
+.BI "\-r, \-\-remove\-thumbnail"
+Remove the thumbnail from the image, writing the new image to the file specified
+with \-\-output.
+.TP
+.BI "-n, \-\-insert\-thumbnail=" "FILE"
+Insert
+.I "FILE"
+as thumbnail.  No attempt is made to ensure that the contents of
+.I "FILE"
+are in a valid thumbnail format.
+.TP
+.BI "\-\-no-fixup"
+Do not attempt to fix EXIF specification violations when reading tags.
+When used in conjunction with \-\-create-exif, this option inhibits the
+creation of the mandatory tags.
+.B exif
+will otherwise remove illegal or unknown tags, add some mandatory tags using
+default values, and change the data type of some tags to match that required
+by the specification.
+.TP
+.BI "\-o, \-\-output=" "FILE"
+Write output image to
+.IR "FILE" .
+If this option is not given and an image file must be written, the
+name used is the same as the input file with the suffix ".modified.jpeg".
+.TP
+.BI "\-\-set\-value=" "VALUE"
+Set the data for the tag specified with \-\-tag and \-\-ifd to
+.IR "VALUE" .
+Compound values consisting of multiple components are separated with
+spaces.
+.TP
+.BI "\-c, \-\-create-exif"
+Create EXIF data if it does not exist. Mandatory tags are created with
+default values unless the \-\-no-fixup option is given.
+This option can be used instead of specifying an input file name in most
+cases, to operate on the default values of the mandatory set of EXIF tags.
+In this case, the \-\-output option has no effect and no file is written.
+.TP
+.BI "\-m, \-\-machine\-readable"
+Produce output in a machine-readable (tab-delimited) format.
+The \-\-xml-output and \-\-machine\-readable options are mutually exclusive.
+.TP
+.BI "\-w, \-\-width=" "N"
+Set the maximum width of the output to N characters (default 80). This does
+not apply to some output formats (e.g. XML).
+.TP
+.BI "\-x, \-\-xml-output"
+Produce output in an XML format (when possible).
+The \-\-xml-output and \-\-machine\-readable options are mutually exclusive.
+Note that the XML schema changes with the locale, and it sometimes produces
+invalid XML. This option is not recommended.
+.TP
+.BI "\-d, \-\-debug"
+Show debugging messages. Also, when processing a file that contains corrupted
+data, this option causes
+.B exif
+to attempt to continue processing. Normally,
+corrupted data causes an abort.
+.SS "Help options"
+.TP
+.BI "\-?, \-\-help"
+Show help message.
+.TP
+.BI "\-\-usage"
+Display brief usage message.
+.SH "EXAMPLES"
+Display all recognized EXIF tags in an image and the tag contents, with bad
+tags fixed:
+.LP
+.RS
+exif image.jpg
+.RE
+.LP
+Display a table listing all known EXIF tags and whether each one exists in the
+given image:
+.LP
+.RS
+exif --list-tags --no-fixup image.jpg
+.RE
+.LP
+Display details on all XResolution tags found in the given image:
+.LP
+.RS
+exif --tag=XResolution --no-fixup image.jpg
+.RE
+.LP
+Display the raw contents of the "Model" tag in the given image (with a newline
+character appended):
+.LP
+.RS
+exif --ifd=0 --tag=Model --machine-readable image.jpg
+.RE
+.LP
+Extract the thumbnail into the file thumbnail.jpg:
+.LP
+.RS
+exif --extract-thumbnail --output=thumbnail.jpg image.jpg
+.RE
+.LP
+Display a list of the numeric values of only the EXIF tags in the thumbnail IFD
+(IFD 1) and the tag values:
+.LP
+.RS
+exif --ids --ifd=1 --no-fixup image.jpg
+.RE
+.LP
+Display the meaning of tag 0x9209 in the "EXIF" IFD according to the EXIF
+specification:
+.LP
+.RS
+exif --show-description --ifd=EXIF --tag=0x9209 
+.RE
+.LP
+Add an Orientation tag with value "bottom - left" to an existing image, leaving
+the existing tags untouched:
+.LP
+.RS
+exif --output=new.jpg --ifd=0 --tag=0x0112 --set-value=4 --no-fixup image.jpg
+.RE
+.LP
+Add a YCbCr Sub-Sampling tag with value 2,1 (a.k.a YCbCr 4:2:2) to an
+existing image and fix the existing tags, if necessary:
+.LP
+.RS
+exif --output=new.jpg --tag=YCbCrSubSampling --ifd=0 --set-value='2 1' image.jpg
+.RE
+.LP
+Display a table with all known EXIF tags, highlighting mandatory ones:
+.LP
+.RS
+exif -cl
+.RE
+.LP
+.SH "AUTHOR"
+.B exif
+was written by Lutz Mueller <lutz@users.sourceforge.net>
+and numerous contributors.
+This man page is Copyright \(co 2002-2012 Thomas Pircher,
+Dan Fandrich and others.
+.SH "SEE ALSO"
+.UR "http://www.sourceforge.net/projects/libexif"
+.BR "http://www.sourceforge.net/projects/libexif"
