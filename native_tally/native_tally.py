@@ -7,7 +7,7 @@ import subprocess
 import progressbar
 
 def usage():
-    print "Usage: python {0} -b SHOWMAP -p PARTITION_SCRIPT -d OUTDIR -e CMD -t interval_(hour) [-o tmp_out] [-T timeout(s)]" % sys.argv[0]
+    print "Usage: python {0} -b SHOWMAP -p PARTITION_SCRIPT -d OUTDIR -e CMD -t interval_(hour) [-o tmp_out] [-T timeout(ms)]" % sys.argv[0]
     print "do pip install progressbar2"
 
 def main():
@@ -110,7 +110,7 @@ def parse_cmdline():
     p.add_argument("-o", "--tmp_out", type=str, required=False,
                    help="temporary file to store per input edges (recommend to put in ramdisk)", default='/tmp/.outout')
     p.add_argument("-T", "--time-out", type=str, required=False,
-                   help="time out for each input case", default='3000')
+                   help="time out for each input case(ms)", default='3000')
 
     return p.parse_args()
 
