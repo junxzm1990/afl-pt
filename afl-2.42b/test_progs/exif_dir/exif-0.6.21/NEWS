@@ -1,0 +1,70 @@
+exif-0.6.21 (2012-07-12):
+  * New translations: cs, eo, hr, sr, uk
+  * Updated translations: da, de, fi, id, is, it, nl, pl, sk, sv, vi, zh_CN
+  * Improved the man page
+  * Prevent NULL pointer dereference on out of memory situation
+  * Fixed bug that caused read past the end of a buffer (CVE-2012-2845)
+
+
+exif-0.6.20 (2010-12-15):
+  * New translation: ro
+  * Updated translations: it, lv, sk
+  * --no-fixup now honoured during --create-exif to not create default tags
+  * Fixed crash when not enough components were given to --set-value
+  * Made --set-value more forgiving of whitespace
+  * Allow --set-value on UNDEFINED tags (treating them as byte arrays)
+  * Honour --machine-readable with --show-mnote and --show-description
+  * Turned on the --enable-silent-rules configure option
+  * Adding or removing a thumbnail can be done simultaneously with other options
+  * Allow --create-exif to be used in place of an input file
+
+
+exif-0.6.19 (2009-11-12):
+  * New translations: fi, ja
+  * Updated translations: sv, vi, zh_CN
+  * Fixed alignment of --list-tags header with --width
+
+
+exif-0.6.18 (2009-10-08):
+  * New translations: is, it, lv
+  * Updated translations: da, de, id, nl, pl, sk, sv, vi, zh_CN
+  * Fixed alignment of tables in locales with multibyte character encoding
+    (bug #2034873)
+  * Allow setting --tag=0 (needed for the GPS IFD)
+  * --ifd is now honoured while displaying tag contents
+  * --create-exif now creates mandatory EXIF tags with default data
+  * --no-fixup disables attempts to fix tags in existing files
+  * --width option sets width of output lines
+
+
+exif-0.6.17 (2008-11-06):
+  * Fixed the output of -s and -t when iconv is configured
+  * Updated translations: pl
+  * Added translations: id nl sk sv vi zh_CN
+  * Fixed a double character encoding conversion problem with recent
+    GNU gettext because version >= 0.10.36 does the conversion of message
+    texts itself.
+
+
+exif-0.6.16 (unreleased version):
+  * Updated translations: pl
+
+
+New in 0.6.15:
+
+  * Misc. (build) bug fixes.
+
+
+New since 0.6.9 (2004-05-27):
+
+  * Bug fixes: #994706, #1005652
+
+  * return exit code != 0 in case of invalid command line
+
+  * Updated build system
+
+  * (Cross-)compiles for Windows (mingw32)
+
+  * Partially updated translations
+
+  * Misc. small fixes (see ChangeLog)

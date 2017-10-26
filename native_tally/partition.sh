@@ -65,9 +65,9 @@ setup_outdir(){
                     cp $testcase $out_dir
                 fi
             done
-            mkdir /tmp/queue
-            mv $out_dir/* /tmp/queue
-            mv /tmp/queue $out_dir
+            # mkdir /tmp/queue
+            # mv $out_dir/* /tmp/queue
+            # mv /tmp/queue $out_dir
         fi
     done
     echo $count
