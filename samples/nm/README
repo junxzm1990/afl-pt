@@ -1,0 +1,4 @@
+compile with ASAN,  and use "libdislocator" for heap memory allocation
+
+command: nm TARGET
+version: binutils-2.29
