@@ -384,23 +384,34 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     bytes_remained = size;
 
 
-#define MAX_TNT_LEN 4096
-#define UPDATE_TNT_PROD(BIT)                                        \
-    do {                                                            \
-      if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
-            ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
-            if(++ctx_curr_tnt_cnt % 8 == 0){                        \
-              ctx_curr_tnt_prod ^= ctx_tnt_container;               \
-              ctx_curr_tnt_prod *= 16777619;                        \
-              ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
-              if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
-                ctx_tnt_lock=1;                                     \
-              }                                                     \
-            }                                                       \
-      }                                                             \
+// #define MAX_TNT_LEN 4096
+// #define UPDATE_TNT_PROD(BIT)                                        \
+//     do {                                                            \
+//       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
+//             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
+//             if(++ctx_curr_tnt_cnt % 8 == 0){                        \
+//               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
+//               ctx_curr_tnt_prod *= 16777619;                        \
+//               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
+//               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
+//                 ctx_tnt_lock=1;                                     \
+//               }                                                     \
+//             }                                                       \
+//       }                                                             \
+//     } while (0)
+
+
+#define UPDATE_TNT_PROD(BIT)                          \
+    do {                                              \
+      if(likely(ctx_tnt_go)){                         \
+        ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt); \
+        if(++ctx_curr_tnt_cnt % 8 == 0){              \
+          ctx_curr_tnt_prod ^= ctx_tnt_container;     \
+          ctx_curr_tnt_prod *= 16777619;              \
+          ctx_tnt_container = ctx_curr_tnt_cnt = 0;   \
+        }                                             \
+      }                                               \
     } while (0)
-
-
 
 #ifdef HPS
  
