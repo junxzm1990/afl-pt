@@ -42,7 +42,9 @@ struct nlmsghdr *nlh = NULL;                           /* contain data payload p
 
 /* AFL data structures */
 u8  __afl_area_initial[PT_MAP_SIZE];                   /* trace_bits map(1/8 of original) */
+u8  __afl_pt_fav_initial[PT_MAP_SIZE];                 /* pt_fav_bits map(1/8 of original) */
 u8* __afl_area_ptr = __afl_area_initial;
+u8* __afl_pt_fav_ptr = __afl_pt_fav_initial;
 static s32 proxy_ctl_fd,                               /* fork server control pipe(write) */
            proxy_st_fd;                                /* fork server status pipe(read)   */
 static u8 *target_path;                                /* target program file path        */
@@ -552,20 +554,24 @@ void netlink_close(){
 static void __afl_map_shm(void) {
 
   u8 *id_str = getenv(SHM_ENV_VAR);
+  u8 *pt_fav_id_str = getenv(SHM_PTFAV_VAR);
 
   /* If we're running under AFL, attach to the appropriate region, replacing the
      early-stage __afl_area_initial region that is needed to allow some really
      hacky .init code to work correctly in projects such as OpenSSL. */
 
-  if (id_str) {
+  if (id_str && pt_fav_id_str) {
 
     u32 shm_id = atoi(id_str);
+    u32 ptfav_id = atoi(pt_fav_id_str);
 
     __afl_area_ptr = shmat(shm_id, NULL, 0);
+    __afl_pt_fav_ptr = shmat(ptfav_id, NULL, 0);
 
     /* Whooooops. */
 
     if (__afl_area_ptr == (void *)-1) _exit(1);
+    if (__afl_pt_fav_ptr == (void *)-1) _exit(1);
 
   }
 

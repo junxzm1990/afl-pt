@@ -9,10 +9,9 @@
 
 
 
-// #define LPS
-#define HPS
 
 extern u8 *__afl_area_ptr;
+extern u8 *__afl_pt_fav_ptr;
 extern u64 rand_map[];
 
 
@@ -384,47 +383,46 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     bytes_remained = size;
 
 
-// #define MAX_TNT_LEN 4096
-// #define UPDATE_TNT_PROD(BIT)                                        \
-//     do {                                                            \
-//       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
-//             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
-//             if(++ctx_curr_tnt_cnt % 8 == 0){                        \
-//               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
-//               ctx_curr_tnt_prod *= 16777619;                        \
-//               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
-//               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
-//                 ctx_tnt_lock=1;                                     \
-//               }                                                     \
-//             }                                                       \
-//       }                                                             \
-//     } while (0)
-
-
-#define UPDATE_TNT_PROD(BIT)                          \
-    do {                                              \
-      if(likely(ctx_tnt_go)){                         \
-        ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt); \
-        if(++ctx_curr_tnt_cnt % 8 == 0){              \
-          ctx_curr_tnt_prod ^= ctx_tnt_container;     \
-          ctx_curr_tnt_prod *= 16777619;              \
-          ctx_tnt_container = ctx_curr_tnt_cnt = 0;   \
-        }                                             \
-      }                                               \
+#define MAX_TNT_LEN 4096
+#define UPDATE_TNT_PROD(BIT)                                        \
+    do {                                                            \
+      if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
+            ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
+            if(++ctx_curr_tnt_cnt % 8 == 0){                        \
+              ctx_curr_tnt_prod ^= ctx_tnt_container;               \
+              ctx_curr_tnt_prod *= 16777619;                        \
+              ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
+              if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
+                ctx_tnt_lock=1;                                     \
+              }                                                     \
+            }                                                       \
+      }                                                             \
     } while (0)
 
-#ifdef HPS
+
+// #define UPDATE_TNT_PROD(BIT)                          \
+//     do {                                              \
+//       if(likely(ctx_tnt_go)){                         \
+//         ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt); \
+//         if(++ctx_curr_tnt_cnt % 8 == 0){              \
+//           ctx_curr_tnt_prod ^= ctx_tnt_container;     \
+//           ctx_curr_tnt_prod *= 16777619;              \
+//           ctx_tnt_container = ctx_curr_tnt_cnt = 0;   \
+//         }                                             \
+//       }                                               \
+//     } while (0)
+
  
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
-    if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;        \
+      if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;      \
         ctx_curr_tnt_prod *= 16777619;}                                 \
-      u32 idx= (map_64(ctx_curr_ip)                                     \
-                ^map_64(ctx_last_tip_ip)                                \
-                ^map_8(ctx_curr_tnt_prod)                               \
-                +log_map[ctx_tnt_counter % (1<<21)]) % MAP_SIZE;        \
-      __afl_area_ptr[idx>>3] |= 1 << (idx &0x7);                        \
-      ctx_curr_tnt_prod = 2166136261;                                            \
+      u32 idx1= (map_64(ctx_curr_ip) ^ map_64(ctx_last_tip_ip));        \
+      u32 idx2= (idx1 ^ map_8(ctx_curr_tnt_prod)                        \
+                 +log_map[ctx_tnt_counter % (1<<21)]) % MAP_SIZE;       \
+      __afl_pt_fav_ptr[idx1>>3] |= 1 << (idx1 &0x7);                    \
+      __afl_area_ptr[idx2>>3] |= 1 << (idx2 &0x7);                      \
+      ctx_curr_tnt_prod = 2166136261;                                   \
       ctx_last_tip_ip=ctx_curr_ip;                                      \
       ctx_tnt_counter= 0;                                               \
       ctx_tnt_lock= 0;                                                  \
@@ -433,40 +431,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
                                                                         \
     } while (0)
 
-#endif
 
-#ifdef LPS
-    #define MAX_TNT_LEN 63
-
-#define UPDATE_TRACEBITS_IDX()                                          \
-    do {                                                                \
-          if(ctx_tnt_counter < MAX_TNT_LEN){                            \
-            if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= map_8(ctx_tnt_container); } \
-            u32 idx= (map_64(ctx_curr_ip)                               \
-                      ^map_64(ctx_last_tip_ip)                          \
-                      ^map_8(ctx_curr_tnt_prod)                         \
-                      +log_map[ctx_tnt_counter]) % MAP_SIZE;            \
-            __afl_area_ptr[idx>>3] |= 1 << (idx &0x7);                  \
-          }else{                                                        \
-            u32 idx= (map_64(ctx_curr_ip)                               \
-                      ^map_64(ctx_last_tip_ip)                          \
-                      +log_map[ctx_tnt_counter]) % MAP_SIZE;            \
-            __afl_area_ptr[idx>>3] |= 1 << (idx &0x7);                  \
-          }                                                             \
-          ctx_curr_tnt_prod = 2166136261;                               \
-          ctx_last_tip_ip=ctx_curr_ip;                                  \
-          ctx_tnt_counter= 0;                                           \
-          ctx_tnt_container= 0;                                         \
-          ctx_curr_tnt_cnt= 0;                                          \
-                                                                        \
-        } while (0)
-        // __afl_area_ptr[                         \
-        //     map_64(ctx_curr_ip)                 \
-        //     ^map_64(ctx_last_tip_ip)            \
-        //     +log_map[ctx_tnt_counter]           \
-        //     ]++;                                \
-
-#endif
 
 #define NEXT_PACKET()                                                \
     do {                                                             \
