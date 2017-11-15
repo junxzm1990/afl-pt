@@ -22,6 +22,7 @@
 
 #define AFL_MAIN
 #define MESSAGES_TO_STDOUT
+#define RAND_PT
 
 #define _GNU_SOURCE
 #define _FILE_OFFSET_BITS 64
@@ -1220,6 +1221,7 @@ static void remove_shm(void) {
    for every byte in the bitmap. We win that slot if there is no previous
    contender, or if the contender has a more favorable speed x size factor. */
 
+#ifndef RAND_PT
 static void update_bitmap_score(struct queue_entry* q) {
 
   u32 i,j;
@@ -1268,6 +1270,7 @@ static void update_bitmap_score(struct queue_entry* q) {
     }
   }
 }
+#endif
 
 
 /* The second part of the mechanism discussed above is a routine that
@@ -1275,6 +1278,10 @@ static void update_bitmap_score(struct queue_entry* q) {
    previously-unseen bytes (temp_v) and marks them as favored, at least
    until the next run. The favored entries are given more air time during
    all fuzzing steps. */
+/* But under ptrix mode, we'd like to ignore the pending fav mechanism, adding some
+   randomness to the power schedule routine can help the fuzzer escape localized suction
+*/
+#ifndef RAND_PT
 static void pt_cull_queue(void) {
 
     struct queue_entry* q;
@@ -1327,6 +1334,7 @@ static void pt_cull_queue(void) {
     }
 
 }
+#endif
 
 static void cull_queue(void) {
 
@@ -2685,7 +2693,9 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
   total_bitmap_size += q->bitmap_size;
   total_bitmap_entries++;
 
+#ifndef RAND_PT
   update_bitmap_score(q);
+#endif
 
   /* If this case didn't result in new output from the instrumentation, tell
      parent. This is a non-critical problem, but something to warn the user
@@ -4607,7 +4617,9 @@ static u8 trim_case(char** argv, struct queue_entry* q, u8* in_buf) {
     close(fd);
 
     memcpy(trace_bits, clean_trace, PT_MAP_SIZE);
+#ifndef RAND_PT
     update_bitmap_score(q);
+#endif
 
   }
 
@@ -5002,6 +5014,7 @@ static u8 fuzz_one(char** argv) {
 
 #else
 
+#ifndef RAND_PT
   if (pending_favored) {
 
     /* If we have any favored, non-fuzzed new arrivals in the queue,
@@ -5012,6 +5025,7 @@ static u8 fuzz_one(char** argv) {
         UR(100) < SKIP_TO_NEW_PROB) return 1;
 
   } else if (!dumb_mode && !queue_cur->favored && queued_paths > 10) {
+#endif
 
     /* Otherwise, still possibly skip non-favored cases, albeit less often.
        The odds of skipping stuff are higher for already-fuzzed inputs and
@@ -5027,7 +5041,9 @@ static u8 fuzz_one(char** argv) {
 
     }
 
+#ifndef RAND_PT
   }
+#endif
 
 #endif /* ^IGNORE_FINDS */
 
@@ -8102,10 +8118,12 @@ int main(int argc, char** argv) {
 
   perform_dry_run(use_argv);
 
+#ifndef RAND_PT
   if (pt_mode)
       pt_cull_queue();
   else
       cull_queue();
+#endif
 
   show_init_stats();
 
@@ -8128,10 +8146,12 @@ int main(int argc, char** argv) {
 
     u8 skipped_fuzz;
 
+#ifndef RAND_PT
     if (pt_mode)
         pt_cull_queue();
     else
         cull_queue();
+#endif
 
 
     if (!queue_cur) {
