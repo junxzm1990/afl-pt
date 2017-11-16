@@ -136,14 +136,16 @@ static s32 forksrv_pid,               /* PID of the fork server           */
            out_dir_fd = -1;           /* FD of the lock file              */
 
 EXP_ST u8* trace_bits;                /* SHM with instrumentation bitmap  */
+EXP_ST u8* pt_fav_bits;               /* SHM with PT-specific fav bitmap  */
 
-EXP_ST u8  virgin_bits[PT_MAP_SIZE],     /* Regions yet untouched by fuzzing */
-           virgin_tmout[PT_MAP_SIZE],    /* Bits we haven't seen in tmouts   */
-           virgin_crash[PT_MAP_SIZE];    /* Bits we haven't seen in crashes  */
+EXP_ST u8  virgin_bits[PT_MAP_SIZE],  /* Regions yet untouched by fuzzing */
+           virgin_tmout[PT_MAP_SIZE], /* Bits we haven't seen in tmouts   */
+           virgin_crash[PT_MAP_SIZE]; /* Bits we haven't seen in crashes  */
 
-static u8  var_bytes[PT_MAP_SIZE];       /* Bytes that appear to be variable */
+static u8  var_bytes[PT_MAP_SIZE];    /* Bytes that appear to be variable */
 
-static s32 shm_id;                    /* ID of the SHM region             */
+static s32 shm_id,                    /* ID of the SHM region             */
+           pt_fav_shm_id;             /* ID of the PT FAV SHM region      */
 
 static volatile u8 stop_soon,         /* Ctrl-C pressed?                  */
                    clear_screen = 1,  /* Window resized?                  */
@@ -1204,6 +1206,7 @@ static inline void classify_counts(u32* mem) {
 static void remove_shm(void) {
 
   shmctl(shm_id, IPC_RMID, NULL);
+  shmctl(pt_fav_shm_id, IPC_RMID, NULL);
 
 }
 
@@ -1220,29 +1223,34 @@ static void remove_shm(void) {
    for every byte in the bitmap. We win that slot if there is no previous
    contender, or if the contender has a more favorable speed x size factor. */
 
+/* In PT mode, we use pt_fav_bits instead of trace_bits to calculate top_rated[]
+   One big reason for adding a new pt_fav_bits is that the semantic meaning of this
+   two maps are different now, as trace_bits is already repurposed to represent paths
+ */
+
 static void update_bitmap_score(struct queue_entry* q) {
 
   u32 i,j;
   u64 fav_factor;
 
-  /* For every byte set in trace_bits[], see if there is a previous winner,
+  /* For every byte set in pt_fav_bits[], see if there is a previous winner,
      and how it compares to us. */
 
   /*PT mode*/
   fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
 
   for (i = 0; i < PT_MAP_SIZE; i++){
-    if (trace_bits[i]) {//optimization
+    if (pt_fav_bits[i]) {//optimization
       for (j=0; j < 8; ++j){
 
-        if ((trace_bits[i] & (1<<j)) && pt_top_rated[i+j]) {
+        if ((pt_fav_bits[i] & (1<<j)) && pt_top_rated[i+j]) {
 
           /* Faster-executing or smaller test cases are favored. */
           if (fav_factor > (pt_top_rated[i+j]->exec_us * pt_top_rated[i+j]->exec_us *
                             pt_top_rated[i+j]->exec_us) * pt_top_rated[i+j]->len) continue;
 
           /* Looks like we're going to win. Decrease ref count for the
-             previous winner, discard its trace_bits[] if necessary. */
+             previous winner, discard its tpt_fav_bits[] if necessary. */
 
           if (!--pt_top_rated[i+j]->tc_ref) {
             ck_free(pt_top_rated[i+j]->trace_mini);
@@ -1259,7 +1267,7 @@ static void update_bitmap_score(struct queue_entry* q) {
           q->trace_mini = ck_alloc(PT_MAP_SIZE);
           /* Just copy trace_bits. */ 
           /* In PT mode, trace_bits is as big as trace_mini. */
-          memcpy(q->trace_mini, trace_bits, PT_MAP_SIZE);
+          memcpy(q->trace_mini, pt_fav_bits, PT_MAP_SIZE);
         }
 
         score_changed = 1;
@@ -1275,6 +1283,9 @@ static void update_bitmap_score(struct queue_entry* q) {
    previously-unseen bytes (temp_v) and marks them as favored, at least
    until the next run. The favored entries are given more air time during
    all fuzzing steps. */
+/* But under ptrix mode, we'd like to ignore the pending fav mechanism, adding some
+   randomness to the power schedule routine can help the fuzzer escape localized suction
+*/
 static void pt_cull_queue(void) {
 
     struct queue_entry* q;
@@ -1306,7 +1317,7 @@ static void pt_cull_queue(void) {
             u32 j = PT_MAP_SIZE;
 
             /* Remove all bits belonging to the current entry from temp_v. */
-            /* In PT mode, trace_bits is as big as trace_mini. */
+            /* In PT mode, pt_fav_bits is as big as trace_mini. */
 
             while (j--) 
                 if (pt_top_rated[i]->trace_mini[j])
@@ -1386,6 +1397,7 @@ static void cull_queue(void) {
 EXP_ST void setup_shm(void) {
 
   u8* shm_str;
+  u8* shm_ptfav_str;
 
   if (!in_bitmap) memset(virgin_bits, 255, PT_MAP_SIZE);
 
@@ -1393,25 +1405,32 @@ EXP_ST void setup_shm(void) {
   memset(virgin_crash, 255, PT_MAP_SIZE);
 
   shm_id = shmget(IPC_PRIVATE, PT_MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
+  pt_fav_shm_id = shmget(IPC_PRIVATE, PT_MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
 
-  if (shm_id < 0) PFATAL("shmget() failed");
+  if (pt_fav_shm_id < 0 || shm_id < 0) PFATAL("shmget() failed");
 
   atexit(remove_shm);
 
   shm_str = alloc_printf("%d", shm_id);
+  shm_ptfav_str = alloc_printf("%d", pt_fav_shm_id);
 
   /* If somebody is asking us to fuzz instrumented binaries in dumb mode,
      we don't want them to detect instrumentation, since we won't be sending
      fork server commands. This should be replaced with better auto-detection
      later on, perhaps? */
 
-  if (!dumb_mode) setenv(SHM_ENV_VAR, shm_str, 1);
+  if (!dumb_mode) {
+    setenv(SHM_ENV_VAR, shm_str, 1); 
+    setenv(SHM_PTFAV_VAR, shm_ptfav_str, 1); 
+  }
 
   ck_free(shm_str);
+  ck_free(shm_ptfav_str);
 
   trace_bits = shmat(shm_id, NULL, 0);
+  pt_fav_bits = shmat(pt_fav_shm_id, NULL, 0);
   
-  if (!trace_bits) PFATAL("shmat() failed");
+  if (!trace_bits || !pt_fav_bits) PFATAL("shmat() failed");
 
 }
 
@@ -2317,6 +2336,7 @@ static u8 run_target(char** argv, u32 timeout) {
      territory. */
 
   memset(trace_bits, 0, PT_MAP_SIZE);
+  memset(pt_fav_bits, 0, PT_MAP_SIZE);
   MEM_BARRIER();
 
   /* If we're running in "dumb" mode, we can't rely on the fork server
