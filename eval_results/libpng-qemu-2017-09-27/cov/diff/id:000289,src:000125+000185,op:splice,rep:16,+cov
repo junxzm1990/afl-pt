@@ -1,3 +1,0 @@
-diff id:000288,src:000125+000177,op:splice,rep:4 -> id:000289,src:000125+000185,op:splice,rep:16,+cov
-Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
-  New 'line' coverage: 1124

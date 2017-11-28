@@ -1,7 +1,0 @@
-diff id:000645,src:000199,op:havoc,rep:64,+cov -> id:000646,src:000199,op:havoc,rep:2,+cov
-Src file: /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/pngrutil.c
-  New 'line' coverage: 3142
-  New 'line' coverage: 3143
-  New 'line' coverage: 3145
-  New 'line' coverage: 3151
-  New 'line' coverage: 3583

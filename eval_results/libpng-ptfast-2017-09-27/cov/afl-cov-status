@@ -1,3 +1,0 @@
-afl_cov_pid     : 26250
-afl_cov_version : 0.6
-command_line    : /home/farshaq/work/afl-pt/afl-2.42b/afl-cov/afl-cov -d /tmp/afl-ramdisk/libpng-ptfast-2017-09-27/ --coverage-cmd cat AFL_FILE | ./readpng --code-dir . --overwrite
