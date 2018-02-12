@@ -35,7 +35,7 @@ fi
 
 
 
-END_DATE= $(ls --full-time $in_dir | grep $(whoami) | tail -n1 | awk '{print $6" "$7}')
+END_DATE=$(ls --full-time $in_dir | grep $(whoami) | tail -n1 | awk '{print $6" "$7}')
 START_DATE=$(ls --full-time $in_dir | grep $(whoami) | head -n1 | awk '{print $6" "$7}')
 END_DATE_STAMP=$(get_timestamp "$END_DATE")
 START_DATE_STAMP=$(get_timestamp "$START_DATE")
