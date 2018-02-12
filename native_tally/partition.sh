@@ -35,11 +35,11 @@ fi
 
 
 
-END_DATE=$(ls -lt $in_dir | grep $(whoami) | head -n1 | awk '{print $6" "$7" "$8}')
-START_DATE=$(ls -lt $in_dir | grep $(whoami) | tail -n1 | awk '{print $6" "$7" "$8}')
+END_DATE=$(ls --full-time $in_dir | grep $(whoami) | head -n1 | awk '{print $6" "$7}')
+START_DATE=$(ls --full-time $in_dir | grep $(whoami) | tail -n1 | awk '{print $6" "$7}')
 END_DATE_STAMP=$(get_timestamp "$END_DATE")
-START_DATE_STAMP=$(get_timestamp "$START_DATE")
 SPAN=$((($END_DATE_STAMP-$START_DATE_STAMP)/3600))
+START_DATE_STAMP=$(get_timestamp "$START_DATE")
 
 # echo "corpus start time: "$START_DATE
 # echo "corpus end time: "$END_DATE

@@ -43,6 +43,7 @@ def partition(script, outdir, interval):
     p_cmd = ' '.join(p_cmd)
     p = subprocess.Popen(p_cmd, stdout=subprocess.PIPE, shell=True)
     r = p.communicate()[0].strip()
+    print p_cmd
     print "created %s partitions"%r
     return int(r)
 
