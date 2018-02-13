@@ -57,7 +57,7 @@ setup_outdir(){
         if (( skip != 1)); then
             for f in $(ls $in_dir); do
                 testcase=$in_dir'/'$f
-                date=$(ls -lt $testcase | awk '{print $6" "$7" "$8}')
+                date=$(ls --full-time $testcase | awk '{print $6" "$7"}')
                 time=$(get_timestamp "$date")
                 curb=$((($time-$START_DATE_STAMP)/3600))
                 # echo $date $time $curb
