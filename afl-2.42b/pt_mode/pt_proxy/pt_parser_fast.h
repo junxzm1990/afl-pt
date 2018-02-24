@@ -388,7 +388,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     do {                                                            \
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
-            if(++ctx_curr_tnt_cnt % 8 == 0){                        \
+            if(++ctx_curr_tnt_cnt % 16 == 0){                        \
               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
               ctx_curr_tnt_prod *= 16777619;                        \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
@@ -418,7 +418,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
       if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;      \
         ctx_curr_tnt_prod *= 16777619;}                                 \
       u32 idx1= (map_64(ctx_curr_ip) ^ map_64(ctx_last_tip_ip));        \
-      u32 idx2= (idx1 ^ map_8(ctx_curr_tnt_prod)                        \
+      u32 idx2= (idx1 ^ map_16(ctx_curr_tnt_prod)                        \
                  +log_map[ctx_tnt_counter % (1<<21)]) % MAP_SIZE;       \
       __afl_pt_fav_ptr[idx1>>3] |= 1 << (idx1 &0x7);                    \
       __afl_area_ptr[idx2>>3] |= 1 << (idx2 &0x7);                      \

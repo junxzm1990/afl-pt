@@ -41,9 +41,9 @@ END_DATE_STAMP=$(get_timestamp "$END_DATE")
 START_DATE_STAMP=$(get_timestamp "$START_DATE")
 SPAN=$((($END_DATE_STAMP-$START_DATE_STAMP)/3600))
 
-echo "corpus start time: "$START_DATE
-echo "corpus end time: "$END_DATE
-echo "using interval as *"$time_interval"* hour(s)" 
+# echo "corpus start time: "$START_DATE
+# echo "corpus end time: "$END_DATE
+# echo "using interval as *"$time_interval"* hour(s)" 
 
 
 setup_outdir(){
