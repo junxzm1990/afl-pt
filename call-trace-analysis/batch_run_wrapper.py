@@ -6,6 +6,20 @@ import argparse
 import subprocess
 import progressbar
 
+"""
+Example cmd:
+python batch_run_wrapper.py -b ~/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/obj-callchain/readpng -d ~/Desktop/libpng-qemu-2017-09-24/ -o ~/Desktop/libpng-qemu-2017-09-24-calltrace -e "cat AFL_FILE | /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/obj-callchain/readpng"
+
+
+If the program takes input from stdin:
+"cat AFL_FILE | /home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/obj-callchain/readpng"
+
+If the program takes input from file:
+"/home/farshaq/work/afl-pt/afl-2.42b/test_progs/libpng-1.6.31/obj-callchain/readpng AFL_FILE"
+
+"""
+
+
 def usage():
     print "Usage: python {0} -b BINARY -d CORPUS_DIR -o OUTPUT -e CMD [-t TIMEOUT]" % sys.argv[0]
     print "do pip install progressbar2"

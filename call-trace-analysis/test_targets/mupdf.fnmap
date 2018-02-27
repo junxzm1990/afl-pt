@@ -1,0 +1,31 @@
+Module Name:../../exif/actions.c
+action_save:1975432363
+action_create_value:1679726540
+action_set_value:862875856
+action_remove_tag:825521494
+action_remove_thumb:1203157700
+action_insert_thumb:692327549
+action_show_tag:1717500692
+show_entry:1186987713
+action_save_thumb:1742507053
+action_tag_table:1306811916
+action_mnote_list:517086385
+action_tag_list:76945796
+show_ifd:705765360
+action_tag_list_machine:1206390711
+show_ifd_machine:592563704
+action_tag_list_xml:870225279
+show_xml:156577319
+show_entry_list:961973631
+show_entry_machine:428936888
+show_entry_xml:667415289
+Module Name:../../exif/exif-i18n.c
+exif_i18n_convert_utf8_to_locale:1099047013
+Module Name:../../exif/main.c
+main:1158473534
+log_func:1635818832
+Module Name:../../exif/utils.c
+exif_tag_from_string:289821410
+exif_ifd_from_string:461934725
+exif_get_data_opts:851262804
+exif_mbstrlen:1241717977
