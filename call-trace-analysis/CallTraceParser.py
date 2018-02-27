@@ -80,6 +80,22 @@ class CallTraceParser:
                 print ("hit:%d" % (callset.callChainSet[key][1]))  
                 #print ("call chain:%s" % (callset.callChainSet[key][2]))  
             print ("")
+    def printMergedResult(self):
+        for callset in self.res:
+            print("==========%d=========" % callset.id)
+            mergedSet={}
+            for key in callset.callChainSet.keys():
+                length = callset.callChainSet[key][0]  
+                hit = callset.callChainSet[key][1]
+                if length in mergedSet:
+                    tmp = mergedSet[length]
+                    mergedSet[length] = tmp + hit
+                else:
+                    mergedSet[length] = hit
+            for key in mergedSet:
+                print ("length:%d" % key)
+                print ("hit:%d" % mergedSet[key])
+            print ("")
 
     def printResultWithCallChain(self, funcMapParser):
         for callset in self.res:
@@ -155,7 +171,9 @@ if __name__ == "__main__":
         print "require at least 1 parameter (calltrace list file)"
         sys.exit(-1)
     parser = CallTraceParser(sys.argv[1])
-    assert (os.path.isfile('fnmap.txt'))
-    fmapParser = FuncMapParser('fnmap.txt')
+    #assert (os.path.isfile('fnmap.txt'))
+    #fmapParser = FuncMapParser('fnmap.txt')
     parser.parseTrace()
-    parser.printResultWithCallChain(fmapParser)
+    parser.printMergedResult()
+    #parser.printResult()
+    #parser.printResultWithCallChain(fmapParser)
