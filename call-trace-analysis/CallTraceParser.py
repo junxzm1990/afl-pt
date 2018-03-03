@@ -2,6 +2,7 @@
 import hashlib
 import sys
 import os
+import progressbar
 
 class CallChainSet:
     def __init__(self, seedId):
@@ -30,12 +31,17 @@ class CallTraceParser:
         self.res = []
     def parseTrace(self):
         with open(self.fn) as fp:
-            line = fp.readline()
+            lines = fp.readlines()
+            num_of_lines = len(lines)
+            bar = progressbar.ProgressBar(max_value=num_of_lines)
+            bar_count = 0
             cnt = 1
-            while line:
+            for line in lines:
                 self.handleTraceLine(line, cnt)
                 line = fp.readline()
                 cnt += 1
+                bar_count += 1
+                bar.update(bar_count)
     def handleTraceLine(self, line, cnt):
         # TODO
         ccs = CallChainSet(cnt)
@@ -55,11 +61,18 @@ class CallTraceParser:
                     HASH = self.getHASH(text)
                     length = len(stack)
                     ccs.insert(HASH, length, text)
-                    assert len(stack) > 0
-                    stack.pop()
+                    try:
+                        assert len(stack) > 0
+                        stack.pop()
+                    except AssertionError:
+                        sys.stderr.write("pop empty stack\n")
                 else:
-                    assert len(stack) > 0
-                    stack.pop()
+                    try:
+                        assert len(stack) > 0
+                        stack.pop()
+                    except AssertionError:
+                        sys.stderr.write("pop empty stack\n")
+                        
             lastItem = item
 
     def getCallChain(self, stack):
@@ -142,10 +155,18 @@ class FuncMapParser():
         #print(self.momap)
     def parseFuncMap(self):
         with open(self.fn) as fp:
-            line = fp.readline()
-            while line:
-                self.handleLine(line)
+            lines = fp.readlines()
+            num_of_lines = len(lines)
+            bar = progressbar.ProgressBar(max_value=num_of_lines)
+            bar_count = 0
+            for line in lines:
+                try:
+                    self.handleLine(line)
+                except AssertionError:
+                    sys.stderr.write("handle Line error!\n")
                 line = fp.readline()
+                bar_count += 1
+                bar.update(bar_count)
     def handleLine(self, line):
         fields = line.split(':')
         assert(len(fields) > 1)
@@ -155,11 +176,19 @@ class FuncMapParser():
         else:
             self.fnmap[fields[1].strip()] = (fields[0].strip(), self.curModuleId) 
     def checkOutFid(self, HASH):
-        assert (HASH in self.fnmap.keys())
-        fname = self.fnmap[HASH][0]
-        modid = self.fnmap[HASH][1]
-        assert (modid in self.momap.keys())
-        moname = self.momap[modid]
+        try:
+            assert (HASH in self.fnmap.keys())
+            fname = self.fnmap[HASH][0]
+            modid = self.fnmap[HASH][1]
+        except AssertionError:
+            fname = "error! not found!"
+            sys.stderr.write("HASH not in fnmap.keys()!\n")
+        try:
+            assert (modid in self.momap.keys())
+            moname = self.momap[modid]
+        except AssertionError:
+            moname = "error! not found!"
+            sys.stderr.write("modid not in momap.keys()!\n")
         return (fname, moname)
     def getFuncName(self, HASH):
         return self.checkOutFid(HASH)[0]
