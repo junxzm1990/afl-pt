@@ -12,7 +12,7 @@ readpng-qemu-parse:
 TEST_DIR_PNG_PT = libpng/libpng-ptfast-long-12-3/
 TRACE_FILE_PNG_PT = png-ptfast.calltrace
 readpng-ptfast:
-	python ./batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PNG)" -b $(WORK_DIR)/test_targets/$(BIN_PNG) -d test_data/libpng/$(TEST_DIR_PNG_PT) -o $(TRACE_FILE_PNG_PT) 
+	python ./batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PNG)" -b $(WORK_DIR)/test_targets/$(BIN_PNG) -d test_data/$(TEST_DIR_PNG_PT) -o $(TRACE_FILE_PNG_PT) 
 
 readpng-ptfast-parse:
 	python ./CallTraceParser.py $(TRACE_FILE_PNG_PT) > $(TRACE_FILE_PNG_PT).analysis
@@ -108,7 +108,7 @@ mutool-qemu:
 mutool-qemu-parse:
 	python ./CallTraceParser.py $(TRACE_FILE_MUTOOL_Q) > $(TRACE_FILE_MUTOOL_Q).analysis
 
-TEST_DIR_MUTOOL_PT = mupdf/mutool-ptfast-long-12-3/
+TEST_DIR_MUTOOL_PT = mupdf/mupdf-ptfast-long-12-3/
 TRACE_FILE_MUTOOL_PT = mupdf-ptfast.calltrace
 mutool-ptfast:
 	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_MUTOOL) show AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_MUTOOL) -d test_data/$(TEST_DIR_MUTOOL_PT) -o $(TRACE_FILE_MUTOOL_PT)
