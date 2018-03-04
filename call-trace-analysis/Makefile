@@ -108,7 +108,7 @@ mutool-qemu:
 mutool-qemu-parse:
 	python ./CallTraceParser.py -i $(TRACE_FILE_MUTOOL_Q) > $(TRACE_FILE_MUTOOL_Q).analysis
 
-TEST_DIR_MUTOOL_PT = mupdf/mutool-ptfast-long-12-3/
+TEST_DIR_MUTOOL_PT = mupdf/mupdf-ptfast-long-12-3/
 TRACE_FILE_MUTOOL_PT = mupdf-ptfast.calltrace
 mutool-ptfast:
 	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_MUTOOL) show AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_MUTOOL) -d test_data/$(TEST_DIR_MUTOOL_PT) -o $(TRACE_FILE_MUTOOL_PT)
