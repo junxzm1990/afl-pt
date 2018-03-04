@@ -72,7 +72,6 @@ class CallTraceParser:
                         stack.pop()
                     except AssertionError:
                         sys.stderr.write("pop empty stack\n")
-                        
             lastItem = item
 
     def getCallChain(self, stack):
