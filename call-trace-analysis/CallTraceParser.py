@@ -2,6 +2,7 @@
 import hashlib
 import sys
 import os
+import argparse
 import progressbar
 
 class CallChainSet:
@@ -92,7 +93,25 @@ class CallTraceParser:
                 print ("hit:%d" % (callset.callChainSet[key][1]))  
                 #print ("call chain:%s" % (callset.callChainSet[key][2]))  
             print ("")
+
     def printMergedResult(self):
+        for callset in self.res:
+            print("=============%d===========" % (callset.id))
+            mergedSet={}
+            for key in callset.callChainSet.keys():
+                length = callset.callChainSet[key][0]  
+                hit = callset.callChainSet[key][1]
+                if length in mergedSet:
+                    tmp = mergedSet[length]
+                    mergedSet[length] = tmp + hit
+                else:
+                    mergedSet[length] = hit
+            for key in mergedSet:
+                print ("length:%d" % key)
+                print ("hit:%d" % AllMergedSet[key])
+            print("")
+
+    def printAllMergedResult(self):
         AllMergedSet = {}
         for callset in self.res:
             mergedSet={}
@@ -200,14 +219,38 @@ class FuncMapParser():
     def getModuleName(self, HASH):
         return self.checkOutFid(HASH)[1]
 
+def parse_cmdline():
+
+    p = argparse.ArgumentParser()
+
+    p.add_argument("-m", "--merge-result", type=str, required=False,
+            help="control whether or not to merge all results, Y means yes, N means no",
+            default='Y')
+
+    p.add_argument("-f", "--function-map", type=str, required=False,
+            help="function hash to name map file")
+
+    p.add_argument("-i", "--input-file", type=str, required=True,
+            help="input call trace file")
+
+    return p.parse_args()
+
+def usage():
+    print "Usage: python {0} -i calltrace.txt -m [YN] [-f fnmap.txt] " % sys.argv[0]
+    print "do pip install progressbar2"
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print "require at least 1 parameter (calltrace list file)"
-        sys.exit(-1)
-    parser = CallTraceParser(sys.argv[1])
-    #assert (os.path.isfile('fnmap.txt'))
-    #fmapParser = FuncMapParser('fnmap.txt')
+    cargs = parse_cmdline()
+    parser = CallTraceParser(cargs.input_file)
     parser.parseTrace()
-    parser.printMergedResult()
-    #parser.printResult()
-    #parser.printResultWithCallChain(fmapParser)
+
+    if cargs.merge_result == "Y":
+        parser.printAllMergedResult()
+    else:
+        parser.printMergedResult()
+
+    # parse function name
+    if cargs.function_map is not None:
+        assert (os.path.isfile(cargs.function_map))
+        fmapParser = FuncMapParser(cargs.function_map)
+        parser.printResultWithCallChain(fmapParser)
