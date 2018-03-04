@@ -93,8 +93,8 @@ class CallTraceParser:
                 #print ("call chain:%s" % (callset.callChainSet[key][2]))  
             print ("")
     def printMergedResult(self):
+        AllMergedSet = {}
         for callset in self.res:
-            print("==========%d=========" % callset.id)
             mergedSet={}
             for key in callset.callChainSet.keys():
                 length = callset.callChainSet[key][0]  
@@ -105,9 +105,15 @@ class CallTraceParser:
                 else:
                     mergedSet[length] = hit
             for key in mergedSet:
-                print ("length:%d" % key)
-                print ("hit:%d" % mergedSet[key])
-            print ("")
+                if key in AllMergedSet:
+                    AllMergedSet[key] += mergedSet[key]
+                else:
+                    AllMergedSet[key] = mergedSet[key]
+
+        print("All merged results:")
+        for key in AllMergedSet:
+            print ("length:%d" % key)
+            print ("hit:%d" % AllMergedSet[key])
 
     def printResultWithCallChain(self, funcMapParser):
         for callset in self.res:
