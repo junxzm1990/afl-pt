@@ -35,7 +35,7 @@ def get_callchain(target_bin, seed_path, cov_cmd, tmp_out, timeout='3000'):
     SUCCESS = 0
     cov = ''
     new_env = os.environ.copy()
-    new_env["CALL_TRACE_FILE"] = ".tmp_call_trace"+tmp_out
+    new_env["CALL_TRACE_FILE"] = ".tmp_call_trace."+tmp_out
     if '|' in cov_cmd:
         cov_cmd = cov_cmd[cov_cmd.rindex('|')+1:]+' < '+ seed_path
     else:
@@ -45,8 +45,8 @@ def get_callchain(target_bin, seed_path, cov_cmd, tmp_out, timeout='3000'):
     nullfd = open(os.devnull, 'w')
     r = subprocess.Popen(g_cmd, shell=True, env = new_env, stdout=nullfd, stderr=nullfd)
     r.wait()
-    # while r.returncode != SUCCESS:
-    with open(".tmp_call_trace"+tmp_out, 'r') as f:
+    # with open(".tmp_call_trace."+tmp_out, 'r') as f:
+    with open(".tmp_call_trace."+tmp_out, 'r') as f:
         cov = f.read()
     f.close()
     nullfd.close()
