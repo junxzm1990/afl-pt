@@ -206,6 +206,7 @@ class FuncMapParser():
             modid = self.fnmap[HASH][1]
         except AssertionError:
             fname = "error! not found!"
+            modid = 0
             sys.stderr.write("HASH not in fnmap.keys()!\n")
         try:
             assert (modid in self.momap.keys())
