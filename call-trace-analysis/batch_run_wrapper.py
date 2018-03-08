@@ -115,5 +115,6 @@ def parse_cmdline():
     return p.parse_args()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
+    sys.exit(0)
 
