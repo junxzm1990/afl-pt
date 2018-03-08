@@ -129,10 +129,20 @@ class CallTraceParser:
                 else:
                     AllMergedSet[key] = mergedSet[key]
 
+        # get percentage info
+        totalHits = 0
+        for key in AllMergedSet:
+            totalHits += AllMergedSet[key]
+
         print("All merged results:")
+        accHit = 0
         for key in AllMergedSet:
             print ("length:%d" % key)
-            print ("hit:%d" % AllMergedSet[key])
+            hit = AllMergedSet[key]
+            accHit += hit
+            per = hit * 1.0 / totalHits * 100
+            accPer = accHit * 1.0 / totalHits * 100
+            print ("hit:%.2f%% (%d/%d) accumulate hit:%.2f%% (%d/%d)" % (per, hit, totalHits, accPer, accHit, totalHits))
 
     def printResultWithCallChain(self, funcMapParser):
         for callset in self.res:
@@ -207,7 +217,8 @@ class FuncMapParser():
         except AssertionError:
             fname = "error! not found!"
             modid = 0
-            sys.stderr.write("HASH not in fnmap.keys()!\n")
+            sys.stderr.write("HASH:%s not in fnmap.keys()!\n" % HASH)
+            #sys.stderr.write("HASH not in fnmap.keys()!\n")
         try:
             assert (modid in self.momap.keys())
             moname = self.momap[modid]
