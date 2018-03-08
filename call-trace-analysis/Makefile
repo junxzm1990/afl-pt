@@ -1,4 +1,4 @@
-WORK_DIR = $(HOME)/work/afl/afl-pt/call-trace-analysis/
+WORK_DIR = $(HOME)/work/afl-pt/call-trace-analysis/
 
 BIN_PNG = readpng
 TEST_DIR_PNG_Q = libpng/libpng-qemu-long-12-3/
@@ -119,23 +119,42 @@ mutool-ptfast-parse:
 BIN_OBJDUMP = objdump
 TEST_DIR_OBJDUMP_Q = objdump/objdump-qemu-long-12-3/
 TRACE_FILE_OBJDUMP_Q = objdump-qemu.calltrace
+CRASH_TRACE_FILE_OBJDUMP_Q = objdump-qemu-crash.calltrace
 objdump-qemu:
 	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_Q) -o $(TRACE_FILE_OBJDUMP_Q)
 
 objdump-qemu-parse:
 	python ./CallTraceParser.py -i $(TRACE_FILE_OBJDUMP_Q) > $(TRACE_FILE_OBJDUMP_Q).analysis
 
+
+objdump-qemu-crash:
+	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_Q) -o $(CRASH_TRACE_FILE_OBJDUMP_Q) -c "Yes"
+
+objdump-qemu-crash-parse:
+	python ./CallTraceParser.py -i $(CRASH_TRACE_FILE_OBJDUMP_Q) > $(CRASH_TRACE_FILE_OBJDUMP_Q).analysis
+
 TEST_DIR_OBJDUMP_PT1 = objdump/objdump-ptfast-long-12-3/
 TRACE_FILE_OBJDUMP_PT1 = objdump-ptfast1.calltrace
+CRASH_TRACE_FILE_OBJDUMP_PT1 = objdump-ptfast1-crash.calltrace
 TEST_DIR_OBJDUMP_PT2 = objdump/objdump-ptfast-long-12-16/
 TRACE_FILE_OBJDUMP_PT2 = objdump-ptfast2.calltrace
+CRASH_TRACE_FILE_OBJDUMP_PT2 = objdump-ptfast2-crash.calltrace
 objdump-ptfast:
-	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT1) -o $(TRACE_FILE_OBJDUMP_PT1)
+	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT1) -o $(TRACE_FILE_OBJDUMP_PT1) -c "Yes"
 
-	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT2) -o $(TRACE_FILE_OBJDUMP_PT2)
+	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT2) -o $(TRACE_FILE_OBJDUMP_PT2) -c "Yes"
 objdump-ptfast-parse:
 	python ./CallTraceParser.py -i $(TRACE_FILE_OBJDUMP_PT1) > $(TRACE_FILE_OBJDUMP_PT1).analysis
 	python ./CallTraceParser.py -i $(TRACE_FILE_OBJDUMP_PT2) > $(TRACE_FILE_OBJDUMP_PT2).analysis
+
+
+objdump-ptfast-crash:
+	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT1) -o $(CRASH_TRACE_FILE_OBJDUMP_PT1) -c "Yes"
+
+	python ./batch_run_wrapper.py -e "$(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -D AFL_FILE" -b $(WORK_DIR)/test_targets/$(BIN_OBJDUMP) -d test_data/$(TEST_DIR_OBJDUMP_PT2) -o $(CRASH_TRACE_FILE_OBJDUMP_PT2) -c "Yes"
+objdump-ptfast-crash-parse:
+	python ./CallTraceParser.py -i $(CRASH_TRACE_FILE_OBJDUMP_PT1) > $(CRASH_TRACE_FILE_OBJDUMP_PT1).analysis
+	python ./CallTraceParser.py -i $(CRASH_TRACE_FILE_OBJDUMP_PT2) > $(CRASH_TRACE_FILE_OBJDUMP_PT2).analysis
 
 BIN_XMLLINT = xmllint
 TEST_DIR_XML_Q = libxml/xmllint-qemu-long-12-3/
