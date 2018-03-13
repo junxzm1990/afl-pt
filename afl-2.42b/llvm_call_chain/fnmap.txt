@@ -1,2 +1,4 @@
 Module Name:../test-instr.c
 main:1148076532
+Module Name:../test-instr.c
+main:1148076532

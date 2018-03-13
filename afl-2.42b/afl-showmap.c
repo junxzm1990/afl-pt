@@ -713,7 +713,7 @@ static char** get_pt_argv(u8* own_loc, char** argv, int argc) {
 
   if (tmp) {
 
-    cp = alloc_printf("%s/afl-pt-proxy", tmp);
+    cp = alloc_printf("%s/pt-proxy-fast", tmp);
 
     if (access(cp, X_OK))
       FATAL("Unable to find '%s'", tmp);
@@ -730,7 +730,7 @@ static char** get_pt_argv(u8* own_loc, char** argv, int argc) {
 
     *rsl = 0;
 
-    cp = alloc_printf("%s/afl-pt-proxy", own_copy);
+    cp = alloc_printf("%s/pt-proxy-fast", own_copy);
     ck_free(own_copy);
 
     if (!access(cp, X_OK)) {
@@ -742,16 +742,16 @@ static char** get_pt_argv(u8* own_loc, char** argv, int argc) {
 
   } else ck_free(own_copy);
 
-  if (!access(BIN_PATH "/afl-pt-proxy", X_OK)) {
+  if (!access(BIN_PATH "/pt-proxy-fast", X_OK)) {
 
-    target_path = new_argv[0] = ck_strdup(BIN_PATH "/afl-pt-proxy");
+    target_path = new_argv[0] = ck_strdup(BIN_PATH "/pt-proxy-fast");
     return new_argv;
 
   }
 
 
   SAYF("\n" cLRD "[-] " cRST
-       "Oops, unable to find the 'afl-pt-proxy' binary. The binary must be built\n"
+       "Oops, unable to find the 'pt-proxy-fast' binary. The binary must be built\n"
        "    separately by following the instructions in pt_mode/README.pt. If you\n"
        "    already have the binary installed, you may need to specify AFL_PATH in the\n"
        "    environment.\n\n"
@@ -760,7 +760,7 @@ static char** get_pt_argv(u8* own_loc, char** argv, int argc) {
        "    that are instrumented at compile time with afl-gcc. It is also possible to\n"
        "     use it as atraditional \"dumb\" fuzzer by specifying '-n' in the command line.\n");
 
-  FATAL("Failed to locate 'afl-pt-proxy'.");
+  FATAL("Failed to locate 'pt-proxy-fast'.");
 
 }
 

@@ -178,8 +178,7 @@ BIN_PERL = perl
 TEST_DIR_PERL_Q = perl/perl-qemu-long-12-3/
 TRACE_FILE_PERL_Q = perl-qemu.calltrace
 perl-qemu:
-	rm -rf perl_sandbox; mkdir perl_sandbox; cd perl_sandbox
-	python ./batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PERL)" -b $(WORK_DIR)/test_targets/$(BIN_PERL) -d test_data/$(TEST_DIR_PERL_Q) -o ../$(TRACE_FILE_PERL_Q)
+	python batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PERL)" -b $(WORK_DIR)/test_targets/$(BIN_PERL) -d test_data/$(TEST_DIR_PERL_Q) -o $(TRACE_FILE_PERL_Q)
 	cd $(WORK_DIR)
 
 perl-qemu-parse:
@@ -191,13 +190,8 @@ TRACE_FILE_PERL_PT1 = perl-ptfast1.calltrace
 TEST_DIR_PERL_PT2 = perl/perl-ptfast-long-12-16/
 TRACE_FILE_PERL_PT2 = perl-ptfast2.calltrace
 perl-ptfast:
-	rm -rf perl_sandbox; mkdir perl_sandbox; cd perl_sandbox
 	python ./batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PERL)" -b $(WORK_DIR)/test_targets/$(BIN_PERL) -d test_data/$(TEST_DIR_PERL_PT1) -o $(TRACE_FILE_PERL_PT1)
-	cd $(WORK_DIR)
-
-	rm -rf perl_sandbox; mkdir perl_sandbox; cd perl_sandbox
 	python ./batch_run_wrapper.py -e "cat AFL_FILE | $(WORK_DIR)/test_targets/$(BIN_PERL)" -b $(WORK_DIR)/test_targets/$(BIN_PERL) -d test_data/$(TEST_DIR_PERL_PT2) -o $(TRACE_FILE_PERL_PT2)
-	cd $(WORK_DIR)
 perl-ptfast-parse:
 	python ./CallTraceParser.py -i $(TRACE_FILE_PERL_PT1) > $(TRACE_FILE_PERL_PT1).analysis
 	python ./CallTraceParser.py -i $(TRACE_FILE_PERL_PT2) > $(TRACE_FILE_PERL_PT2).analysis
