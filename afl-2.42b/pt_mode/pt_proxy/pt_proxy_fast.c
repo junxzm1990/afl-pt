@@ -72,7 +72,9 @@ volatile u8  worker_done,                              /* for syncing worker and
             worker_not_done;
 #define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
 #define TWO_BYTE_ENTRIES (1<<16)                       /* num of keys in the rand_map     */
-#define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
+#define TWENTY_BIT_ENTRIES (1<<20)                       /* num of keys in the rand_map     */
+//#define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
+#define RAND_MAP_SIZE TWENTY_BIT_ENTRIES                 /* size of the rand_map            */
 u64 rand_map[RAND_MAP_SIZE];                           /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
@@ -87,7 +89,7 @@ u64 ctx_last_tip_ip = 0;                               /* the ip val of last tip
 u64 ctx_tnt_long = 0;                                  /* used by tnt long packet         */
 u32 ctx_bit_selector = 0;                              /* point to valid tnt bits, > 2    */
 u32 ctx_tnt_counter = 0;                               /* num of tnt seen in curr slice   */
-u32 ctx_curr_tnt_prod = 2166136261;                             /* tmp tnt product used by worker  */
+u64 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used by worker  */
 u16 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
 u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/

@@ -69,7 +69,7 @@ u64 pt_trace_off = 0;				       /* last off to the buf pt update   */
 volatile u8  worker_done,                              /* for syncing worker and proxy    */
             worker_not_done;
 #define ONE_BYTE_ENTRIES (1<<8)                        /* num of keys in the rand_map     */
-#define TWO_BYTE_ENTRIES (1<<16)                       /* num of keys in the rand_map     */
+#define TWO_BYTE_ENTRIES (1<<18)                       /* num of keys in the rand_map     */
 #define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
 u64 rand_map[RAND_MAP_SIZE];                           /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
