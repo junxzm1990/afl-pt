@@ -23,7 +23,7 @@ extern u64 ctx_tnt_long;
 extern u32 ctx_bit_selector;
 extern u32 ctx_tnt_counter;
 extern u64 ctx_curr_tnt_prod;
-extern u16 ctx_tnt_container;
+extern u64 ctx_tnt_container;
 extern u8  ctx_tnt_short;
 extern u8  ctx_tnt_go;
 extern u8  ctx_tnt_lock;
@@ -75,6 +75,28 @@ inline map_16(u16 val){
     return rand_map[val];
 }
 
+
+//look up rand_map and map the 32-bit val to a random number
+// static u32
+// inline map_32(u32 val){
+//   u8 i = 0;
+//   u32 res = 0;
+//   for (;i < 2;++i){
+// 	  res ^= rand_map[((u16)val)];	
+// 	  val = val >> 0x10; 
+//   }
+//   return res;
+// }
+
+static u32
+inline map_32(u32 val){
+  u8 i = 0;
+  u32 res = 0;
+  res ^= rand_map[(val & 0xffffff)];	
+  val = val >> 0x18; 
+  res ^= rand_map[(val & 0xff)];	
+  return res;
+}
 //look up rand_map and map the 64-bit val to a random number
 static u32
 inline map_64(u64 val){
@@ -392,16 +414,16 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     bytes_remained = size;
 
 
-#define MAX_TNT_LEN 4096
+#define MAX_TNT_LEN 65536
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
-            if(++ctx_curr_tnt_cnt % 64 == 0){                        \
+            if(++ctx_curr_tnt_cnt % 64 == 0){                       \
               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
-                ctx_tnt_lock=1;                                     \
+                ctx_tnt_lock=0;                                     \
               }                                                     \
             }                                                       \
       }                                                             \
