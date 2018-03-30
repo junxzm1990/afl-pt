@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 
+#define BIT_RANGE 0b11111111111111111111
 
 // #define LPS
 #define HPS
@@ -23,8 +24,8 @@ extern u64 ctx_last_tip_ip;
 extern u64 ctx_tnt_long;
 extern u32 ctx_bit_selector;
 extern u32 ctx_tnt_counter;
-extern u32 ctx_curr_tnt_prod;
-extern u16 ctx_tnt_container;
+extern u64 ctx_curr_tnt_prod;
+extern u64 ctx_tnt_container;
 extern u8  ctx_tnt_short;
 extern u8  ctx_tnt_go;
 extern u8  ctx_tnt_lock;
@@ -78,19 +79,45 @@ inline map_16(u16 val){
 
 //look up rand_map and map the 64-bit val to a random number
 
+static u64 hash_func(u64 hash, char * str, size_t num){
+	
+	size_t index = 0;
+
+	while(index < num){
+		hash  = str[index] + (hash<<6) + (hash << 16) - hash;
+		index++;
+	}
+
+	return hash;
+}
+
 
 static u32
 inline map_64(u64 val){
 
+
+    srand(((u32)val) ^ (u32) (val>>32));
+    return rand() & BIT_RANGE;
+	
 //map a kep to a 18 bit value
-    u32 index = 0;
+    u16 index = 0;
 
-    index ^= (val & 0xfffff);
-    index ^= ((val >> 18) & 0xfffff);
-    index ^= ((val >> 36 ) & 0xfffff);
-    index ^= ((val >> 54) & 0xfffff);
+    index = rand_map[index ^ (u16)(val & BIT_RANGE)];
+    index = rand_map[index ^ (u16)((val >> 16) & BIT_RANGE)];
+    index = rand_map[index ^ (u16)((val >>32 ) &BIT_RANGE)];
+    index = rand_map[index ^ (u16)((val >> 48 ) &BIT_RANGE)];
+    
+    return index;
+    
+    index ^= (val & BIT_RANGE);
+    index >> 1;
+    index ^= ((val >> 16) & BIT_RANGE);
+    index >> 1;
+    index ^= ((val >> 32 ) & BIT_RANGE);
+    index >> 1;
+    index ^= ((val >> 48) & BIT_RANGE);
 
-    return rand_map[index & 0xfffff];
+    return rand_map[index & BIT_RANGE];
 
 /*
     u8 i = 0;
@@ -402,16 +429,16 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 #define MAX_TNT_LEN 4096
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
-      if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
+      if(likely(ctx_tnt_go)){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
-            if(++ctx_curr_tnt_cnt % 64 == 0){                        \
+            if(++ctx_curr_tnt_cnt % 64 == 0 && likely(!ctx_tnt_lock)){                        \
+	      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));}       \
               ctx_curr_tnt_prod ^= ctx_tnt_container;               \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
                 ctx_tnt_lock=1;                                     \
               }                                                     \
             }                                                       \
-      }                                                             \
     } while (0)
 
 
@@ -420,16 +447,15 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
  
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
-    if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;}       \
-      u32 idx= (map_64(ctx_curr_ip ^ ctx_last_tip_ip)                                \
-                ^map_64(ctx_curr_tnt_prod) );                              \
-      __afl_area_ptr[idx] ++ ;                                          \
-      ctx_last_tip_ip = ctx_curr_ip >> 1;                                      \
+    if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;\
+      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));}       \
+      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_curr_ip, sizeof(ctx_curr_ip));\
+      __afl_area_ptr[map_64(ctx_last_tip_ip)] ++ ;                                          \
       ctx_tnt_counter= 0;                                               \
       ctx_tnt_lock= 0;                                                  \
       ctx_tnt_container= 0;                                             \
       ctx_curr_tnt_cnt= 0;                                              \
-    } while (0)
+	} while (0)
 
 #endif
 
@@ -477,7 +503,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
             ctx_curr_ip = pt_get_and_update_ip(packet, packet_len, &ctx_last_ip);
 #ifdef DEBUG_PACKET
             writeout_packet(dfd, "TNTCOUNT", ctx_tnt_counter);
-            writeout_packet(dfd, "TNTPROD", ctx_curr_tnt_prod);
+//            writeout_packet(dfd, "TNTPROD", ctx_curr_tnt_prod);
             writeout_packet(dfd, "TIP", ctx_curr_ip);
 #endif
             UPDATE_TRACEBITS_IDX();

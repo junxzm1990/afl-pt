@@ -72,6 +72,7 @@ def process_test_cases(args):
     #1 collect edge cov for each partition
     #1.1 for each input run afl-showmap on the target queue
     #2 update the curve_time_cov
+    print args.interval, args.interval*(par_num+1)
     for p_time in range(args.interval, args.interval* (par_num +1), args.interval):
         edge_cov = set()
         target_par = "{0}-{1}hr/".format(os.path.dirname(args.afl_fuzzing_dir), p_time)

@@ -74,7 +74,8 @@ volatile u8  worker_done,                              /* for syncing worker and
 #define TWO_BYTE_ENTRIES (1<<16)                       /* num of keys in the rand_map     */
 #define TWENTY_BIT_ENTRIES (1<<20)                       /* num of keys in the rand_map     */
 //#define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
-#define RAND_MAP_SIZE TWENTY_BIT_ENTRIES                 /* size of the rand_map            */
+#define RAND_MAP_SIZE 1 << 19 //TWENTY_BIT_ENTRIES                 /* size of the rand_map            */
+
 u64 rand_map[RAND_MAP_SIZE];                           /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
@@ -90,7 +91,7 @@ u64 ctx_tnt_long = 0;                                  /* used by tnt long packe
 u32 ctx_bit_selector = 0;                              /* point to valid tnt bits, > 2    */
 u32 ctx_tnt_counter = 0;                               /* num of tnt seen in curr slice   */
 u64 ctx_curr_tnt_prod = 0;                             /* tmp tnt product used by worker  */
-u16 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
+u64 ctx_tnt_container = 0;                             /* holder for tnt(s) in curr slice */
 u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
 u8  ctx_tnt_lock = 0;                                  /* u8 tnt val;flag stop tnt trace  */
@@ -363,13 +364,11 @@ static void *pt_parse_worker(void *arg)
 	bind_to_free_core();
 #endif
 
-#define DEBUG
 #ifdef DEBUG
 	char msg[256];
 	off_fd = open("/tmp/test.log", O_RDWR);
 #endif
 
-#define DEBUG_PACKET
 #ifdef DEBUG_PACKET
 	packet_fd = open("/tmp/packet.log", O_RDWR);
 #endif
@@ -670,7 +669,7 @@ int main(int argc, char *argv[])
   dev_urandom_fd = open("/dev/urandom", O_RDONLY);
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
-  gen_rand_map(RAND_MAP_SIZE, PT_MAP_SIZE << 3);
+  gen_rand_map(RAND_MAP_SIZE, RAND_MAP_SIZE);
   serialize_rand_map(argv[1]);
 
   /* setting up share memory bitmap */

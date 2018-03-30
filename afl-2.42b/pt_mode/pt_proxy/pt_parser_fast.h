@@ -9,6 +9,7 @@
 
 
 
+#define BIT_RANGE 0b1111111111111111111111111
 
 extern u8 *__afl_area_ptr;
 extern u8 *__afl_pt_fav_ptr;
@@ -97,9 +98,43 @@ inline map_32(u32 val){
   res ^= rand_map[(val & 0xff)];	
   return res;
 }
+
+static u64 hash_func(u64 hash, char * str, size_t num){
+	
+	size_t index = 0;
+
+	while(index < num){
+		hash  = str[index] + (hash<<6) + (hash << 16) - hash;
+		index++;
+	}
+
+	return hash;
+}
+
+
 //look up rand_map and map the 64-bit val to a random number
 static u32
 inline map_64(u64 val){
+
+    return ((u32)val) & ((u32)(val>>32)) & BIT_RANGE;
+
+	// fitting into the bit map 19 bit in total
+
+	//map a kep to a 18 bit value
+
+    srand(((u32)val) ^ (u32) (val>>32));
+    return rand() & BIT_RANGE;
+	
+    u32 index = 0;
+
+    index ^= rand_map[val & BIT_RANGE];
+    index ^= rand_map[(val >> 19) & BIT_RANGE];
+    index ^= rand_map[(val >> 38 ) & BIT_RANGE];
+    index ^= rand_map[(val >> 57) & BIT_RANGE];
+
+    return rand_map[index & BIT_RANGE];
+
+/*
     u8 i = 0;
     u32 res = 0;
     res ^= rand_map[val & 0xfffff];
@@ -109,13 +144,12 @@ inline map_64(u64 val){
     res ^= rand_map[val & 0xfffff];
     val = val >> 20;
     res ^= rand_map[val & 0xf];
-/*
     for (;i < 4;++i){
 	  res ^= rand_map[((u16)val)];	
 	  val = val >> 0x10; 
     }
-*/
     return res;
+*/
 }
 
 enum pt_packet_kind {
@@ -414,52 +448,29 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     bytes_remained = size;
 
 
-#define MAX_TNT_LEN 65536
+#define MAX_TNT_LEN 4096
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
             if(++ctx_curr_tnt_cnt % 64 == 0){                       \
-              ctx_curr_tnt_prod ^= ctx_tnt_container;               \
+	      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));}       \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
                 ctx_tnt_lock=0;                                     \
               }                                                     \
             }                                                       \
-      }                                                             \
     } while (0)
-
-
-// #define UPDATE_TNT_PROD(BIT)                          \
-//     do {                                              \
-//       if(likely(ctx_tnt_go)){                         \
-//         ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt); \
-//         if(++ctx_curr_tnt_cnt % 8 == 0){              \
-//           ctx_curr_tnt_prod ^= ctx_tnt_container;     \
-//           ctx_curr_tnt_prod *= 16777619;              \
-//           ctx_tnt_container = ctx_curr_tnt_cnt = 0;   \
-//         }                                             \
-//       }                                               \
-//     } while (0)
-
  
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
-      if(ctx_curr_tnt_cnt){ctx_curr_tnt_prod ^= ctx_tnt_container;      \
-        }                                 \
-      u32 idx1= (map_64(ctx_curr_ip) ^ map_64(ctx_last_tip_ip));        \
-      u32 idx2= (idx1 ^ map_64(ctx_curr_tnt_prod)                        \
-                 +log_map[ctx_tnt_counter % (1<<21)]) % (MAP_SIZE*8);       \
-            writeout_packet(dfd, "idx2", idx2);\
-      __afl_pt_fav_ptr[idx1>>3] |= 1 << (idx1 &0x7);                    \
-      __afl_area_ptr[idx2>>3] |= 1 << (idx2 &0x7);                      \
-      ctx_curr_tnt_prod = 0;                                   \
-      ctx_last_tip_ip=ctx_curr_ip;                                      \
+	if(ctx_curr_tnt_cnt){ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, ctx_curr_tnt_cnt);}       \
+      ctx_last_tip_ip = hash_func(ctx_last_tip_ip,(char*)&ctx_curr_ip, sizeof(ctx_curr_ip));\
+      __afl_area_ptr[ map_64(ctx_last_tip_ip) >> 3 ] |= (1 << (map_64(ctx_last_tip_ip) & 0b111)) ;                                          \
       ctx_tnt_counter= 0;                                               \
       ctx_tnt_lock= 0;                                                  \
       ctx_tnt_container= 0;                                             \
       ctx_curr_tnt_cnt= 0;                                              \
-                                                                        \
     } while (0)
 
 
