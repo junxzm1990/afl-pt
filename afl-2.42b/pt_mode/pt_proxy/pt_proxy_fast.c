@@ -76,7 +76,8 @@ volatile u8  worker_done,                              /* for syncing worker and
 //#define RAND_MAP_SIZE TWO_BYTE_ENTRIES                 /* size of the rand_map            */
 #define RAND_MAP_SIZE 1 << 19 //TWENTY_BIT_ENTRIES                 /* size of the rand_map            */
 
-u64 rand_map[RAND_MAP_SIZE];                           /* maps u8 val to random value UR()*/
+/* u64 rand_map[RAND_MAP_SIZE];                           /\* maps u8 val to random value UR()*\/ */
+u64 rand_map[1];                           /* maps u8 val to random value UR()*/
 static u32 rand_cnt;                                   /* Random number counter           */
 static s32 dev_urandom_fd = -1;                        /* Persistent fd for /dev/urandom  */
 
@@ -669,8 +670,8 @@ int main(int argc, char *argv[])
   dev_urandom_fd = open("/dev/urandom", O_RDONLY);
   if (dev_urandom_fd < 0) PFATAL("Unable to open /dev/urandom");
 
-  gen_rand_map(RAND_MAP_SIZE, RAND_MAP_SIZE);
-  serialize_rand_map(argv[1]);
+  /* gen_rand_map(RAND_MAP_SIZE, RAND_MAP_SIZE); */
+  /* serialize_rand_map(argv[1]); */
 
   /* setting up share memory bitmap */
   __afl_map_shm();
