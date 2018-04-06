@@ -457,7 +457,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 	      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));}       \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
-                ctx_tnt_lock=0;                                     \
+                ctx_tnt_lock = 1;                                     \
               }                                                     \
             }                                                       \
     } while (0)
