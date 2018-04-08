@@ -33,11 +33,13 @@ def get_edge_cov(show_map, seed_path, cov_cmd, tmp_out, timeout='3000'):
         cov_cmd = cov_cmd.replace('AFL_FILE', seed_path)
     g_cmd = [show_map, '-e', '-T', '-m','none','-t',timeout+'+', '-o',  tmp_out, cov_cmd]
     g_cmd = ' '.join(g_cmd)
+    # print g_cmd
     r = subprocess.call(g_cmd, shell=True)
     if r == SUCCESS:
         with open(tmp_out, 'r') as f:
             cov = f.read().splitlines()
         f.close()
+    os.unlink(tmp_out)
     return cov
 
 

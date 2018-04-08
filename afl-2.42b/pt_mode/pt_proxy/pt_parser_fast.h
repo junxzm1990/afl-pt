@@ -9,7 +9,7 @@
 
 
 
-#define BIT_RANGE 0b1111111111111111111111111
+#define BIT_RANGE 0b1111111111111111111
 
 extern u8 *__afl_area_ptr;
 extern u8 *__afl_pt_fav_ptr;
@@ -28,6 +28,7 @@ extern u64 ctx_tnt_container;
 extern u8  ctx_tnt_short;
 extern u8  ctx_tnt_go;
 extern u8  ctx_tnt_lock;
+extern u8  ctx_tip_counter;
 extern u8  ctx_curr_tnt_cnt;
 
 
@@ -97,18 +98,6 @@ inline map_32(u32 val){
   val = val >> 0x18; 
   res ^= rand_map[(val & 0xff)];	
   return res;
-}
-
-static u64 hash_func(u64 hash, char * str, size_t num){
-	
-	size_t index = 0;
-
-	while(index < num){
-		hash  = str[index] + (hash<<6) + (hash << 16) - hash;
-		index++;
-	}
-
-	return hash;
 }
 
 
@@ -433,6 +422,19 @@ pt_get_packet(u8 *buffer, u64 size, u64 *len)
 }
 
 //#define DEBUG_PACKET
+inline
+static u64 hash_func(u64 hash, char * str, size_t num){
+	
+	size_t index = 0;
+
+	while(index < num){
+		hash  = str[index] + (hash<<6) + (hash << 16) - hash;
+		index++;
+	}
+
+	return hash;
+}
+
 
 inline void
 pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
@@ -454,24 +456,32 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
             ctx_tnt_container |= (BIT<<ctx_curr_tnt_cnt);           \
             if(++ctx_curr_tnt_cnt % 64 == 0){                       \
-	      ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));}       \
+              ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, sizeof(ctx_tnt_container));} \
               ctx_tnt_container = ctx_curr_tnt_cnt = 0;             \
               if (ctx_tnt_counter>=MAX_TNT_LEN){                    \
-                ctx_tnt_lock = 1;                                     \
+                ctx_tnt_lock = 1;                                   \
               }                                                     \
             }                                                       \
     } while (0)
- 
+
+
+#define MAX_TIP_LEN 5 
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
 	if(ctx_curr_tnt_cnt){ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, ctx_curr_tnt_cnt);}       \
       ctx_last_tip_ip = hash_func(ctx_last_tip_ip,(char*)&ctx_curr_ip, sizeof(ctx_curr_ip));\
-      __afl_area_ptr[ map_64(ctx_last_tip_ip) >> 3 ] |= (1 << (map_64(ctx_last_tip_ip) & 0b111)) ;                                          \
+      __afl_area_ptr[ map_64(ctx_last_tip_ip) >> 3 ] |= (1 << (map_64(ctx_last_tip_ip) & 0b111)) ; \
+      __afl_pt_fav_ptr[(ctx_curr_ip ^ ctx_last_ip) >> 3] |= (1<<(ctx_curr_ip ^ ctx_last_ip)); \
       ctx_tnt_counter= 0;                                               \
       ctx_tnt_lock= 0;                                                  \
       ctx_tnt_container= 0;                                             \
       ctx_curr_tnt_cnt= 0;                                              \
-    } while (0)
+      if (++ctx_tip_counter >= MAX_TIP_LEN)                             \
+        {                                                               \
+          ctx_tip_counter = 0;                                          \
+          ctx_last_tip_ip = 0;                                          \
+        }                                                               \
+  } while (0)
 
 
 

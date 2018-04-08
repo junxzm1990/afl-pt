@@ -96,6 +96,7 @@ u64 ctx_tnt_container = 0;                             /* holder for tnt(s) in c
 u8  ctx_tnt_short = 0;
 u8  ctx_tnt_go = 0;                                    /* u8 tnt val;flag starts tnt trace*/
 u8  ctx_tnt_lock = 0;                                  /* u8 tnt val;flag stop tnt trace  */
+u8  ctx_tip_counter = 0;                                  /* u8 tnt val;flag stop tnt trace  */
 u8  ctx_curr_tnt_cnt = 0;                              /* map prod to rand when reach 8   */
 
 s32  g_target_cpu = -1;                                /* place holder*/
@@ -128,6 +129,7 @@ get_next_pt_off(){
     ctx_tnt_short = 0;                         \
     ctx_tnt_go = 0;                            \
     ctx_tnt_lock = 0;                          \
+    ctx_tip_counter = 0;                          \
     ctx_curr_tnt_cnt = 0;                      \
   }while(0)                                    \
     
