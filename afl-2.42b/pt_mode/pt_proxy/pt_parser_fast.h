@@ -471,7 +471,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 	if(ctx_curr_tnt_cnt){ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, ctx_curr_tnt_cnt);}       \
       ctx_last_tip_ip = hash_func(ctx_last_tip_ip,(char*)&ctx_curr_ip, sizeof(ctx_curr_ip));\
       __afl_area_ptr[ map_64(ctx_last_tip_ip) >> 3 ] |= (1 << (map_64(ctx_last_tip_ip) & 0b111)) ; \
-      __afl_pt_fav_ptr[(ctx_curr_ip ^ ctx_last_ip) >> 3] |= (1<<(ctx_curr_ip ^ ctx_last_ip)); \
+      __afl_pt_fav_ptr[((ctx_curr_ip ^ ctx_last_ip)&BIT_RANGE) >> 3] |= (1<<((ctx_curr_ip ^ ctx_last_ip) & BIT_RANGE)); \
       ctx_tnt_counter= 0;                                               \
       ctx_tnt_lock= 0;                                                  \
       ctx_tnt_container= 0;                                             \
