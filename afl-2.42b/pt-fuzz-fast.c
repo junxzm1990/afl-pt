@@ -1237,7 +1237,7 @@ static void update_bitmap_score(struct queue_entry* q) {
      and how it compares to us. */
 
   /*PT mode*/
-  fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
+  fav_factor = (q->exec_us *q->exec_us *q->exec_us * q->exec_us) * q->len;
 
   for (i = 0; i < PT_MAP_SIZE; i++){
     if (pt_fav_bits[i]) {//optimization
@@ -1247,7 +1247,8 @@ static void update_bitmap_score(struct queue_entry* q) {
 
           /* Faster-executing or smaller test cases are favored. */
           if (fav_factor > (pt_top_rated[i+j]->exec_us * pt_top_rated[i+j]->exec_us *
-                            pt_top_rated[i+j]->exec_us) * pt_top_rated[i+j]->len) continue;
+                            pt_top_rated[i+j]->exec_us *pt_top_rated[i+j]->exec_us) *
+            pt_top_rated[i+j]->len) continue;
 
           /* Looks like we're going to win. Decrease ref count for the
              previous winner, discard its tpt_fav_bits[] if necessary. */
