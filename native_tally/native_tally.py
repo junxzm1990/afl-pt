@@ -6,7 +6,7 @@ import argparse
 import subprocess
 import progressbar
 from multiprocessing import Pool
-
+from operator import itemgetter
 
 count = 0
 cargs = argparse.ArgumentParser()
@@ -72,8 +72,10 @@ def process_one_seed(arguments):
     cargs = arguments[1]
     target_par = "%s/queue"%cargs.afl_fuzzing_dir
     seed_path = "%s/%s"%(target_par, seed)
+    seed_time = int(os.path.getmtime(seed_path))
+
     r_list = get_edge_cov(cargs.show_map, seed_path, str(cargs.coverage_cmd), cargs.tmp_out + seed, cargs.time_out)
-    return set(r_list)
+    return (seed_time, set(r_list))
 
 
 def process_test_cases(args):
@@ -93,58 +95,31 @@ def process_test_cases(args):
     p = Pool(6)
     target_par = "%s/queue"%args.afl_fuzzing_dir
     listtest =  [("%s/%s"%(target_par, seed), args) for seed in os.listdir(target_par)]
-    edge_sets = p.imap(process_one_seed, [(seed, args) for seed in os.listdir(target_par)])
-    total_edge = set()
+    edge_sets = p.map(process_one_seed, [(seed, args) for seed in os.listdir(target_par)])
 
-    count = 0
+    edge_sets = sorted(edge_sets,key=itemgetter(0))
+
+    total_edges = set()	
+
+    tdis = args.interval * 3600
+
+    tstart = edge_sets[0][0]
+    
+    edge_cnt = 0
+
     for edge in edge_sets:
-        total_edge |= edge
-	count += 1
-        if count%500 == 0:
-            print "Proceed ", count, len(total_edge)
+        tmp_edge_set = total_edges
+        total_edges = total_edges.union(edge[1])
+        edge_cnt += len(total_edges) - len(tmp_edge_set)         
 
-    print len(total_edge)	
-    return 
+        if edge[0] - tstart >= tdis:
+		print "Number of edge in interval: ", edge_cnt 
+		tstart = edge[0]
 
-
-    edge_cov = set()
-    target_par = "%s/queue"%args.afl_fuzzing_dir
-    for seed in os.listdir(target_par):
-
-        seed_path = "%s/%s"%(target_par, seed)
-        r_list = get_edge_cov(args.show_map, seed_path, str(args.coverage_cmd), args.tmp_out, args.time_out)
-        edge_cov |= set(r_list)
-        count += 1;
-	if count % 1000 == 0:
-            print "Proceed ", count, len(edge_cov)
-
-
-    print len(edge_cov)
+    if edge_cnt != 0:
+        print "Number of edge in interval: ", edge_cnt
 
     return
-
-
-    print args.interval, args.interval*(par_num+1)
-    for p_time in range(args.interval, args.interval* (par_num +1), args.interval):
-        edge_cov = set()
-        target_par = "{0}-{1}hr/".format(os.path.dirname(args.afl_fuzzing_dir), p_time)
-        if not os.path.exists(target_par):
-            print target_par, "not exist"
-            sys.exit(-1)
-        for seed in os.listdir(target_par):
-            seed_path = "%s/%s"%(target_par, seed)
-            r_list = get_edge_cov(args.show_map, seed_path, str(args.coverage_cmd), args.tmp_out, args.time_out)
-            edge_cov |= set(r_list)
-
-        time_cov_curve[p_time] = set(edge_cov)
-        total_edge |= set(edge_cov)
-        bar_count += 1
-        bar.update(bar_count)
-    
-    outfile = "%s/.edge_cov"%(args.afl_fuzzing_dir)
-    print_coverage_curve(time_cov_curve,edge_set=edge_cov,out_file=outfile)
-    os.remove(args.tmp_out)
-
 
 
 def parse_cmdline():
