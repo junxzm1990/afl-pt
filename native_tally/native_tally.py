@@ -95,9 +95,24 @@ def process_test_cases(args):
     p = Pool(6)
     target_par = "%s/queue"%args.afl_fuzzing_dir
     listtest =  [("%s/%s"%(target_par, seed), args) for seed in os.listdir(target_par)]
-    edge_sets = p.map(process_one_seed, [(seed, args) for seed in os.listdir(target_par)])
+    edge_set = p.imap(process_one_seed, [(seed, args) for seed in os.listdir(target_par)])
 
+
+
+    cnt = 0;
+
+    
+    edge_sets = []
+    for edge in edge_set:
+        cnt += 1
+	edge_sets.append(edge)
+        if cnt % 500 == 0:
+            print "Processed ", cnt 
+		
+
+    print "----- finished all coverage testing, now counting"
     edge_sets = sorted(edge_sets,key=itemgetter(0))
+    print "----- now finished all sorting ", len(edge_sets)
 
     total_edges = set()	
 
