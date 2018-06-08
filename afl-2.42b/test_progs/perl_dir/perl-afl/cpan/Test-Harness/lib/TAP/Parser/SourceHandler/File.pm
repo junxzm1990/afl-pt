@@ -16,11 +16,11 @@ TAP::Parser::SourceHandler::File - Stream TAP from a text file.
 
 =head1 VERSION
 
-Version 3.39
+Version 3.38
 
 =cut
 
-our $VERSION = '3.39';
+our $VERSION = '3.38';
 
 =head1 SYNOPSIS
 

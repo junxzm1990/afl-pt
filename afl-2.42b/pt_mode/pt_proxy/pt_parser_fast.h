@@ -447,10 +447,10 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     u64 packet_len;
     enum pt_packet_kind kind;
     packet = buffer;
-    bytes_remained = size;
+    bytes_remained = size; 
 
 
-#define MAX_TNT_LEN 1024
+#define MAX_TNT_LEN 4096
 #define UPDATE_TNT_PROD(BIT)                                        \
     do {                                                            \
       if(likely(ctx_tnt_go) && !ctx_tnt_lock){                      \
@@ -465,7 +465,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     } while (0)
 
 
-#define MAX_TIP_LEN 5 
+#define MAX_TIP_LEN  4
 #define UPDATE_TRACEBITS_IDX()                                          \
     do {                                                                \
 	if(ctx_curr_tnt_cnt){ctx_last_tip_ip = hash_func(ctx_last_tip_ip, (char*)&ctx_tnt_container, ctx_curr_tnt_cnt);}       \
@@ -493,11 +493,11 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
     } while (0)
 
     while (bytes_remained > 0) {
+      // #ifdef DEBUG_PACKET
+      // writeout_packet(dfd, "max buffer end:", buffer + pt_trace_buf_size - 16);
+      // writeout_packet(dfd, "packet addr:", packet);
+      // #endif
         kind = pt_get_packet(packet, bytes_remained, &packet_len);
-// #ifdef DEBUG_PACKET
-        /* writeout_packet(fd, "BYTE remained:", bytes_remained); */
-        /* writeout_packet(fd, "packet addr:", packet); */
-// #endif
         switch (kind) {
         case PT_PACKET_TNTSHORT:
             ctx_tnt_short = (u8)*packet;

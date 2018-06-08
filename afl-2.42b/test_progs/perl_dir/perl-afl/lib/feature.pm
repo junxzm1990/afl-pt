@@ -5,7 +5,7 @@
 
 package feature;
 
-our $VERSION = '1.49';
+our $VERSION = '1.47';
 
 our %feature = (
     fc              => 'feature_fc',
@@ -46,8 +46,6 @@ $feature_bundle{"5.22"} = $feature_bundle{"5.15"};
 $feature_bundle{"5.24"} = $feature_bundle{"5.23"};
 $feature_bundle{"5.25"} = $feature_bundle{"5.23"};
 $feature_bundle{"5.26"} = $feature_bundle{"5.23"};
-$feature_bundle{"5.27"} = $feature_bundle{"5.23"};
-$feature_bundle{"5.28"} = $feature_bundle{"5.23"};
 $feature_bundle{"5.9.5"} = $feature_bundle{"5.10"};
 my %noops = (
     postderef => 1,
@@ -177,9 +175,8 @@ C<use feature 'unicode_strings'> subpragma is B<strongly> recommended.
 
 This feature is available starting with Perl 5.12; was almost fully
 implemented in Perl 5.14; and extended in Perl 5.16 to cover C<quotemeta>;
-was extended further in Perl 5.26 to cover L<the range
-operator|perlop/Range Operators>; and was extended again in Perl 5.28 to
-cover L<special-cased whitespace splitting|perlfunc/split>.
+and extended further in Perl 5.26 to cover L<the range
+operator|perlop/Range Operators>.
 
 =head2 The 'unicode_eval' and 'evalbytes' features
 
@@ -385,10 +382,6 @@ The following feature bundles are available:
             postderef_qq
 
   :5.26     say state switch unicode_strings
-            unicode_eval evalbytes current_sub fc
-            postderef_qq
-
-  :5.28     say state switch unicode_strings
             unicode_eval evalbytes current_sub fc
             postderef_qq
 

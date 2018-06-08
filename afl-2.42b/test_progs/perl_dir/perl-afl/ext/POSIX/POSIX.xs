@@ -62,14 +62,6 @@ static int not_here(const char *s);
 #include <unistd.h>
 #endif
 
-#ifdef I_SYS_TIME
-# include <sys/time.h>
-#endif
-
-#ifdef I_SYS_RESOURCE
-# include <sys/resource.h>
-#endif
-
 #if defined(USE_QUADMATH) && defined(I_QUADMATH)
 
 #  undef M_E
@@ -2202,16 +2194,116 @@ setlocale(category, locale = 0)
     PREINIT:
 	char *		retval;
     CODE:
-	retval = Perl_setlocale(category, locale);
-        if (! retval) { /* Should never happen that a query would return an
-                         * error, but be sure */
+#ifdef USE_LOCALE_NUMERIC
+        /* A 0 (or NULL) locale means only query what the current one is.  We
+         * have the LC_NUMERIC name saved, because we are normally switched
+         * into the C locale for it.  Switch back so an LC_ALL query will yield
+         * the correct results; all other categories don't require special
+         * handling */
+        if (locale == 0) {
+            if (category == LC_NUMERIC) {
+                XSRETURN_PV(PL_numeric_name);
+            }
+#   ifdef LC_ALL
+            else if (category == LC_ALL) {
+                SET_NUMERIC_UNDERLYING();
+            }
+#   endif
+        }
+#endif
+#ifdef WIN32    /* Use wrapper on Windows */
+	retval = Perl_my_setlocale(aTHX_ category, locale);
+#else
+	retval = setlocale(category, locale);
+#endif
+        DEBUG_L(PerlIO_printf(Perl_debug_log,
+            "%s:%d: %s\n", __FILE__, __LINE__,
+                _setlocale_debug_string(category, locale, retval)));
+	if (! retval) {
+            /* Should never happen that a query would return an error, but be
+             * sure and reset to C locale */
+            if (locale == 0) {
+                SET_NUMERIC_STANDARD();
+            }
             XSRETURN_UNDEF;
         }
 
-        /* Make sure the returned copy gets cleaned up */
+        /* Save retval since subsequent setlocale() calls may overwrite it. */
+        retval = savepv(retval);
         SAVEFREEPV(retval);
 
-        RETVAL = retval;
+        /* For locale == 0, we may have switched to NUMERIC_UNDERLYING.  Switch
+         * back */
+        if (locale == 0) {
+            SET_NUMERIC_STANDARD();
+            XSRETURN_PV(retval);
+        }
+        else {
+	    RETVAL = retval;
+#ifdef USE_LOCALE_CTYPE
+	    if (category == LC_CTYPE
+#ifdef LC_ALL
+		|| category == LC_ALL
+#endif
+		)
+	    {
+		char *newctype;
+#ifdef LC_ALL
+		if (category == LC_ALL) {
+		    newctype = setlocale(LC_CTYPE, NULL);
+                    DEBUG_Lv(PerlIO_printf(Perl_debug_log,
+                        "%s:%d: %s\n", __FILE__, __LINE__,
+                        _setlocale_debug_string(LC_CTYPE, NULL, newctype)));
+                }
+		else
+#endif
+		    newctype = RETVAL;
+		new_ctype(newctype);
+	    }
+#endif /* USE_LOCALE_CTYPE */
+#ifdef USE_LOCALE_COLLATE
+	    if (category == LC_COLLATE
+#ifdef LC_ALL
+		|| category == LC_ALL
+#endif
+		)
+	    {
+		char *newcoll;
+#ifdef LC_ALL
+		if (category == LC_ALL) {
+		    newcoll = setlocale(LC_COLLATE, NULL);
+                    DEBUG_Lv(PerlIO_printf(Perl_debug_log,
+                        "%s:%d: %s\n", __FILE__, __LINE__,
+                        _setlocale_debug_string(LC_COLLATE, NULL, newcoll)));
+                }
+		else
+#endif
+		    newcoll = RETVAL;
+		new_collate(newcoll);
+	    }
+#endif /* USE_LOCALE_COLLATE */
+#ifdef USE_LOCALE_NUMERIC
+	    if (category == LC_NUMERIC
+#ifdef LC_ALL
+		|| category == LC_ALL
+#endif
+		)
+	    {
+		char *newnum;
+#ifdef LC_ALL
+		if (category == LC_ALL) {
+		    newnum = setlocale(LC_NUMERIC, NULL);
+                    DEBUG_Lv(PerlIO_printf(Perl_debug_log,
+                        "%s:%d: %s\n", __FILE__, __LINE__,
+                        _setlocale_debug_string(LC_NUMERIC, NULL, newnum)));
+                }
+		else
+#endif
+		    newnum = RETVAL;
+		new_numeric(newnum);
+	    }
+#endif /* USE_LOCALE_NUMERIC */
+	}
     OUTPUT:
 	RETVAL
 

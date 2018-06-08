@@ -870,18 +870,15 @@ S_ithread_create(
            reallocated (and hence move) as a side effect of calls to
            perl_clone() and sv_dup_inc(). Hence copy the parameters
            somewhere under our control first, before duplicating.  */
-        if (num_params) {
 #if (PERL_VERSION > 8)
-            Copy(parent_perl->Istack_base + params_start, array, num_params, SV *);
+        Copy(parent_perl->Istack_base + params_start, array, num_params, SV *);
 #else
-            Copy(parent_perl->Tstack_base + params_start, array, num_params, SV *);
+        Copy(parent_perl->Tstack_base + params_start, array, num_params, SV *);
 #endif
-            while (num_params--) {
-                *array = sv_dup_inc(*array, clone_param);
-                ++array;
-            }
+        while (num_params--) {
+            *array = sv_dup_inc(*array, clone_param);
+            ++array;
         }
-
 #if (PERL_VERSION > 13) || (PERL_VERSION == 13 && PERL_SUBVERSION > 1)
         Perl_clone_params_del(clone_param);
 #endif
@@ -1019,13 +1016,12 @@ S_ithread_create(
     MUTEX_UNLOCK(&my_pool->create_destruct_mutex);
     return (thread);
 
-#if defined(CLANG_DIAG_IGNORE)
+#if defined(__clang__) || defined(__clang)
     CLANG_DIAG_IGNORE(-Wthread-safety);
     /* warning: mutex 'thread->mutex' is not held on every path through here [-Wthread-safety-analysis] */
 #endif
 }
-/* perl.h defines CLANG_DIAG_* but only in 5.24+ */
-#if defined(CLANG_DIAG_RESTORE)
+#if defined(__clang__) || defined(__clang)
 CLANG_DIAG_RESTORE
 #endif
 
@@ -1363,9 +1359,6 @@ ithread_join(...)
             ptr_table_store(PL_ptr_table, &other_perl->Isv_undef, &PL_sv_undef);
             ptr_table_store(PL_ptr_table, &other_perl->Isv_no, &PL_sv_no);
             ptr_table_store(PL_ptr_table, &other_perl->Isv_yes, &PL_sv_yes);
-#  ifdef PL_sv_zero
-            ptr_table_store(PL_ptr_table, &other_perl->Isv_zero, &PL_sv_zero);
-#  endif
             params = (AV *)sv_dup((SV*)params_copy, clone_params);
             S_ithread_set(aTHX_ current_thread);
             Perl_clone_params_del(clone_params);
@@ -1794,9 +1787,6 @@ ithread_error(...)
             ptr_table_store(PL_ptr_table, &other_perl->Isv_undef, &PL_sv_undef);
             ptr_table_store(PL_ptr_table, &other_perl->Isv_no, &PL_sv_no);
             ptr_table_store(PL_ptr_table, &other_perl->Isv_yes, &PL_sv_yes);
-#  ifdef PL_sv_zero
-            ptr_table_store(PL_ptr_table, &other_perl->Isv_zero, &PL_sv_zero);
-#  endif
             err = sv_dup(thread->err, clone_params);
             S_ithread_set(aTHX_ current_thread);
             Perl_clone_params_del(clone_params);

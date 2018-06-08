@@ -399,7 +399,8 @@ unless ($define{'USE_ITHREADS'}) {
 			 );
 }
 
-unless ($define{'HAS_NEWLOCALE'} && ! $define{'NO_POSIX_2008_LOCALE'})
+unless (   $define{'USE_ITHREADS'}
+        && $define{'HAS_NEWLOCALE'})
 {
     ++$skip{$_} foreach qw(
         PL_C_locale_obj
@@ -481,10 +482,6 @@ unless ($define{'MULTIPLICITY'}) {
     ++$skip{$_} foreach qw(
 		    PL_interp_size
 		    PL_interp_size_5_18_0
-                    PL_sv_yes
-                    PL_sv_undef
-                    PL_sv_no
-                    PL_sv_zero
 			 );
 }
 
@@ -575,9 +572,6 @@ if ($define{'PERL_GLOBAL_STRUCT'}) {
 
 ++$skip{PL_op_exec_cnt}
     unless $define{PERL_TRACE_OPS};
-
-++$skip{PL_hash_chars}
-    unless $define{PERL_USE_SINGLE_CHAR_HASH_CACHE};
 
 # functions from *.sym files
 

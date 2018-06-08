@@ -163,9 +163,15 @@ PP(pp_regcomp)
     /* handle the empty pattern */
     if (!RX_PRELEN(PM_GETRE(pm)) && PL_curpm) {
         if (PL_curpm == PL_reg_curpm) {
-            if (PL_curpm_under && PL_curpm_under == PL_reg_curpm) {
-                Perl_croak(aTHX_ "Infinite recursion via empty pattern");
+            if (PL_curpm_under) {
+                if (PL_curpm_under == PL_reg_curpm) {
+                    Perl_croak(aTHX_ "Infinite recursion via empty pattern");
+                } else {
+                    pm = PL_curpm_under;
+                }
             }
+        } else {
+            pm = PL_curpm;
         }
     }
 
@@ -715,7 +721,6 @@ PP(pp_formline)
 		SvSETMAGIC(sv);
 		break;
 	    }
-            /* FALLTHROUGH */
 
 	case FF_LINESNGL: /* process ^*  */
 	    chopspace = 0;
@@ -953,7 +958,7 @@ PP(pp_grepstart)
     if (PL_stack_base + TOPMARK == SP) {
 	(void)POPMARK;
 	if (GIMME_V == G_SCALAR)
-	    XPUSHs(&PL_sv_zero);
+	    mXPUSHi(0);
 	RETURNOP(PL_op->op_next->op_next);
     }
     PL_stack_sp = PL_stack_base + TOPMARK + 1;
@@ -1123,11 +1128,9 @@ PP(pp_mapwhile)
 
 PP(pp_range)
 {
-    dTARG;
     if (GIMME_V == G_ARRAY)
 	return NORMAL;
-    GETTARGET;
-    if (SvTRUE_NN(targ))
+    if (SvTRUEx(PAD_SV(PL_op->op_targ)))
 	return cLOGOP->op_other;
     else
 	return NORMAL;
@@ -1155,7 +1158,7 @@ PP(pp_flip)
 		    flip = SvIV(sv) == SvIV(GvSV(gv));
 	    }
 	} else {
-	    flip = SvTRUE_NN(sv);
+	    flip = SvTRUE(sv);
 	}
 	if (flip) {
 	    sv_setiv(PAD_SV(cUNOP->op_first->op_targ), 1);
@@ -1268,7 +1271,7 @@ PP(pp_flop)
 	    }
 	}
 	else {
-	    flop = SvTRUE_NN(sv);
+	    flop = SvTRUE(sv);
 	}
 
 	if (flop) {
@@ -1682,13 +1685,7 @@ Perl_die_unwind(pTHX_ SV *msv)
     if (in_eval) {
 	I32 cxix;
 
-        /* We need to keep this SV alive through all the stack unwinding
-         * and FREETMPSing below, while ensuing that it doesn't leak
-         * if we call out to something which then dies (e.g. sub STORE{die}
-         * when unlocalising a tied var). So we do a dance with
-         * mortalising and SAVEFREEing.
-         */
-        sv_2mortal(SvREFCNT_inc_simple_NN(exceptsv));
+        exceptsv = sv_2mortal(SvREFCNT_inc_simple_NN(exceptsv));
 
 	/*
 	 * Historically, perl used to set ERRSV ($@) early in the die
@@ -1757,24 +1754,6 @@ Perl_die_unwind(pTHX_ SV *msv)
 
 	    restartjmpenv = cx->blk_eval.cur_top_env;
 	    restartop     = cx->blk_eval.retop;
-
-            /* We need a FREETMPS here to avoid late-called destructors
-             * clobbering $@ *after* we set it below, e.g.
-             *    sub DESTROY { eval { die "X" } }
-             *    eval { my $x = bless []; die $x = 0, "Y" };
-             *    is($@, "Y")
-             * Here the clearing of the $x ref mortalises the anon array,
-             * which needs to be freed *before* $& is set to "Y",
-             * otherwise it gets overwritten with "X".
-             *
-             * However, the FREETMPS will clobber exceptsv, so preserve it
-             * on the savestack for now.
-             */
-            SAVEFREESV(SvREFCNT_inc_simple_NN(exceptsv));
-            FREETMPS;
-            /* now we're about to pop the savestack, so re-mortalise it */
-            sv_2mortal(SvREFCNT_inc_simple_NN(exceptsv));
-
             /* Note that unlike pp_entereval, pp_require isn't supposed to
              * trap errors. So if we're a require, after we pop the
              * CXt_EVAL that pp_require pushed, rethrow the error with
@@ -1800,7 +1779,7 @@ Perl_die_unwind(pTHX_ SV *msv)
 PP(pp_xor)
 {
     dSP; dPOPTOPssrl;
-    if (SvTRUE_NN(left) != SvTRUE_NN(right))
+    if (SvTRUE(left) != SvTRUE(right))
 	RETSETYES;
     else
 	RETSETNO;
@@ -1942,7 +1921,7 @@ PP(pp_caller)
     }
     else {
 	PUSHs(newSVpvs_flags("(eval)", SVs_TEMP));
-	PUSHs(&PL_sv_zero);
+	mPUSHi(0);
     }
     gimme = cx->blk_gimme;
     if (gimme == G_VOID)
@@ -1992,8 +1971,7 @@ PP(pp_caller)
 
 	if (AvMAX(PL_dbargs) < AvFILLp(ary) + off)
 	    av_extend(PL_dbargs, AvFILLp(ary) + off);
-        if (AvFILLp(ary) + 1 + off)
-            Copy(AvALLOC(ary), AvARRAY(PL_dbargs), AvFILLp(ary) + 1 + off, SV*);
+	Copy(AvALLOC(ary), AvARRAY(PL_dbargs), AvFILLp(ary) + 1 + off, SV*);
 	AvFILLp(PL_dbargs) = AvFILLp(ary) + off;
     }
     mPUSHi(CopHINTS_get(cx->blk_oldcop));
@@ -2034,10 +2012,8 @@ PP(pp_reset)
     dSP;
     const char * tmps;
     STRLEN len = 0;
-    if (MAXARG < 1 || (!TOPs && !POPs)) {
-        EXTEND(SP, 1);
+    if (MAXARG < 1 || (!TOPs && !POPs))
 	tmps = NULL, len = 0;
-    }
     else
 	tmps = SvPVx_const(POPs, len);
     sv_resetpvn(tmps, len, CopSTASH(PL_curcop));
@@ -3277,7 +3253,7 @@ Perl_find_runcv_where(pTHX_ U8 cond, IV arg, U32 *db_seqp)
 		    return cv;
 		case FIND_RUNCV_level_eq:
 		    if (level++ != arg) continue;
-                    /* FALLTHROUGH */
+		    /* GERONIMO! */
 		default:
 		    return cv;
 		}
@@ -3373,11 +3349,7 @@ S_doeval_compile(pTHX_ U8 gimme, CV* outside, U32 seq, HV *hh)
 	SAVEGENERICSV(PL_curstash);
 	PL_curstash = (HV *)CopSTASH(PL_curcop);
 	if (SvTYPE(PL_curstash) != SVt_PVHV) PL_curstash = NULL;
-	else {
-	    SvREFCNT_inc_simple_void(PL_curstash);
-	    save_item(PL_curstname);
-	    sv_sethek(PL_curstname, HvNAME_HEK(PL_curstash));
-	}
+	else SvREFCNT_inc_simple_void(PL_curstash);
     }
     /* XXX:ajgo do we really need to alloc an AV for begin/checkunit */
     SAVESPTR(PL_beginav);
@@ -3757,7 +3729,6 @@ S_require_file(pTHX_ SV *sv)
     I32 old_savestack_ix;
     const bool op_is_require = PL_op->op_type == OP_REQUIRE;
     const char *const op_name = op_is_require ? "require" : "do";
-    SV ** svp_cached = NULL;
 
     assert(op_is_require || PL_op->op_type == OP_DOFILE);
 
@@ -3766,15 +3737,6 @@ S_require_file(pTHX_ SV *sv)
     name = SvPV_nomg_const(sv, len);
     if (!(name && len > 0 && *name))
         DIE(aTHX_ "Missing or undefined argument to %s", op_name);
-
-#ifndef VMS
-	/* try to return earlier (save the SAFE_PATHNAME check) if INC already got the name */
-	if (op_is_require) {
-		/* can optimize to only perform one single lookup */
-		svp_cached = hv_fetch(GvHVn(PL_incgv), (char*) name, len, 0);
-		if ( svp_cached && *svp_cached != &PL_sv_undef ) RETPUSHYES;
-	}
-#endif
 
     if (!IS_SAFE_PATHNAME(name, len, op_name)) {
         if (!op_is_require) {
@@ -3814,8 +3776,8 @@ S_require_file(pTHX_ SV *sv)
 	unixlen = len;
     }
     if (op_is_require) {
-	/* reuse the previous hv_fetch result if possible */
-	SV * const * const svp = svp_cached ? svp_cached : hv_fetch(GvHVn(PL_incgv), unixname, unixlen, 0);
+	SV * const * const svp = hv_fetch(GvHVn(PL_incgv),
+					  unixname, unixlen, 0);
 	if ( svp ) {
 	    if (*svp != &PL_sv_undef)
 		RETPUSHYES;
@@ -4474,14 +4436,11 @@ PP(pp_leaveeval)
     /* did require return a false value? */
     failed =    CxOLD_OP_TYPE(cx) == OP_REQUIRE
              && !(gimme == G_SCALAR
-                    ? SvTRUE_NN(*PL_stack_sp)
+                    ? SvTRUE(*PL_stack_sp)
                     : PL_stack_sp > oldsp);
 
-    if (gimme == G_VOID) {
+    if (gimme == G_VOID)
         PL_stack_sp = oldsp;
-        /* free now to avoid late-called destructors clobbering $@ */
-        FREETMPS;
-    }
     else
         leave_adjust_stacks(oldsp, oldsp, gimme, 0);
 
@@ -4573,11 +4532,8 @@ PP(pp_leavetry)
     oldsp = PL_stack_base + cx->blk_oldsp;
     gimme = cx->blk_gimme;
 
-    if (gimme == G_VOID) {
+    if (gimme == G_VOID)
         PL_stack_sp = oldsp;
-        /* free now to avoid late-called destructors clobbering $@ */
-        FREETMPS;
-    }
     else
         leave_adjust_stacks(oldsp, oldsp, gimme, 1);
     CX_LEAVE_SCOPE(cx);
@@ -5378,8 +5334,7 @@ S_doparseform(pTHX_ SV *sv)
 	    if (s < send) {
 	        skipspaces = 0;
                 continue;
-            }
-            /* FALLTHROUGH */
+            } /* else FALL THROUGH */
 	case '\n':
 	    arg = s - base;
 	    skipspaces++;
@@ -5647,7 +5602,7 @@ S_run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
 
 	DEFSV_set(upstream);
 	PUSHMARK(SP);
-	PUSHs(&PL_sv_zero);
+	mPUSHi(0);
 	if (filter_state) {
 	    PUSHs(filter_state);
 	}

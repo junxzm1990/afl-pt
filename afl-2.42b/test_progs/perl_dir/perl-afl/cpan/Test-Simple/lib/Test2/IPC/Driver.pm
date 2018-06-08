@@ -2,10 +2,10 @@ package Test2::IPC::Driver;
 use strict;
 use warnings;
 
-our $VERSION = '1.302101';
+our $VERSION = '1.302073';
 
 
-use Carp qw/confess/;
+use Carp qw/confess longmess/;
 use Test2::Util::HashBase qw{no_fatal};
 
 use Test2::API qw/test2_ipc_add_driver/;
@@ -45,8 +45,7 @@ sub abort {
 sub abort_trace {
     my $self = shift;
     my ($msg) = @_;
-    # Older versions of Carp do not export longmess() function, so it needs to be called with package name
-    $self->abort(Carp::longmess($msg));
+    $self->abort(longmess($msg));
 }
 
 1;
@@ -283,7 +282,7 @@ F<http://github.com/Test-More/test-more/>.
 
 =head1 COPYRIGHT
 
-Copyright 2017 Chad Granum E<lt>exodist@cpan.orgE<gt>.
+Copyright 2016 Chad Granum E<lt>exodist@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

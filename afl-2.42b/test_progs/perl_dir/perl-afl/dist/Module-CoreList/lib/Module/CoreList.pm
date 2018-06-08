@@ -3,10 +3,7 @@ use strict;
 use vars qw/$VERSION %released %version %families %upstream
 	    %bug_tracker %deprecated %delta/;
 use version;
-$VERSION = '5.20171020';
-
-sub PKG_PATTERN () { q#\A[a-zA-Z_][0-9a-zA-Z_]*(?:(::|')[0-9a-zA-Z_]+)*\z# }
-sub _looks_like_invocant ($) { local $@; !!eval { $_[0]->isa(__PACKAGE__) } }
+$VERSION = '5.20170922_26';
 
 sub _undelta {
     my ($delta) = @_;
@@ -47,8 +44,9 @@ END {
 
 
 sub first_release_raw {
-    shift if defined $_[1] and $_[1] =~ PKG_PATTERN and _looks_like_invocant $_[0];
     my $module = shift;
+    $module = shift if eval { $module->isa(__PACKAGE__) }
+      and scalar @_ and $_[0] =~ m#\A[a-zA-Z_][0-9a-zA-Z_]*(?:(::|')[0-9a-zA-Z_]+)*\z#;
     my $version = shift;
 
     my @perls = $version
@@ -72,9 +70,10 @@ sub first_release {
 }
 
 sub find_modules {
-    shift if _looks_like_invocant $_[0];
     my $regex = shift;
-    my @perls = @_ ? @_ : keys %version;
+    $regex = shift if eval { $regex->isa(__PACKAGE__) };
+    my @perls = @_;
+    @perls = keys %version unless @perls;
 
     my %mods;
     foreach (@perls) {
@@ -86,23 +85,30 @@ sub find_modules {
 }
 
 sub find_version {
-    shift if _looks_like_invocant $_[0];
     my $v = shift;
-    return $version{$v} if defined $v and defined $version{$v};
+    if ($v->isa(__PACKAGE__)) {
+        $v = shift;
+        return if not defined $v;
+    }
+    return $version{$v} if defined $version{$v};
     return;
 }
 
 sub is_deprecated {
-    shift if defined $_[1] and $_[1] =~ PKG_PATTERN and _looks_like_invocant $_[0];
     my $module = shift;
-    my $perl_version = shift || $];
+    $module = shift if eval { $module->isa(__PACKAGE__) }
+      and scalar @_ and $_[0] =~ m#\A[a-zA-Z_][0-9a-zA-Z_]*(?:(::|')[0-9a-zA-Z_]+)*\z#;
+    my $perl_version = shift;
+    $perl_version ||= $];
     return unless $module && exists $deprecated{$perl_version}{$module};
     return $deprecated{$perl_version}{$module};
 }
 
 sub deprecated_in {
-    shift if defined $_[1] and $_[1] =~ PKG_PATTERN and _looks_like_invocant $_[0];
-    my $module = shift or return;
+    my $module = shift;
+    $module = shift if eval { $module->isa(__PACKAGE__) }
+      and scalar @_ and $_[0] =~ m#\A[a-zA-Z_][0-9a-zA-Z_]*(?:(::|')[0-9a-zA-Z_]+)*\z#;
+    return unless $module;
     my @perls = grep { exists $deprecated{$_}{$module} } keys %deprecated;
     return unless @perls;
     require List::Util;
@@ -120,8 +126,9 @@ sub removed_from_by_date {
 }
 
 sub removed_raw {
-  shift if defined $_[1] and $_[1] =~ PKG_PATTERN and _looks_like_invocant $_[0];
   my $mod = shift;
+  $mod = shift if eval { $mod->isa(__PACKAGE__) }
+      and scalar @_ and $_[0] =~ m#\A[a-zA-Z_][0-9a-zA-Z_]*(?:(::|')[0-9a-zA-Z_]+)*\z#;
   return unless my @perls = sort { $a cmp $b } first_release_raw($mod);
   my $last = pop @perls;
   my @removed = grep { $_ > $last } sort { $a cmp $b } keys %version;
@@ -129,8 +136,8 @@ sub removed_raw {
 }
 
 sub changes_between {
-  shift if _looks_like_invocant $_[0];
   my $left_ver = shift;
+  $left_ver = shift if eval { $left_ver->isa(__PACKAGE__) };
   my $right_ver = shift;
 
   my $left  = $version{ $left_ver };
@@ -321,9 +328,7 @@ sub changes_between {
     5.027002 => '2017-07-20',
     5.027003 => '2017-08-21',
     5.027004 => '2017-09-20',
-    5.024003 => '2017-09-22',
     5.026001 => '2017-09-22',
-    5.027005 => '2017-10-20',
   );
 
 for my $version ( sort { $a <=> $b } keys %released ) {
@@ -14429,20 +14434,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
         removed => {
         }
     },
-    5.024003 => {
-        delta_from => 5.024002,
-        changed => {
-            'B::Op_private'         => '5.024003',
-            'Config'                => '5.024003',
-            'Module::CoreList'      => '5.20170922_24',
-            'Module::CoreList::TieHashDelta'=> '5.20170922_24',
-            'Module::CoreList::Utils'=> '5.20170922_24',
-            'POSIX'                 => '1.65_01',
-            'Time::HiRes'           => '1.9741',
-        },
-        removed => {
-        }
-    },
     5.026001 => {
         delta_from => 5.026000,
         changed => {
@@ -14458,26 +14449,16 @@ for my $version ( sort { $a <=> $b } keys %released ) {
         removed => {
         }
     },
-    5.027005 => {
-        delta_from => 5.027004,
-        changed => {
-            'B::Op_private'         => '5.027005',
-            'Config'                => '5.027005',
-            'Module::CoreList'      => '5.20171020',
-            'Module::CoreList::TieHashDelta'=> '5.20171020',
-            'Module::CoreList::Utils'=> '5.20171020',
-        },
-        removed => {
-        }
-    },
 );
 
 sub is_core
 {
-    shift if defined $_[1] and $_[1] =~ /^\w/ and _looks_like_invocant $_[0];
     my $module = shift;
-    my $module_version = @_ > 0 ? shift : undef;
-    my $perl_version   = @_ > 0 ? shift : $];
+    $module = shift if eval { $module->isa(__PACKAGE__) } && @_ > 0 && defined($_[0]) && $_[0] =~ /^\w/;
+    my ($module_version, $perl_version);
+
+    $module_version = shift if @_ > 0;
+    $perl_version   = @_ > 0 ? shift : $];
 
     my $first_release = first_release($module);
 
@@ -15277,22 +15258,8 @@ sub is_core
         removed => {
         }
     },
-    5.024003 => {
-        delta_from => 5.024002,
-        changed => {
-        },
-        removed => {
-        }
-    },
     5.026001 => {
         delta_from => 5.026000,
-        changed => {
-        },
-        removed => {
-        }
-    },
-    5.027005 => {
-        delta_from => 5.027004,
         changed => {
         },
         removed => {

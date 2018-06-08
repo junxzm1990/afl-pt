@@ -4240,24 +4240,6 @@ $ tmp = "memchr"
 $ GOSUB inlibc
 $ d_memchr = tmp
 $!
-$! Check for memrchr
-$!
-$ OS
-$ WS "#if defined(__DECC) || defined(__DECCXX)"
-$ WS "#include <stdlib.h>"
-$ WS "#endif"
-$ WS "#include <string.h>"
-$ WS "int main()"
-$ WS "{"
-$ WS "char * place;"
-$ WS "place = (char *)memrchr(""foo"", 47, 3);"
-$ WS "exit(0);"
-$ WS "}"
-$ CS
-$ tmp = "memrchr"
-$ GOSUB inlibc
-$ d_memrchr = tmp
-$!
 $! Check for strtoull
 $!
 $ OS
@@ -6217,7 +6199,6 @@ $ WC "d_memcmp='define'"
 $ WC "d_memcpy='define'"
 $ WC "d_memmem='undef'"
 $ WC "d_memmove='define'"
-$ WC "d_memrchr='" + d_memrchr + "'"
 $ WC "d_memset='define'"
 $ WC "d_mkdir='define'"
 $ WC "d_mkdtemp='" + d_mkdtemp + "'"
@@ -6265,11 +6246,6 @@ $ WC "d_oldarchlib='define'"
 $ WC "d_oldpthreads='" + d_oldpthreads + "'"
 $ WC "d_oldsock='undef'"
 $ WC "d_open3='define'"
-$ WC "d_openat='undef'"
-$ WC "d_unlinkat='undef'"
-$ WC "d_renameat='undef'"
-$ WC "d_linkat='undef'"
-$ WC "d_fchmodat='undef'"
 $ WC "d_pathconf='" + d_pathconf + "'"
 $ WC "d_pause='define'"
 $ WC "d_perl_otherlibdirs='undef'"

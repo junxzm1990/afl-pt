@@ -15,7 +15,7 @@ require Exporter;
 # walkoptree comes from B.xs
 
 BEGIN {
-    $B::VERSION = '1.70';
+    $B::VERSION = '1.68';
     @B::EXPORT_OK = ();
 
     # Our BOOT code needs $VERSION set, and will append to @EXPORT_OK.
@@ -80,8 +80,7 @@ push @B::EXPORT_OK, (qw(minus_c ppname save_BEGINs
 # Nullsv *must* come first in the following so that the condition
 # ($$sv == 0) can continue to be used to test (sv == Nullsv).
 @B::specialsv_name = qw(Nullsv &PL_sv_undef &PL_sv_yes &PL_sv_no
-			(SV*)pWARN_ALL (SV*)pWARN_NONE (SV*)pWARN_STD
-                        &PL_sv_zero);
+			(SV*)pWARN_ALL (SV*)pWARN_NONE (SV*)pWARN_STD);
 
 {
     # Stop "-w" from complaining about the lack of a real B::OBJECT class
@@ -257,10 +256,12 @@ sub walkoptree_exec {
 sub walksymtable {
     my ($symref, $method, $recurse, $prefix) = @_;
     my $sym;
+    my $ref;
     my $fullname;
     no strict 'refs';
     $prefix = '' unless defined $prefix;
     foreach my $sym ( sort keys %$symref ) {
+        $ref= $symref->{$sym};
         $fullname = "*main::".$prefix.$sym;
 	if ($sym =~ /::$/) {
 	    $sym = $prefix . $sym;

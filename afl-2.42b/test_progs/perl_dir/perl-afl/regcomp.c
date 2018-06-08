@@ -119,7 +119,8 @@ typedef struct scan_frame {
 
 /* Certain characters are output as a sequence with the first being a
  * backslash. */
-#define isBACKSLASHED_PUNCT(c)  strchr("-[]\\^", c)
+#define isBACKSLASHED_PUNCT(c)                                              \
+                    ((c) == '-' || (c) == ']' || (c) == '\\' || (c) == '^')
 
 
 struct RExC_state_t {
@@ -392,7 +393,7 @@ struct RExC_state_t {
 
   For each string some basic information is maintained:
 
-  - min_offset
+  - offset or min_offset
     This is the position the string must appear at, or not before.
     It also implicitly (when combined with minlenp) tells us how many
     characters must match before the string we are searching for.
@@ -404,7 +405,6 @@ struct RExC_state_t {
     Only used for floating strings. This is the rightmost point that
     the string can appear at. If set to SSize_t_MAX it indicates that the
     string can occur infinitely far to the right.
-    For fixed strings, it is equal to min_offset.
 
   - minlenp
     A pointer to the minimum number of characters of the pattern that the
@@ -444,15 +444,6 @@ struct RExC_state_t {
 
 */
 
-struct scan_data_substrs {
-    SV      *str;       /* longest substring found in pattern */
-    SSize_t min_offset; /* earliest point in string it can appear */
-    SSize_t max_offset; /* latest point in string it can appear */
-    SSize_t *minlenp;   /* pointer to the minlen relevant to the string */
-    SSize_t lookbehind; /* is the pos of the string modified by LB */
-    I32 flags;          /* per substring SF_* and SCF_* flags */
-};
-
 typedef struct scan_data_t {
     /*I32 len_min;      unused */
     /*I32 len_delta;    unused */
@@ -462,14 +453,17 @@ typedef struct scan_data_t {
     SSize_t last_end;	    /* min value, <0 unless valid. */
     SSize_t last_start_min;
     SSize_t last_start_max;
-    U8      cur_is_floating; /* whether the last_* values should be set as
-                              * the next fixed (0) or floating (1)
-                              * substring */
-
-    /* [0] is longest fixed substring so far, [1] is longest float so far */
-    struct scan_data_substrs  substrs[2];
-
-    I32 flags;             /* common SF_* and SCF_* flags */
+    SV **longest;	    /* Either &l_fixed, or &l_float. */
+    SV *longest_fixed;      /* longest fixed string found in pattern */
+    SSize_t offset_fixed;   /* offset where it starts */
+    SSize_t *minlen_fixed;  /* pointer to the minlen relevant to the string */
+    I32 lookbehind_fixed;   /* is the position of the string modfied by LB */
+    SV *longest_float;      /* longest floating string found in pattern */
+    SSize_t offset_float_min; /* earliest point in string it can appear */
+    SSize_t offset_float_max; /* latest point in string it can appear */
+    SSize_t *minlen_float;  /* pointer to the minlen relevant to the string */
+    SSize_t lookbehind_float; /* is the pos of the string modified by LB */
+    I32 flags;
     I32 whilem_c;
     SSize_t *last_closep;
     regnode_ssc *start_class;
@@ -479,21 +473,23 @@ typedef struct scan_data_t {
  * Forward declarations for pregcomp()'s friends.
  */
 
-static const scan_data_t zero_scan_data = {
-    0, 0, NULL, 0, 0, 0, 0,
-    {
-        { NULL, 0, 0, 0, 0, 0 },
-        { NULL, 0, 0, 0, 0, 0 },
-    },
-    0, 0, NULL, NULL
-};
+static const scan_data_t zero_scan_data =
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0};
 
-/* study flags */
-
+#define SF_BEFORE_EOL		(SF_BEFORE_SEOL|SF_BEFORE_MEOL)
 #define SF_BEFORE_SEOL		0x0001
 #define SF_BEFORE_MEOL		0x0002
-#define SF_BEFORE_EOL		(SF_BEFORE_SEOL|SF_BEFORE_MEOL)
+#define SF_FIX_BEFORE_EOL	(SF_FIX_BEFORE_SEOL|SF_FIX_BEFORE_MEOL)
+#define SF_FL_BEFORE_EOL	(SF_FL_BEFORE_SEOL|SF_FL_BEFORE_MEOL)
 
+#define SF_FIX_SHIFT_EOL	(+2)
+#define SF_FL_SHIFT_EOL		(+4)
+
+#define SF_FIX_BEFORE_SEOL	(SF_BEFORE_SEOL << SF_FIX_SHIFT_EOL)
+#define SF_FIX_BEFORE_MEOL	(SF_BEFORE_MEOL << SF_FIX_SHIFT_EOL)
+
+#define SF_FL_BEFORE_SEOL	(SF_BEFORE_SEOL << SF_FL_SHIFT_EOL)
+#define SF_FL_BEFORE_MEOL	(SF_BEFORE_MEOL << SF_FL_SHIFT_EOL) /* 0x20 */
 #define SF_IS_INF		0x0040
 #define SF_HAS_PAR		0x0080
 #define SF_IN_PAR		0x0100
@@ -975,123 +971,65 @@ Perl_re_indentf(pTHX_ const char *fmt, U32 depth, ...)
 #define DEBUG_SHOW_STUDY_FLAG(flags,flag) \
   if ((flags) & flag) Perl_re_printf( aTHX_  "%s ", #flag)
 
-
-#ifdef DEBUGGING
-static void
-S_debug_show_study_flags(pTHX_ U32 flags, const char *open_str,
-                                    const char *close_str)
-{
-    if (!flags)
-        return;
-
-    Perl_re_printf( aTHX_  "%s", open_str);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_BEFORE_SEOL);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_BEFORE_MEOL);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_IS_INF);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_HAS_PAR);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_IN_PAR);
-    DEBUG_SHOW_STUDY_FLAG(flags, SF_HAS_EVAL);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_DO_SUBSTR);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_DO_STCLASS_AND);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_DO_STCLASS_OR);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_DO_STCLASS);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_WHILEM_VISITED_POS);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_TRIE_RESTUDY);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_SEEN_ACCEPT);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_TRIE_DOING_RESTUDY);
-    DEBUG_SHOW_STUDY_FLAG(flags, SCF_IN_DEFINE);
-    Perl_re_printf( aTHX_  "%s", close_str);
-}
+#define DEBUG_SHOW_STUDY_FLAGS(flags,open_str,close_str)                    \
+    if ( ( flags ) ) {                                                      \
+        Perl_re_printf( aTHX_  "%s", open_str);                                         \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_FL_BEFORE_SEOL);                     \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_FL_BEFORE_MEOL);                     \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_IS_INF);                             \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_HAS_PAR);                            \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_IN_PAR);                             \
+        DEBUG_SHOW_STUDY_FLAG(flags,SF_HAS_EVAL);                           \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_DO_SUBSTR);                         \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_DO_STCLASS_AND);                    \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_DO_STCLASS_OR);                     \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_DO_STCLASS);                        \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_WHILEM_VISITED_POS);                \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_TRIE_RESTUDY);                      \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_SEEN_ACCEPT);                       \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_TRIE_DOING_RESTUDY);                \
+        DEBUG_SHOW_STUDY_FLAG(flags,SCF_IN_DEFINE);                         \
+        Perl_re_printf( aTHX_  "%s", close_str);                                        \
+    }
 
 
-static void
-S_debug_studydata(pTHX_ const char *where, scan_data_t *data,
-                    U32 depth, int is_inf)
-{
-    GET_RE_DEBUG_FLAGS_DECL;
-
-    DEBUG_OPTIMISE_MORE_r({
-        if (!data)
-            return;
-        Perl_re_indentf(aTHX_  "%s: Pos:%" IVdf "/%" IVdf " Flags: 0x%" UVXf,
-            depth,
-            where,
-            (IV)data->pos_min,
-            (IV)data->pos_delta,
-            (UV)data->flags
-        );
-
-        S_debug_show_study_flags(aTHX_ data->flags," [","]");
-
-        Perl_re_printf( aTHX_
-            " Whilem_c: %" IVdf " Lcp: %" IVdf " %s",
-            (IV)data->whilem_c,
-            (IV)(data->last_closep ? *((data)->last_closep) : -1),
-            is_inf ? "INF " : ""
-        );
-
-        if (data->last_found) {
-            int i;
-            Perl_re_printf(aTHX_
-                "Last:'%s' %" IVdf ":%" IVdf "/%" IVdf,
-                    SvPVX_const(data->last_found),
-                    (IV)data->last_end,
-                    (IV)data->last_start_min,
-                    (IV)data->last_start_max
-            );
-
-            for (i = 0; i < 2; i++) {
-                Perl_re_printf(aTHX_
-                    " %s%s: '%s' @ %" IVdf "/%" IVdf,
-                    data->cur_is_floating == i ? "*" : "",
-                    i ? "Float" : "Fixed",
-                    SvPVX_const(data->substrs[i].str),
-                    (IV)data->substrs[i].min_offset,
-                    (IV)data->substrs[i].max_offset
-                );
-                S_debug_show_study_flags(aTHX_ data->substrs[i].flags," [","]");
-            }
-        }
-
-        Perl_re_printf( aTHX_ "\n");
-    });
-}
-
-
-static void
-S_debug_peep(pTHX_ const char *str, const RExC_state_t *pRExC_state,
-                regnode *scan, U32 depth, U32 flags)
-{
-    GET_RE_DEBUG_FLAGS_DECL;
-
-    DEBUG_OPTIMISE_r({
-        regnode *Next;
-
-        if (!scan)
-            return;
-        Next = regnext(scan);
-        regprop(RExC_rx, RExC_mysv, scan, NULL, pRExC_state);
-        Perl_re_indentf( aTHX_   "%s>%3d: %s (%d)",
-            depth,
-            str,
-            REG_NODE_NUM(scan), SvPV_nolen_const(RExC_mysv),
-            Next ? (REG_NODE_NUM(Next)) : 0 );
-        S_debug_show_study_flags(aTHX_ flags," [ ","]");
-        Perl_re_printf( aTHX_  "\n");
-   });
-}
-
-
-#  define DEBUG_STUDYDATA(where, data, depth, is_inf) \
-                    S_debug_studydata(aTHX_ where, data, depth, is_inf)
-
-#  define DEBUG_PEEP(str, scan, depth, flags)   \
-                    S_debug_peep(aTHX_ str, pRExC_state, scan, depth, flags)
-
-#else
-#  define DEBUG_STUDYDATA(where, data, depth, is_inf) NOOP
-#  define DEBUG_PEEP(str, scan, depth, flags)         NOOP
-#endif
+#define DEBUG_STUDYDATA(str,data,depth)                              \
+DEBUG_OPTIMISE_MORE_r(if(data){                                      \
+    Perl_re_indentf( aTHX_  "" str "Pos:%" IVdf "/%" IVdf            \
+        " Flags: 0x%" UVXf,                                          \
+        depth,                                                       \
+        (IV)((data)->pos_min),                                       \
+        (IV)((data)->pos_delta),                                     \
+        (UV)((data)->flags)                                          \
+    );                                                               \
+    DEBUG_SHOW_STUDY_FLAGS((data)->flags," [ ","]");                 \
+    Perl_re_printf( aTHX_                                            \
+        " Whilem_c: %" IVdf " Lcp: %" IVdf " %s",                    \
+        (IV)((data)->whilem_c),                                      \
+        (IV)((data)->last_closep ? *((data)->last_closep) : -1),     \
+        is_inf ? "INF " : ""                                         \
+    );                                                               \
+    if ((data)->last_found)                                          \
+        Perl_re_printf( aTHX_                                        \
+            "Last:'%s' %" IVdf ":%" IVdf "/%" IVdf                   \
+            " %sFixed:'%s' @ %" IVdf                                 \
+            " %sFloat: '%s' @ %" IVdf "/%" IVdf,                     \
+            SvPVX_const((data)->last_found),                         \
+            (IV)((data)->last_end),                                  \
+            (IV)((data)->last_start_min),                            \
+            (IV)((data)->last_start_max),                            \
+            ((data)->longest &&                                      \
+             (data)->longest==&((data)->longest_fixed)) ? "*" : "",  \
+            SvPVX_const((data)->longest_fixed),                      \
+            (IV)((data)->offset_fixed),                              \
+            ((data)->longest &&                                      \
+             (data)->longest==&((data)->longest_float)) ? "*" : "",  \
+            SvPVX_const((data)->longest_float),                      \
+            (IV)((data)->offset_float_min),                          \
+            (IV)((data)->offset_float_max)                           \
+        );                                                           \
+    Perl_re_printf( aTHX_ "\n");                                                 \
+});
 
 
 /* =========================================================
@@ -1263,7 +1201,7 @@ S_cntrl_to_mnemonic(const U8 c)
 }
 
 /* Mark that we cannot extend a found fixed substring at this point.
-   Update the longest found anchored substring or the longest found
+   Update the longest found anchored substring and the longest found
    floating substrings if needed. */
 
 STATIC void
@@ -1271,38 +1209,42 @@ S_scan_commit(pTHX_ const RExC_state_t *pRExC_state, scan_data_t *data,
                     SSize_t *minlenp, int is_inf)
 {
     const STRLEN l = CHR_SVLEN(data->last_found);
-    SV * const longest_sv = data->substrs[data->cur_is_floating].str;
-    const STRLEN old_l = CHR_SVLEN(longest_sv);
+    const STRLEN old_l = CHR_SVLEN(*data->longest);
     GET_RE_DEBUG_FLAGS_DECL;
 
     PERL_ARGS_ASSERT_SCAN_COMMIT;
 
     if ((l >= old_l) && ((l > old_l) || (data->flags & SF_BEFORE_EOL))) {
-        const U8 i = data->cur_is_floating;
-	SvSetMagicSV(longest_sv, data->last_found);
-        data->substrs[i].min_offset = l ? data->last_start_min : data->pos_min;
-
-	if (!i) /* fixed */
-	    data->substrs[0].max_offset = data->substrs[0].min_offset;
-	else { /* float */
-	    data->substrs[1].max_offset = (l
+	SvSetMagicSV(*data->longest, data->last_found);
+	if (*data->longest == data->longest_fixed) {
+	    data->offset_fixed = l ? data->last_start_min : data->pos_min;
+	    if (data->flags & SF_BEFORE_EOL)
+		data->flags
+		    |= ((data->flags & SF_BEFORE_EOL) << SF_FIX_SHIFT_EOL);
+	    else
+		data->flags &= ~SF_FIX_BEFORE_EOL;
+	    data->minlen_fixed=minlenp;
+	    data->lookbehind_fixed=0;
+	}
+	else { /* *data->longest == data->longest_float */
+	    data->offset_float_min = l ? data->last_start_min : data->pos_min;
+	    data->offset_float_max = (l
                           ? data->last_start_max
                           : (data->pos_delta > SSize_t_MAX - data->pos_min
 					 ? SSize_t_MAX
 					 : data->pos_min + data->pos_delta));
 	    if (is_inf
-		 || (STRLEN)data->substrs[1].max_offset > (STRLEN)SSize_t_MAX)
-		data->substrs[1].max_offset = SSize_t_MAX;
-        }
-
-        if (data->flags & SF_BEFORE_EOL)
-            data->substrs[i].flags |= (data->flags & SF_BEFORE_EOL);
-        else
-            data->substrs[i].flags &= ~SF_BEFORE_EOL;
-        data->substrs[i].minlenp = minlenp;
-        data->substrs[i].lookbehind = 0;
+		 || (STRLEN)data->offset_float_max > (STRLEN)SSize_t_MAX)
+		data->offset_float_max = SSize_t_MAX;
+	    if (data->flags & SF_BEFORE_EOL)
+		data->flags
+		    |= ((data->flags & SF_BEFORE_EOL) << SF_FL_SHIFT_EOL);
+	    else
+		data->flags &= ~SF_FL_BEFORE_EOL;
+            data->minlen_float=minlenp;
+            data->lookbehind_float=0;
+	}
     }
-
     SvCUR_set(data->last_found, 0);
     {
 	SV * const sv = data->last_found;
@@ -1314,7 +1256,7 @@ S_scan_commit(pTHX_ const RExC_state_t *pRExC_state, scan_data_t *data,
     }
     data->last_end = -1;
     data->flags &= ~SF_BEFORE_EOL;
-    DEBUG_STUDYDATA("commit", data, 0, is_inf);
+    DEBUG_STUDYDATA("commit: ",data,0);
 }
 
 /* An SSC is just a regnode_charclass_posix with an extra field: the inversion
@@ -2521,11 +2463,8 @@ S_make_trie(pTHX_ RExC_state_t *pRExC_state, regnode *startbranch,
     /* we just use folder as a flag in utf8 */
     const U8 * folder = NULL;
 
-    /* in the below add_data call we are storing either 'tu' or 'tuaa'
-     * which stands for one trie structure, one hash, optionally followed
-     * by two arrays */
 #ifdef DEBUGGING
-    const U32 data_slot = add_data( pRExC_state, STR_WITH_LEN("tuaa"));
+    const U32 data_slot = add_data( pRExC_state, STR_WITH_LEN("tuuu"));
     AV *trie_words = NULL;
     /* along with revcharmap, this only used during construction but both are
      * useful during debugging so we store them in the struct when debugging.
@@ -3680,6 +3619,17 @@ S_construct_ahocorasick_from_trie(pTHX_ RExC_state_t *pRExC_state, regnode *sour
 }
 
 
+#define DEBUG_PEEP(str,scan,depth)         \
+    DEBUG_OPTIMISE_r({if (scan){           \
+       regnode *Next = regnext(scan);      \
+       regprop(RExC_rx, RExC_mysv, scan, NULL, pRExC_state);\
+       Perl_re_indentf( aTHX_  "" str ">%3d: %s (%d)", \
+           depth, REG_NODE_NUM(scan), SvPV_nolen_const(RExC_mysv),\
+           Next ? (REG_NODE_NUM(Next)) : 0 );\
+       DEBUG_SHOW_STUDY_FLAGS(flags," [ ","]");\
+       Perl_re_printf( aTHX_  "\n");                   \
+   }});
+
 /* The below joins as many adjacent EXACTish nodes as possible into a single
  * one.  The regop may be changed if the node(s) contain certain sequences that
  * require special handling.  The joining is only done if:
@@ -3834,7 +3784,7 @@ S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
     PERL_UNUSED_ARG(flags);
     PERL_UNUSED_ARG(val);
 #endif
-    DEBUG_PEEP("join", scan, depth, 0);
+    DEBUG_PEEP("join",scan,depth);
 
     /* Look through the subsequent nodes in the chain.  Skip NOTHING, merge
      * EXACT ones that are mergeable to the current one. */
@@ -3848,7 +3798,7 @@ S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
         if (OP(n) == TAIL || n > next)
             stringok = 0;
         if (PL_regkind[OP(n)] == NOTHING) {
-            DEBUG_PEEP("skip:", n, depth, 0);
+            DEBUG_PEEP("skip:",n,depth);
             NEXT_OFF(scan) += NEXT_OFF(n);
             next = n + NODE_STEP_REGNODE;
 #ifdef DEBUGGING
@@ -3868,7 +3818,7 @@ S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
             if (oldl + STR_LEN(n) > U8_MAX)
                 break;
 
-            DEBUG_PEEP("merg", n, depth, 0);
+            DEBUG_PEEP("merg",n,depth);
             merged++;
 
             NEXT_OFF(scan) += NEXT_OFF(n);
@@ -3885,7 +3835,7 @@ S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
 
 #ifdef EXPERIMENTAL_INPLACESCAN
 	if (flags && !NEXT_OFF(n)) {
-	    DEBUG_PEEP("atch", val, depth, 0);
+	    DEBUG_PEEP("atch", val, depth);
 	    if (reg_off_by_arg[OP(n)]) {
 		ARG_SET(n, val - n);
 	    }
@@ -4116,7 +4066,7 @@ S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
         n++;
     }
 #endif
-    DEBUG_OPTIMISE_r(if (merged){DEBUG_PEEP("finl", scan, depth, 0);});
+    DEBUG_OPTIMISE_r(if (merged){DEBUG_PEEP("finl",scan,depth)});
     return stopnow;
 }
 
@@ -4230,8 +4180,8 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
                                    the folded version may be shorter) */
 	bool unfolded_multi_char = FALSE;
 	/* Peephole optimizer: */
-        DEBUG_STUDYDATA("Peep", data, depth, is_inf);
-        DEBUG_PEEP("Peep", scan, depth, flags);
+        DEBUG_STUDYDATA("Peep:", data, depth);
+        DEBUG_PEEP("Peep", scan, depth);
 
 
         /* The reason we do this here is that we need to deal with things like
@@ -4275,14 +4225,14 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
             StructCopy(&zero_scan_data, &data_fake, scan_data_t);
             scan = regnext(scan);
             assert( OP(scan) == IFTHEN );
-            DEBUG_PEEP("expect IFTHEN", scan, depth, flags);
+            DEBUG_PEEP("expect IFTHEN", scan, depth);
 
             data_fake.last_closep= &fake_last_close;
             minlen = *minlenp;
             next = regnext(scan);
             scan = NEXTOPER(NEXTOPER(scan));
-            DEBUG_PEEP("scan", scan, depth, flags);
-            DEBUG_PEEP("next", next, depth, flags);
+            DEBUG_PEEP("scan", scan, depth);
+            DEBUG_PEEP("next", next, depth);
 
             /* we suppose the run is continuous, last=next...
              * NOTE we dont use the return here! */
@@ -4326,7 +4276,7 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
 		    I32 f = 0;
 		    regnode_ssc this_class;
 
-                    DEBUG_PEEP("Branch", scan, depth, flags);
+                    DEBUG_PEEP("Branch", scan, depth);
 
 		    num++;
                     StructCopy(&zero_scan_data, &data_fake, scan_data_t);
@@ -4391,7 +4341,7 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
 		    else
 		        data->pos_delta += max1 - min1;
 		    if (max1 != min1 || is_inf)
-			data->cur_is_floating = 1;
+			data->longest = &(data->longest_float);
 		}
 		min += min1;
 		if (delta == SSize_t_MAX
@@ -4829,16 +4779,16 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
                              RExC_study_chunk_recursed_bytes, U8);
                     }
                     /* we havent recursed into this paren yet, so recurse into it */
-                    DEBUG_STUDYDATA("gosub-set", data, depth, is_inf);
+                    DEBUG_STUDYDATA("gosub-set:", data,depth);
                     PAREN_SET(RExC_study_chunk_recursed + (recursed_depth * RExC_study_chunk_recursed_bytes), paren);
                     my_recursed_depth= recursed_depth + 1;
                 } else {
-                    DEBUG_STUDYDATA("gosub-inf", data, depth, is_inf);
+                    DEBUG_STUDYDATA("gosub-inf:", data,depth);
                     /* some form of infinite recursion, assume infinite length
                      * */
                     if (flags & SCF_DO_SUBSTR) {
                         scan_commit(pRExC_state, data, minlenp, is_inf);
-                        data->cur_is_floating = 1;
+                        data->longest = &(data->longest_float);
                     }
                     is_inf = is_inf_internal = 1;
                     if (flags & SCF_DO_STCLASS_OR) /* Allow everything */
@@ -4876,8 +4826,8 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
                 newframe->prev_recursed_depth = recursed_depth;
                 newframe->this_prev_frame= frame;
 
-                DEBUG_STUDYDATA("frame-new", data, depth, is_inf);
-                DEBUG_PEEP("fnew", scan, depth, flags);
+                DEBUG_STUDYDATA("frame-new:",data,depth);
+                DEBUG_PEEP("fnew", scan, depth);
 
 	        frame = newframe;
 	        scan =  start;
@@ -4966,7 +4916,7 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
                 }
                 data->pos_delta += min_subtract;
 		if (min_subtract) {
-		    data->cur_is_floating = 1; /* float */
+		    data->longest = &(data->longest_float);
 		}
 	    }
 
@@ -5033,7 +4983,7 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
 		if (flags & SCF_DO_SUBSTR) {
                     scan_commit(pRExC_state, data, minlenp, is_inf);
                     /* Cannot extend fixed substrings */
-		    data->cur_is_floating = 1; /* float */
+		    data->longest = &(data->longest_float);
 		}
                 is_inf = is_inf_internal = 1;
                 scan = regnext(scan);
@@ -5123,7 +5073,7 @@ S_study_chunk(pTHX_ RExC_state_t *pRExC_state, regnode **scanp,
 		}
 		if (!scan) 		/* It was not CURLYX, but CURLY. */
 		    scan = next;
-		if (((flags & (SCF_TRIE_DOING_RESTUDY|SCF_DO_SUBSTR))==SCF_DO_SUBSTR)
+		if (!(flags & SCF_TRIE_DOING_RESTUDY)
 		    /* ? quantifier ok, except for (?{ ... }) */
 		    && (next_is_eval || !(mincount == 0 && maxcount == 1))
 		    && (minnext == 0) && (deltanext == 0)
@@ -5371,7 +5321,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
 				? SSize_t_MAX
 				: data->pos_min + data->pos_delta - last_chrs;
 			}
-			data->cur_is_floating = 1; /* float */
+			data->longest = &(data->longest_float);
 		    }
 		    SvREFCNT_dec(last_str);
 		}
@@ -5395,7 +5345,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
 		if (flags & SCF_DO_SUBSTR) {
                     /* Cannot expect anything... */
                     scan_commit(pRExC_state, data, minlenp, is_inf);
-		    data->cur_is_floating = 1; /* float */
+		    data->longest = &(data->longest_float);
 		}
 		is_inf = is_inf_internal = 1;
 		if (flags & SCF_DO_STCLASS_OR) {
@@ -5442,7 +5392,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
                 scan_commit(pRExC_state, data, minlenp, is_inf);
     	        data->pos_min += 1;
 	        data->pos_delta += 1;
-		data->cur_is_floating = 1; /* float */
+		data->longest = &(data->longest_float);
     	    }
 	}
 	else if (REGNODE_SIMPLE(OP(scan))) {
@@ -5714,8 +5664,6 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
                 else
                     data_fake.last_closep = &fake;
                 data_fake.flags = 0;
-                data_fake.substrs[0].flags = 0;
-                data_fake.substrs[1].flags = 0;
 		data_fake.pos_delta = delta;
                 if (is_inf)
 	            data_fake.flags |= SF_IS_INF;
@@ -5758,29 +5706,29 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
                         data->flags |= SF_HAS_EVAL;
                     data->whilem_c = data_fake.whilem_c;
                     if ((flags & SCF_DO_SUBSTR) && data_fake.last_found) {
-                        int i;
                         if (RExC_rx->minlen<*minnextp)
                             RExC_rx->minlen=*minnextp;
                         scan_commit(pRExC_state, &data_fake, minnextp, is_inf);
                         SvREFCNT_dec_NN(data_fake.last_found);
 
-                        for (i = 0; i < 2; i++) {
-                            if (data_fake.substrs[i].minlenp != minlenp) {
-                                data->substrs[i].min_offset =
-                                            data_fake.substrs[i].min_offset;
-                                data->substrs[i].max_offset =
-                                            data_fake.substrs[i].max_offset;
-                                data->substrs[i].minlenp =
-                                            data_fake.substrs[i].minlenp;
-                                data->substrs[i].lookbehind += scan->flags;
-                            }
+                        if ( data_fake.minlen_fixed != minlenp )
+                        {
+                            data->offset_fixed= data_fake.offset_fixed;
+                            data->minlen_fixed= data_fake.minlen_fixed;
+                            data->lookbehind_fixed+= scan->flags;
+                        }
+                        if ( data_fake.minlen_float != minlenp )
+                        {
+                            data->minlen_float= data_fake.minlen_float;
+                            data->offset_float_min=data_fake.offset_float_min;
+                            data->offset_float_max=data_fake.offset_float_max;
+                            data->lookbehind_float+= scan->flags;
                         }
                     }
                 }
 	    }
 #endif
 	}
-
 	else if (OP(scan) == OPEN) {
 	    if (stopparen != (I32)ARG(scan))
 	        pars++;
@@ -5817,7 +5765,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
 	{
 		if (flags & SCF_DO_SUBSTR) {
                     scan_commit(pRExC_state, data, minlenp, is_inf);
-		    data->cur_is_floating = 1; /* float */
+		    data->longest = &(data->longest_float);
 		}
 		is_inf = is_inf_internal = 1;
 		if (flags & SCF_DO_STCLASS_OR) /* Allow everything */
@@ -5928,7 +5876,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
                 data->pos_min += min1;
                 data->pos_delta += max1 - min1;
                 if (max1 != min1 || is_inf)
-                    data->cur_is_floating = 1; /* float */
+                    data->longest = &(data->longest_float);
             }
             min += min1;
             if (delta != SSize_t_MAX)
@@ -5972,7 +5920,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
     	        data->pos_min += trie->minlen;
     	        data->pos_delta += (trie->maxlen - trie->minlen);
 		if (trie->maxlen != trie->minlen)
-		    data->cur_is_floating = 1; /* float */
+		    data->longest = &(data->longest_float);
     	    }
     	    if (trie->jump) /* no more substrings -- for now /grr*/
                flags &= ~SCF_DO_SUBSTR;
@@ -5989,8 +5937,8 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
         /* we need to unwind recursion. */
         depth = depth - 1;
 
-        DEBUG_STUDYDATA("frame-end", data, depth, is_inf);
-        DEBUG_PEEP("fend", scan, depth, flags);
+        DEBUG_STUDYDATA("frame-end:",data,depth);
+        DEBUG_PEEP("fend", scan, depth);
 
         /* restore previous context */
         last = frame->last_regnode;
@@ -6004,7 +5952,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
     }
 
     assert(!frame);
-    DEBUG_STUDYDATA("pre-fin", data, depth, is_inf);
+    DEBUG_STUDYDATA("pre-fin:",data,depth);
 
     *scanp = scan;
     *deltap = is_inf_internal ? SSize_t_MAX : delta;
@@ -6026,7 +5974,7 @@ Perl_re_printf( aTHX_  "LHS=%" UVuf " RHS=%" UVuf "\n",
     if (flags & SCF_TRIE_RESTUDY)
         data->flags |= 	SCF_TRIE_RESTUDY;
 
-    DEBUG_STUDYDATA("post-fin", data, depth, is_inf);
+    DEBUG_STUDYDATA("post-fin:",data,depth);
 
     {
         SSize_t final_minlen= min < stopmin ? min : stopmin;
@@ -6744,10 +6692,10 @@ S_compile_runtime_code(pTHX_ RExC_state_t * const pRExC_state,
 
 
 STATIC bool
-S_setup_longest(pTHX_ RExC_state_t *pRExC_state,
-                      struct reg_substr_datum  *rsd,
-                      struct scan_data_substrs *sub,
-                      STRLEN longest_length)
+S_setup_longest(pTHX_ RExC_state_t *pRExC_state, SV* sv_longest,
+                      SV** rx_utf8, SV** rx_substr, SSize_t* rx_end_shift,
+		      SSize_t lookbehind, SSize_t offset, SSize_t *minlen,
+                      STRLEN longest_length, bool eol, bool meol)
 {
     /* This is the common code for setting up the floating and fixed length
      * string data extracted from Perl_re_op_compile() below.  Returns a boolean
@@ -6755,8 +6703,6 @@ S_setup_longest(pTHX_ RExC_state_t *pRExC_state,
 
     I32 t;
     SSize_t ml;
-    bool eol  = cBOOL(sub->flags & SF_BEFORE_EOL);
-    bool meol = cBOOL(sub->flags & SF_BEFORE_MEOL);
 
     if (! (longest_length
            || (eol /* Can't have SEOL and MULTI */
@@ -6770,29 +6716,29 @@ S_setup_longest(pTHX_ RExC_state_t *pRExC_state,
 
     /* copy the information about the longest from the reg_scan_data
         over to the program. */
-    if (SvUTF8(sub->str)) {
-        rsd->substr      = NULL;
-        rsd->utf8_substr = sub->str;
+    if (SvUTF8(sv_longest)) {
+        *rx_utf8 = sv_longest;
+        *rx_substr = NULL;
     } else {
-        rsd->substr      = sub->str;
-        rsd->utf8_substr = NULL;
+        *rx_substr = sv_longest;
+        *rx_utf8 = NULL;
     }
     /* end_shift is how many chars that must be matched that
         follow this item. We calculate it ahead of time as once the
         lookbehind offset is added in we lose the ability to correctly
         calculate it.*/
-    ml = sub->minlenp ? *(sub->minlenp) : (SSize_t)longest_length;
-    rsd->end_shift = ml - sub->min_offset
+    ml = minlen ? *(minlen) : (SSize_t)longest_length;
+    *rx_end_shift = ml - offset
         - longest_length
             /* XXX SvTAIL is always false here - did you mean FBMcf_TAIL
              * intead? - DAPM
-            + (SvTAIL(sub->str) != 0)
+            + (SvTAIL(sv_longest) != 0)
             */
-        + sub->lookbehind;
+        + lookbehind;
 
     t = (eol/* Can't have SEOL and MULTI */
          && (! meol || (RExC_flags & RXf_PMf_MULTILINE)));
-    fbm_compile(sub->str, t ? FBMcf_TAIL : 0);
+    fbm_compile(sv_longest, t ? FBMcf_TAIL : 0);
 
     return TRUE;
 }
@@ -7262,8 +7208,8 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
         /* make sure PL_bitcount bounds not exceeded */
         assert(sizeof(STD_PAT_MODS) <= 8);
 
-        p = sv_grow(MUTABLE_SV(rx), wraplen + 1); /* +1 for the ending NUL */
-        SvPOK_on(rx);
+        Newx(p, wraplen + 1, char); /* +1 for the ending NUL */
+	r->xpv_len_u.xpvlenu_pv = p;
 	if (RExC_utf8)
 	    SvFLAGS(rx) |= SVf_UTF8;
         *p++='('; *p++='?';
@@ -7423,14 +7369,12 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
     if (!(RExC_seen & REG_TOP_LEVEL_BRANCHES_SEEN)) { /*  Only one top-level choice.
                                                   */
 	SSize_t fake;
-	STRLEN longest_length[2];
+	STRLEN longest_float_length, longest_fixed_length;
 	regnode_ssc ch_class; /* pointed to by data */
 	int stclass_flag;
 	SSize_t last_close = 0; /* pointed to by data */
         regnode *first= scan;
         regnode *first_next= regnext(first);
-        int i;
-
 	/*
 	 * Skip introductions and multiplicators >= 1
 	 * so that we can extract the 'meat' of the pattern that must
@@ -7472,7 +7416,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
 
 	/* Starting-point info. */
       again:
-        DEBUG_PEEP("first:", first, 0, 0);
+        DEBUG_PEEP("first:",first,0);
         /* Ignore EXACT as we deal with it later. */
 	if (PL_regkind[OP(first)] == EXACT) {
 	    if (OP(first) == EXACT || OP(first) == EXACTL)
@@ -7553,13 +7497,13 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
 	* earlier string may buy us something the later one won't.]
 	*/
 
-	data.substrs[0].str = newSVpvs("");
-	data.substrs[1].str = newSVpvs("");
+	data.longest_fixed = newSVpvs("");
+	data.longest_float = newSVpvs("");
 	data.last_found = newSVpvs("");
-	data.cur_is_floating = 0; /* initially any found substring is fixed */
+	data.longest = &(data.longest_fixed);
 	ENTER_with_name("study_chunk");
-	SAVEFREESV(data.substrs[0].str);
-	SAVEFREESV(data.substrs[1].str);
+	SAVEFREESV(data.longest_fixed);
+	SAVEFREESV(data.longest_float);
 	SAVEFREESV(data.last_found);
 	first = scan;
 	if (!ri->regstclass) {
@@ -7582,7 +7526,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
         CHECK_RESTUDY_GOTO_butfirst(LEAVE_with_name("study_chunk"));
 
 
-	if ( RExC_npar == 1 && !data.cur_is_floating
+	if ( RExC_npar == 1 && data.longest == &(data.longest_fixed)
 	     && data.last_start_min == 0 && data.last_end > 0
 	     && !RExC_seen_zerolen
              && !(RExC_seen & REG_VERBARG_SEEN)
@@ -7592,49 +7536,62 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
         }
 	scan_commit(pRExC_state, &data,&minlen,0);
 
+	longest_float_length = CHR_SVLEN(data.longest_float);
 
-        /* XXX this is done in reverse order because that's the way the
-         * code was before it was parameterised. Don't know whether it
-         * actually needs doing in reverse order. DAPM */
-        for (i = 1; i >= 0; i--) {
-            longest_length[i] = CHR_SVLEN(data.substrs[i].str);
+        if (! ((SvCUR(data.longest_fixed)  /* ok to leave SvCUR */
+                   && data.offset_fixed == data.offset_float_min
+                   && SvCUR(data.longest_fixed) == SvCUR(data.longest_float)))
+            && S_setup_longest (aTHX_ pRExC_state,
+                                    data.longest_float,
+                                    &(r->float_utf8),
+                                    &(r->float_substr),
+                                    &(r->float_end_shift),
+                                    data.lookbehind_float,
+                                    data.offset_float_min,
+                                    data.minlen_float,
+                                    longest_float_length,
+                                    cBOOL(data.flags & SF_FL_BEFORE_EOL),
+                                    cBOOL(data.flags & SF_FL_BEFORE_MEOL)))
+        {
+	    r->float_min_offset = data.offset_float_min - data.lookbehind_float;
+	    r->float_max_offset = data.offset_float_max;
+	    if (data.offset_float_max < SSize_t_MAX) /* Don't offset infinity */
+	        r->float_max_offset -= data.lookbehind_float;
+	    SvREFCNT_inc_simple_void_NN(data.longest_float);
+	}
+	else {
+	    r->float_substr = r->float_utf8 = NULL;
+	    longest_float_length = 0;
+	}
 
-            if (   !(   i
-                     && SvCUR(data.substrs[0].str)  /* ok to leave SvCUR */
-                     &&    data.substrs[0].min_offset
-                        == data.substrs[1].min_offset
-                     &&    SvCUR(data.substrs[0].str)
-                        == SvCUR(data.substrs[1].str)
-                    )
-                && S_setup_longest (aTHX_ pRExC_state,
-                                        &(r->substrs->data[i]),
-                                        &(data.substrs[i]),
-                                        longest_length[i]))
-            {
-                r->substrs->data[i].min_offset =
-                        data.substrs[i].min_offset - data.substrs[i].lookbehind;
+	longest_fixed_length = CHR_SVLEN(data.longest_fixed);
 
-                r->substrs->data[i].max_offset = data.substrs[i].max_offset;
-                /* Don't offset infinity */
-                if (data.substrs[i].max_offset < SSize_t_MAX)
-                    r->substrs->data[i].max_offset -= data.substrs[i].lookbehind;
-                SvREFCNT_inc_simple_void_NN(data.substrs[i].str);
-            }
-            else {
-                r->substrs->data[i].substr      = NULL;
-                r->substrs->data[i].utf8_substr = NULL;
-                longest_length[i] = 0;
-            }
-        }
-
+        if (S_setup_longest (aTHX_ pRExC_state,
+                                data.longest_fixed,
+                                &(r->anchored_utf8),
+                                &(r->anchored_substr),
+                                &(r->anchored_end_shift),
+                                data.lookbehind_fixed,
+                                data.offset_fixed,
+                                data.minlen_fixed,
+                                longest_fixed_length,
+                                cBOOL(data.flags & SF_FIX_BEFORE_EOL),
+                                cBOOL(data.flags & SF_FIX_BEFORE_MEOL)))
+        {
+	    r->anchored_offset = data.offset_fixed - data.lookbehind_fixed;
+	    SvREFCNT_inc_simple_void_NN(data.longest_fixed);
+	}
+	else {
+	    r->anchored_substr = r->anchored_utf8 = NULL;
+	    longest_fixed_length = 0;
+	}
 	LEAVE_with_name("study_chunk");
 
 	if (ri->regstclass
 	    && (OP(ri->regstclass) == REG_ANY || OP(ri->regstclass) == SANY))
 	    ri->regstclass = NULL;
 
-	if ((!(r->substrs->data[0].substr || r->substrs->data[0].utf8_substr)
-              || r->substrs->data[0].min_offset)
+	if ((!(r->anchored_substr || r->anchored_utf8) || r->anchored_offset)
 	    && stclass_flag
             && ! (ANYOF_FLAGS(data.start_class) & SSC_MATCHES_EMPTY_STRING)
 	    && is_ssc_worth_it(pRExC_state, data.start_class))
@@ -7657,29 +7614,37 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
             data.start_class = NULL;
 	}
 
-        /* A temporary algorithm prefers floated substr to fixed one of
-         * same length to dig more info. */
-	i = (longest_length[0] <= longest_length[1]);
-        r->substrs->check_ix = i;
-        r->check_end_shift  = r->substrs->data[i].end_shift;
-        r->check_substr     = r->substrs->data[i].substr;
-        r->check_utf8       = r->substrs->data[i].utf8_substr;
-        r->check_offset_min = r->substrs->data[i].min_offset;
-        r->check_offset_max = r->substrs->data[i].max_offset;
-        if (!i && (r->intflags & (PREGf_ANCH_SBOL|PREGf_ANCH_GPOS)))
-            r->intflags |= PREGf_NOSCAN;
-
+        /* A temporary algorithm prefers floated substr to fixed one to dig
+         * more info. */
+	if (longest_fixed_length > longest_float_length) {
+	    r->substrs->check_ix = 0;
+	    r->check_end_shift = r->anchored_end_shift;
+	    r->check_substr = r->anchored_substr;
+	    r->check_utf8 = r->anchored_utf8;
+	    r->check_offset_min = r->check_offset_max = r->anchored_offset;
+            if (r->intflags & (PREGf_ANCH_SBOL|PREGf_ANCH_GPOS))
+                r->intflags |= PREGf_NOSCAN;
+	}
+	else {
+	    r->substrs->check_ix = 1;
+	    r->check_end_shift = r->float_end_shift;
+	    r->check_substr = r->float_substr;
+	    r->check_utf8 = r->float_utf8;
+	    r->check_offset_min = r->float_min_offset;
+	    r->check_offset_max = r->float_max_offset;
+	}
 	if ((r->check_substr || r->check_utf8) ) {
 	    r->extflags |= RXf_USE_INTUIT;
 	    if (SvTAIL(r->check_substr ? r->check_substr : r->check_utf8))
 		r->extflags |= RXf_INTUIT_TAIL;
 	}
+        r->substrs->data[0].max_offset = r->substrs->data[0].min_offset;
 
 	/* XXX Unneeded? dmq (shouldn't as this is handled elsewhere)
-	if ( (STRLEN)minlen < longest_length[1] )
-            minlen= longest_length[1];
-        if ( (STRLEN)minlen < longest_length[0] )
-            minlen= longest_length[0];
+	if ( (STRLEN)minlen < longest_float_length )
+            minlen= longest_float_length;
+        if ( (STRLEN)minlen < longest_fixed_length )
+            minlen= longest_fixed_length;
         */
     }
     else {
@@ -7705,12 +7670,8 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
 
         CHECK_RESTUDY_GOTO_butfirst(NOOP);
 
-	r->check_substr = NULL;
-        r->check_utf8 = NULL;
-        r->substrs->data[0].substr      = NULL;
-        r->substrs->data[0].utf8_substr = NULL;
-        r->substrs->data[1].substr      = NULL;
-        r->substrs->data[1].utf8_substr = NULL;
+	r->check_substr = r->check_utf8 = r->anchored_substr = r->anchored_utf8
+		= r->float_substr = r->float_utf8 = NULL;
 
         if (! (ANYOF_FLAGS(data.start_class) & SSC_MATCHES_EMPTY_STRING)
 	    && is_ssc_worth_it(pRExC_state, data.start_class))
@@ -11782,12 +11743,14 @@ S_regpiece(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
 	    if ((flags&SIMPLE)) {
                 if (min == 0 && max == REG_INFTY) {
                     reginsert(pRExC_state, STAR, ret, depth+1);
+                    ret->flags = 0;
                     MARK_NAUGHTY(4);
                     RExC_seen |= REG_UNBOUNDED_QUANTIFIER_SEEN;
                     goto nest_check;
                 }
                 if (min == 1 && max == REG_INFTY) {
                     reginsert(pRExC_state, PLUS, ret, depth+1);
+                    ret->flags = 0;
                     MARK_NAUGHTY(3);
                     RExC_seen |= REG_UNBOUNDED_QUANTIFIER_SEEN;
                     goto nest_check;
@@ -11900,6 +11863,7 @@ S_regpiece(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
         ender = reg_node(pRExC_state, SUCCEED);
         REGTAIL(pRExC_state, ret, ender);
         reginsert(pRExC_state, SUSPEND, ret, depth+1);
+        ret->flags = 0;
         ender = reg_node(pRExC_state, TAIL);
         REGTAIL(pRExC_state, ret, ender);
     }
@@ -12054,8 +12018,7 @@ S_grok_bslash_N(pTHX_ RExC_state_t *pRExC_state,
 
     RExC_parse++;	/* Skip past the '{' */
 
-    endbrace = strchr(RExC_parse, '}');
-    if (! endbrace) { /* no trailing brace */
+    if (! (endbrace = strchr(RExC_parse, '}'))) { /* no trailing brace */
         vFAIL2("Missing right brace on \\%c{}", 'N');
     }
     else if(!(endbrace == RExC_parse		/* nothing between the {} */
@@ -12438,52 +12401,6 @@ S_alloc_maybe_populate_EXACT(pTHX_ RExC_state_t *pRExC_state,
     }
 }
 
-STATIC bool
-S_new_regcurly(const char *s, const char *e)
-{
-    /* This is a temporary function designed to match the most lenient form of
-     * a {m,n} quantifier we ever envision, with either number omitted, and
-     * spaces anywhere between/before/after them.
-     *
-     * If this function fails, then the string it matches is very unlikely to
-     * ever be considered a valid quantifier, so we can allow the '{' that
-     * begins it to be considered as a literal */
-
-    bool has_min = FALSE;
-    bool has_max = FALSE;
-
-    PERL_ARGS_ASSERT_NEW_REGCURLY;
-
-    if (s >= e || *s++ != '{')
-	return FALSE;
-
-    while (s < e && isSPACE(*s)) {
-        s++;
-    }
-    while (s < e && isDIGIT(*s)) {
-        has_min = TRUE;
-        s++;
-    }
-    while (s < e && isSPACE(*s)) {
-        s++;
-    }
-
-    if (*s == ',') {
-	s++;
-        while (s < e && isSPACE(*s)) {
-            s++;
-        }
-        while (s < e && isDIGIT(*s)) {
-            has_max = TRUE;
-            s++;
-        }
-        while (s < e && isSPACE(*s)) {
-            s++;
-        }
-    }
-
-    return s < e && *s == '}' && (has_min || has_max);
-}
 
 /* Parse backref decimal value, unless it's too big to sensibly be a backref,
  * in which case return I32_MAX (rather than possibly 32-bit wrapping) */
@@ -12918,12 +12835,6 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
             /* FALLTHROUGH */
 
           finish_meta_pat:
-            if (   UCHARAT(RExC_parse + 1) == '{'
-                && UNLIKELY(! new_regcurly(RExC_parse + 1, RExC_end)))
-            {
-                RExC_parse += 2;
-                vFAIL("Unescaped left brace in regex is illegal here");
-            }
 	    nextchar(pRExC_state);
             Set_Node_Length(ret, 2); /* MJD */
 	    break;
@@ -13474,25 +13385,22 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
 		    } /* End of switch on '\' */
 		    break;
 		case '{':
-                    /* Currently we allow an lbrace at the start of a construct
-                     * without raising a warning.  This is because we think we
-                     * will never want such a brace to be meant to be other
-                     * than taken literally. */
-		    if (len || (p > RExC_start && isALPHA_A(*(p - 1)))) {
+		    /* Currently we don't care if the lbrace is at the start
+		     * of a construct.  This catches it in the middle of a
+		     * literal string, or when it's the first thing after
+		     * something like "\b" */
+		    if (len || (p > RExC_start && isALPHA_A(*(p -1)))) {
 
-                        /* But, we raise a fatal warning otherwise, as the
-                         * deprecation cycle has come and gone.  Except that it
-                         * turns out that some heavily-relied on upstream
-                         * software, notably GNU Autoconf, have failed to fix
-                         * their uses.  For these, don't make it fatal unless
-                         * we anticipate using the '{' for something else.
-                         * This happens after any alpha, and for a looser {m,n}
-                         * quantifier specification */
-                        if (      RExC_strict
-                            || (  p > parse_start + 1
-                                && isALPHA_A(*(p - 1))
-                                && *(p - 2) == '\\')
-                            || new_regcurly(p, RExC_end))
+                        /* GNU Autoconf is depended on by a lot of code, and
+                         * can't seem to release a new version that avoids the
+                         * deprecation now made fatal.  (A commit to do so has
+                         * been in its repository since early 2013; only one
+                         * pattern is affected.)  As a work-around, don't
+                         * fatalize this if the pattern being compiled is the
+                         * precise one that trips up Autoconf.  See [perl
+                         * #130497] for more details. */
+                        if (memNEs(RExC_start, RExC_end - RExC_start,
+                                   "\\${[^\\}]*}"))
                         {
                             RExC_parse = p + 1;
                             vFAIL("Unescaped left brace in regex is "
@@ -13542,10 +13450,10 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
                  * this character again next time through, when it will be the
                  * only thing in its new node */
 
-                next_is_quantifier =    LIKELY(p < RExC_end)
-                                     && UNLIKELY(ISMULT2(p));
-
-                if (next_is_quantifier && LIKELY(len)) {
+                if ((next_is_quantifier = (   LIKELY(p < RExC_end)
+                                           && UNLIKELY(ISMULT2(p))))
+                    && LIKELY(len))
+		{
                     p = oldp;
                     goto loopdone;
                 }
@@ -14032,16 +13940,12 @@ S_populate_ANYOF_from_invlist(pTHX_ regnode *node, SV** invlist_ptr)
         }                                                                   \
     } STMT_END
 #define CLEAR_POSIX_WARNINGS()                                              \
-    STMT_START {                                                            \
-        if (posix_warnings && RExC_warn_text)                               \
-            av_clear(RExC_warn_text);                                       \
-    } STMT_END
+    if (posix_warnings && RExC_warn_text)                                   \
+        av_clear(RExC_warn_text)
 
 #define CLEAR_POSIX_WARNINGS_AND_RETURN(ret)                                \
-    STMT_START {                                                            \
-        CLEAR_POSIX_WARNINGS();                                             \
-        return ret;                                                         \
-    } STMT_END
+    CLEAR_POSIX_WARNINGS();                                                 \
+    return ret
 
 STATIC int
 S_handle_possible_posix(pTHX_ RExC_state_t *pRExC_state,
@@ -14178,7 +14082,6 @@ S_handle_possible_posix(pTHX_ RExC_state_t *pRExC_state,
      * decide that no posix class was intended.  Should be at least
      * sizeof("alphanumeric") */
     UV input_text[15];
-    STATIC_ASSERT_DECL(C_ARRAY_LENGTH(input_text) >= sizeof "alphanumeric");
 
     PERL_ARGS_ASSERT_HANDLE_POSSIBLE_POSIX;
 
@@ -18637,7 +18540,6 @@ S_reg2Lanode(pTHX_ RExC_state_t *pRExC_state, const U8 op, const U32 arg1, const
 * if (PASS2)
 *     NEXT_OFF(orig_emit) = regarglen[OPFAIL] + NODE_STEP_REGNODE;
 *
-* ALSO NOTE - operand->flags will be set to 0 as well.
 */
 STATIC void
 S_reginsert(pTHX_ RExC_state_t *pRExC_state, U8 op, regnode *operand, U32 depth)
@@ -18711,6 +18613,7 @@ S_reginsert(pTHX_ RExC_state_t *pRExC_state, U8 op, regnode *operand, U32 depth)
 #endif
     }
 
+
     place = operand;		/* Op node, where operand used to be. */
 #ifdef RE_TRACK_PATTERN_OFFSETS
     if (RExC_offsets) {         /* MJD */
@@ -18729,7 +18632,6 @@ S_reginsert(pTHX_ RExC_state_t *pRExC_state, U8 op, regnode *operand, U32 depth)
     }
 #endif
     src = NEXTOPER(place);
-    place->flags = 0;
     FILL_ADVANCE_NODE(place, op);
     Zero(src, offset, regnode);
 }
@@ -18964,7 +18866,6 @@ void
 Perl_regdump(pTHX_ const regexp *r)
 {
 #ifdef DEBUGGING
-    int i;
     SV * const sv = sv_newmortal();
     SV *dsv= sv_newmortal();
     RXi_GET_DECL(r,ri);
@@ -18975,40 +18876,41 @@ Perl_regdump(pTHX_ const regexp *r)
     (void)dumpuntil(r, ri->program, ri->program + 1, NULL, NULL, sv, 0, 0);
 
     /* Header fields of interest. */
-    for (i = 0; i < 2; i++) {
-        if (r->substrs->data[i].substr) {
-            RE_PV_QUOTED_DECL(s, 0, dsv,
-                            SvPVX_const(r->substrs->data[i].substr),
-                            RE_SV_DUMPLEN(r->substrs->data[i].substr),
-                            30);
-            Perl_re_printf( aTHX_
-                          "%s %s%s at %" IVdf "..%" UVuf " ",
-                          i ? "floating" : "anchored",
-                          s,
-                          RE_SV_TAIL(r->substrs->data[i].substr),
-                          (IV)r->substrs->data[i].min_offset,
-                          (UV)r->substrs->data[i].max_offset);
-        }
-        else if (r->substrs->data[i].utf8_substr) {
-            RE_PV_QUOTED_DECL(s, 1, dsv,
-                            SvPVX_const(r->substrs->data[i].utf8_substr),
-                            RE_SV_DUMPLEN(r->substrs->data[i].utf8_substr),
-                            30);
-            Perl_re_printf( aTHX_
-                          "%s utf8 %s%s at %" IVdf "..%" UVuf " ",
-                          i ? "floating" : "anchored",
-                          s,
-                          RE_SV_TAIL(r->substrs->data[i].utf8_substr),
-                          (IV)r->substrs->data[i].min_offset,
-                          (UV)r->substrs->data[i].max_offset);
-        }
+    if (r->anchored_substr) {
+	RE_PV_QUOTED_DECL(s, 0, dsv, SvPVX_const(r->anchored_substr),
+	    RE_SV_DUMPLEN(r->anchored_substr), 30);
+        Perl_re_printf( aTHX_
+		      "anchored %s%s at %" IVdf " ",
+		      s, RE_SV_TAIL(r->anchored_substr),
+		      (IV)r->anchored_offset);
+    } else if (r->anchored_utf8) {
+	RE_PV_QUOTED_DECL(s, 1, dsv, SvPVX_const(r->anchored_utf8),
+	    RE_SV_DUMPLEN(r->anchored_utf8), 30);
+        Perl_re_printf( aTHX_
+		      "anchored utf8 %s%s at %" IVdf " ",
+		      s, RE_SV_TAIL(r->anchored_utf8),
+		      (IV)r->anchored_offset);
     }
-
+    if (r->float_substr) {
+	RE_PV_QUOTED_DECL(s, 0, dsv, SvPVX_const(r->float_substr),
+	    RE_SV_DUMPLEN(r->float_substr), 30);
+        Perl_re_printf( aTHX_
+		      "floating %s%s at %" IVdf "..%" UVuf " ",
+		      s, RE_SV_TAIL(r->float_substr),
+		      (IV)r->float_min_offset, (UV)r->float_max_offset);
+    } else if (r->float_utf8) {
+	RE_PV_QUOTED_DECL(s, 1, dsv, SvPVX_const(r->float_utf8),
+	    RE_SV_DUMPLEN(r->float_utf8), 30);
+        Perl_re_printf( aTHX_
+		      "floating utf8 %s%s at %" IVdf "..%" UVuf " ",
+		      s, RE_SV_TAIL(r->float_utf8),
+		      (IV)r->float_min_offset, (UV)r->float_max_offset);
+    }
     if (r->check_substr || r->check_utf8)
         Perl_re_printf( aTHX_
 		      (const char *)
-		      (   r->check_substr == r->substrs->data[1].substr
-		       && r->check_utf8   == r->substrs->data[1].utf8_substr
+		      (r->check_substr == r->float_substr
+		       && r->check_utf8 == r->float_utf8
 		       ? "(checking floating" : "(checking anchored"));
     if (r->intflags & PREGf_NOSCAN)
         Perl_re_printf( aTHX_  " noscan");
@@ -19441,11 +19343,8 @@ Perl_regprop(pTHX_ const regexp *prog, SV *sv, const regnode *o, const regmatch_
 
     /* add on the verb argument if there is one */
     if ( ( k == VERB || OP(o) == ACCEPT || OP(o) == OPFAIL ) && o->flags) {
-        if ( ARG(o) )
-            Perl_sv_catpvf(aTHX_ sv, ":%" SVf,
+        Perl_sv_catpvf(aTHX_ sv, ":%" SVf,
                        SVfARG((MUTABLE_SV(progi->data->data[ ARG( o ) ]))));
-        else
-            sv_catpvs(sv, ":NULL");
     }
 #else
     PERL_UNUSED_CONTEXT;
@@ -19520,13 +19419,13 @@ Perl_pregfree2(pTHX_ REGEXP *rx)
     } else {
         CALLREGFREE_PVT(rx); /* free the private data */
         SvREFCNT_dec(RXp_PAREN_NAMES(r));
+	Safefree(r->xpv_len_u.xpvlenu_pv);
     }
     if (r->substrs) {
-        int i;
-        for (i = 0; i < 2; i++) {
-            SvREFCNT_dec(r->substrs->data[i].substr);
-            SvREFCNT_dec(r->substrs->data[i].utf8_substr);
-        }
+        SvREFCNT_dec(r->anchored_substr);
+        SvREFCNT_dec(r->anchored_utf8);
+        SvREFCNT_dec(r->float_substr);
+        SvREFCNT_dec(r->float_utf8);
 	Safefree(r->substrs);
     }
     RX_MATCH_COPY_FREE(rx);
@@ -19537,19 +19436,12 @@ Perl_pregfree2(pTHX_ REGEXP *rx)
     SvREFCNT_dec(r->qr_anoncv);
     if (r->recurse_locinput)
         Safefree(r->recurse_locinput);
+    rx->sv_u.svu_rx = 0;
 }
-
 
 /*  reg_temp_copy()
 
-    Copy ssv to dsv, both of which should of type SVt_REGEXP or SVt_PVLV,
-    except that dsv will be created if NULL.
-
-    This function is used in two main ways. First to implement
-        $r = qr/....; $s = $$r;
-
-    Secondly, it is used as a hacky workaround to the structural issue of
-    match results
+    This is a hacky workaround to the structural issue of match results
     being stored in the regexp structure which is in turn stored in
     PL_curpm/PL_reg_curpm. The problem is that due to qr// the pattern
     could be PL_curpm in multiple contexts, and could require multiple
@@ -19565,79 +19457,74 @@ Perl_pregfree2(pTHX_ REGEXP *rx)
 
 
 REGEXP *
-Perl_reg_temp_copy(pTHX_ REGEXP *dsv, REGEXP *ssv)
+Perl_reg_temp_copy (pTHX_ REGEXP *ret_x, REGEXP *rx)
 {
-    struct regexp *drx;
-    struct regexp *const srx = ReANY(ssv);
-    const bool islv = dsv && SvTYPE(dsv) == SVt_PVLV;
+    struct regexp *ret;
+    struct regexp *const r = ReANY(rx);
+    const bool islv = ret_x && SvTYPE(ret_x) == SVt_PVLV;
 
     PERL_ARGS_ASSERT_REG_TEMP_COPY;
 
-    if (!dsv)
-	dsv = (REGEXP*) newSV_type(SVt_REGEXP);
+    if (!ret_x)
+	ret_x = (REGEXP*) newSV_type(SVt_REGEXP);
     else {
-	SvOK_off((SV *)dsv);
+	SvOK_off((SV *)ret_x);
 	if (islv) {
-	    /* For PVLVs, the head (sv_any) points to an XPVLV, while
-             * the LV's xpvlenu_rx will point to a regexp body, which
-             * we allocate here */
+	    /* For PVLVs, SvANY points to the xpvlv body while sv_u points
+	       to the regexp.  (For SVt_REGEXPs, sv_upgrade has already
+	       made both spots point to the same regexp body.) */
 	    REGEXP *temp = (REGEXP *)newSV_type(SVt_REGEXP);
-	    assert(!SvPVX(dsv));
-            ((XPV*)SvANY(dsv))->xpv_len_u.xpvlenu_rx = temp->sv_any;
+	    assert(!SvPVX(ret_x));
+	    ret_x->sv_u.svu_rx = temp->sv_any;
 	    temp->sv_any = NULL;
 	    SvFLAGS(temp) = (SvFLAGS(temp) & ~SVTYPEMASK) | SVt_NULL;
 	    SvREFCNT_dec_NN(temp);
 	    /* SvCUR still resides in the xpvlv struct, so the regexp copy-
 	       ing below will not set it. */
-	    SvCUR_set(dsv, SvCUR(ssv));
+	    SvCUR_set(ret_x, SvCUR(rx));
 	}
     }
     /* This ensures that SvTHINKFIRST(sv) is true, and hence that
        sv_force_normal(sv) is called.  */
-    SvFAKE_on(dsv);
-    drx = ReANY(dsv);
+    SvFAKE_on(ret_x);
+    ret = ReANY(ret_x);
 
-    SvFLAGS(dsv) |= SvFLAGS(ssv) & (SVf_POK|SVp_POK|SVf_UTF8);
-    SvPV_set(dsv, RX_WRAPPED(ssv));
+    SvFLAGS(ret_x) |= SvUTF8(rx);
     /* We share the same string buffer as the original regexp, on which we
        hold a reference count, incremented when mother_re is set below.
        The string pointer is copied here, being part of the regexp struct.
      */
-    memcpy(&(drx->xpv_cur), &(srx->xpv_cur),
+    memcpy(&(ret->xpv_cur), &(r->xpv_cur),
 	   sizeof(regexp) - STRUCT_OFFSET(regexp, xpv_cur));
-    if (!islv)
-        SvLEN_set(dsv, 0);
-    if (srx->offs) {
-        const I32 npar = srx->nparens+1;
-        Newx(drx->offs, npar, regexp_paren_pair);
-        Copy(srx->offs, drx->offs, npar, regexp_paren_pair);
+    if (r->offs) {
+        const I32 npar = r->nparens+1;
+        Newx(ret->offs, npar, regexp_paren_pair);
+        Copy(r->offs, ret->offs, npar, regexp_paren_pair);
     }
-    if (srx->substrs) {
-        int i;
-        Newx(drx->substrs, 1, struct reg_substr_data);
-	StructCopy(srx->substrs, drx->substrs, struct reg_substr_data);
+    if (r->substrs) {
+        Newx(ret->substrs, 1, struct reg_substr_data);
+	StructCopy(r->substrs, ret->substrs, struct reg_substr_data);
 
-        for (i = 0; i < 2; i++) {
-            SvREFCNT_inc_void(drx->substrs->data[i].substr);
-            SvREFCNT_inc_void(drx->substrs->data[i].utf8_substr);
-        }
+	SvREFCNT_inc_void(ret->anchored_substr);
+	SvREFCNT_inc_void(ret->anchored_utf8);
+	SvREFCNT_inc_void(ret->float_substr);
+	SvREFCNT_inc_void(ret->float_utf8);
 
 	/* check_substr and check_utf8, if non-NULL, point to either their
 	   anchored or float namesakes, and don't hold a second reference.  */
     }
-    RX_MATCH_COPIED_off(dsv);
+    RX_MATCH_COPIED_off(ret_x);
 #ifdef PERL_ANY_COW
-    drx->saved_copy = NULL;
+    ret->saved_copy = NULL;
 #endif
-    drx->mother_re = ReREFCNT_inc(srx->mother_re ? srx->mother_re : ssv);
-    SvREFCNT_inc_void(drx->qr_anoncv);
-    if (srx->recurse_locinput)
-        Newxz(drx->recurse_locinput,srx->nparens + 1,char *);
+    ret->mother_re = ReREFCNT_inc(r->mother_re ? r->mother_re : rx);
+    SvREFCNT_inc_void(ret->qr_anoncv);
+    if (r->recurse_locinput)
+        Newxz(ret->recurse_locinput,r->nparens + 1,char *);
 
-    return dsv;
+    return ret_x;
 }
 #endif
-
 
 /* regfree_internal()
 
@@ -19800,41 +19687,36 @@ Perl_re_dup_guts(pTHX_ const REGEXP *sstr, REGEXP *dstr, CLONE_PARAMS *param)
 	/* Do it this way to avoid reading from *r after the StructCopy().
 	   That way, if any of the sv_dup_inc()s dislodge *r from the L1
 	   cache, it doesn't matter.  */
-        int i;
 	const bool anchored = r->check_substr
-	    ? r->check_substr == r->substrs->data[0].substr
-	    : r->check_utf8   == r->substrs->data[0].utf8_substr;
+	    ? r->check_substr == r->anchored_substr
+	    : r->check_utf8 == r->anchored_utf8;
         Newx(ret->substrs, 1, struct reg_substr_data);
 	StructCopy(r->substrs, ret->substrs, struct reg_substr_data);
 
-        for (i = 0; i < 2; i++) {
-            ret->substrs->data[i].substr =
-                        sv_dup_inc(ret->substrs->data[i].substr, param);
-            ret->substrs->data[i].utf8_substr =
-                        sv_dup_inc(ret->substrs->data[i].utf8_substr, param);
-        }
+	ret->anchored_substr = sv_dup_inc(ret->anchored_substr, param);
+	ret->anchored_utf8 = sv_dup_inc(ret->anchored_utf8, param);
+	ret->float_substr = sv_dup_inc(ret->float_substr, param);
+	ret->float_utf8 = sv_dup_inc(ret->float_utf8, param);
 
 	/* check_substr and check_utf8, if non-NULL, point to either their
 	   anchored or float namesakes, and don't hold a second reference.  */
 
 	if (ret->check_substr) {
 	    if (anchored) {
-		assert(r->check_utf8 == r->substrs->data[0].utf8_substr);
-
-		ret->check_substr = ret->substrs->data[0].substr;
-		ret->check_utf8   = ret->substrs->data[0].utf8_substr;
+		assert(r->check_utf8 == r->anchored_utf8);
+		ret->check_substr = ret->anchored_substr;
+		ret->check_utf8 = ret->anchored_utf8;
 	    } else {
-		assert(r->check_substr == r->substrs->data[1].substr);
-		assert(r->check_utf8   == r->substrs->data[1].utf8_substr);
-
-		ret->check_substr = ret->substrs->data[1].substr;
-		ret->check_utf8   = ret->substrs->data[1].utf8_substr;
+		assert(r->check_substr == r->float_substr);
+		assert(r->check_utf8 == r->float_utf8);
+		ret->check_substr = ret->float_substr;
+		ret->check_utf8 = ret->float_utf8;
 	    }
 	} else if (ret->check_utf8) {
 	    if (anchored) {
-		ret->check_utf8 = ret->substrs->data[0].utf8_substr;
+		ret->check_utf8 = ret->anchored_utf8;
 	    } else {
-		ret->check_utf8 = ret->substrs->data[1].utf8_substr;
+		ret->check_utf8 = ret->float_utf8;
 	    }
 	}
     }
@@ -19861,7 +19743,7 @@ Perl_re_dup_guts(pTHX_ const REGEXP *sstr, REGEXP *dstr, CLONE_PARAMS *param)
 	       1: a buffer in a different thread
 	       2: something we no longer hold a reference on
 	       so we need to copy it locally.  */
-    RX_WRAPPED(dstr) = SAVEPVN(RX_WRAPPED_const(sstr), SvCUR(sstr)+1);
+    RX_WRAPPED(dstr) = SAVEPVN(RX_WRAPPED(sstr), SvCUR(sstr)+1);
     ret->mother_re   = NULL;
 }
 #endif /* PERL_IN_XSUB_RE */
@@ -19930,47 +19812,33 @@ Perl_regdupe_internal(pTHX_ REGEXP * const rx, CLONE_PARAMS *param)
 	    d->what[i] = ri->data->what[i];
 	    switch (d->what[i]) {
 	        /* see also regcomp.h and regfree_internal() */
-            case 'a': /* actually an AV, but the dup function is identical.
-                         values seem to be "plain sv's" generally. */
-            case 'r': /* a compiled regex (but still just another SV) */
-            case 's': /* an RV (currently only used for an RV to an AV by the ANYOF code)
-                         this use case should go away, the code could have used
-                         'a' instead - see S_set_ANYOF_arg() for array contents. */
-            case 'S': /* actually an SV, but the dup function is identical.  */
-            case 'u': /* actually an HV, but the dup function is identical.
-                         values are "plain sv's" */
+	    case 'a': /* actually an AV, but the dup function is identical.  */
+	    case 'r':
+	    case 's':
+	    case 'S':
+	    case 'u': /* actually an HV, but the dup function is identical.  */
 		d->data[i] = sv_dup_inc((const SV *)ri->data->data[i], param);
 		break;
 	    case 'f':
-                /* Synthetic Start Class - "Fake" charclass we generate to optimize
-                 * patterns which could start with several different things. Pre-TRIE
-                 * this was more important than it is now, however this still helps
-                 * in some places, for instance /x?a+/ might produce a SSC equivalent
-                 * to [xa]. This is used by Perl_re_intuit_start() and S_find_byclass()
-                 * in regexec.c
-                 */
 		/* This is cheating. */
 		Newx(d->data[i], 1, regnode_ssc);
 		StructCopy(ri->data->data[i], d->data[i], regnode_ssc);
 		reti->regstclass = (regnode*)d->data[i];
 		break;
 	    case 'T':
-                /* AHO-CORASICK fail table */
-                /* Trie stclasses are readonly and can thus be shared
+		/* Trie stclasses are readonly and can thus be shared
 		 * without duplication. We free the stclass in pregfree
 		 * when the corresponding reg_ac_data struct is freed.
 		 */
 		reti->regstclass= ri->regstclass;
 		/* FALLTHROUGH */
 	    case 't':
-                /* TRIE transition table */
 		OP_REFCNT_LOCK;
 		((reg_trie_data*)ri->data->data[i])->refcount++;
 		OP_REFCNT_UNLOCK;
 		/* FALLTHROUGH */
-            case 'l': /* (?{...}) or (??{ ... }) code (cb->block) */
-            case 'L': /* same when RExC_pm_flags & PMf_HAS_CV and code
-                         is not from another regexp */
+	    case 'l':
+	    case 'L':
 		d->data[i] = ri->data->data[i];
 		break;
             default:

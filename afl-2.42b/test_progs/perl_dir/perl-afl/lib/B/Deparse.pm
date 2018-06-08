@@ -12,14 +12,11 @@ use Carp;
 use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
 	 OPf_WANT OPf_WANT_VOID OPf_WANT_SCALAR OPf_WANT_LIST
 	 OPf_KIDS OPf_REF OPf_STACKED OPf_SPECIAL OPf_MOD OPf_PARENS
-	 OPpLVAL_INTRO OPpOUR_INTRO OPpENTERSUB_AMPER OPpSLICE OPpKVSLICE
-         OPpCONST_BARE
+	 OPpLVAL_INTRO OPpOUR_INTRO OPpENTERSUB_AMPER OPpSLICE OPpCONST_BARE
 	 OPpTRANS_SQUASH OPpTRANS_DELETE OPpTRANS_COMPLEMENT OPpTARGET_MY
 	 OPpEXISTS_SUB OPpSORT_NUMERIC OPpSORT_INTEGER OPpREPEAT_DOLIST
 	 OPpSORT_REVERSE OPpMULTIDEREF_EXISTS OPpMULTIDEREF_DELETE
          OPpSPLIT_ASSIGN OPpSPLIT_LEX
-         OPpPADHV_ISKEYS OPpRV2HV_ISKEYS
-         OPpTRUEBOOL OPpINDEX_BOOLNEG
 	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVpad_OUR SVf_FAKE SVs_RMG SVs_SMG
 	 SVs_PADTMP SVpad_TYPED
          CVf_METHOD CVf_LVALUE
@@ -50,7 +47,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
         MDEREF_SHIFT
     );
 
-$VERSION = '1.43';
+$VERSION = '1.40';
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -365,8 +362,7 @@ BEGIN {
 
 
 BEGIN { for (qw[ const stringify rv2sv list glob pushmark null aelem
-		 kvaslice kvhslice
-                 nextstate dbstate rv2av rv2hv helem custom ]) {
+		 nextstate dbstate rv2av rv2hv helem custom ]) {
     eval "sub OP_\U$_ () { " . opnumber($_) . "}"
 }}
 
@@ -406,27 +402,13 @@ sub _pessimise_walk {
 
 	# pessimisations end here
 
-	if (class($op) eq 'PMOP') {
-	    if (ref($op->pmreplroot)
-                && ${$op->pmreplroot}
-                && $op->pmreplroot->isa( 'B::OP' ))
-            {
-                $self-> _pessimise_walk($op->pmreplroot);
-            }
-
-            # pessimise any /(?{...})/ code blocks
-            my ($re, $cv);
-            my $code_list = $op->code_list;
-            if ($$code_list) {
-                $self->_pessimise_walk($code_list);
-            }
-            elsif (${$re = $op->pmregexp} && ${$cv = $re->qr_anoncv}) {
-                $code_list = $cv->ROOT      # leavesub
-                               ->first      #   qr
-                               ->code_list; #     list
-                $self->_pessimise_walk($code_list);
-            }
-        }
+	if (class($op) eq 'PMOP'
+	    && ref($op->pmreplroot)
+	    && ${$op->pmreplroot}
+	    && $op->pmreplroot->isa( 'B::OP' ))
+	{
+	    $self-> _pessimise_walk($op->pmreplroot);
+	}
 
 	if ($op->flags & OPf_KIDS) {
 	    $self-> _pessimise_walk($op->first);
@@ -441,8 +423,6 @@ sub _pessimise_walk {
 
 sub _pessimise_walk_exe {
     my ($self, $startop, $visited) = @_;
-
-    no warnings 'recursion';
 
     return unless $$startop;
     return if $visited->{$$startop};
@@ -512,10 +492,6 @@ sub todo {
     } else {
 	$seq = 0;
     }
-    my $stash = $cv->STASH;
-    if (class($stash) eq 'HV') {
-        $self->{packs}{$stash->NAME}++;
-    }
     push @{$self->{'subs_todo'}}, [$seq, $cv, $is_form, $name];
 }
 
@@ -582,17 +558,7 @@ sub next_todo {
                 #  makes use of a lexical var that's not in scope.
                 #  So strip it out.
                 return $pragmata
-                        if $use_dec =~
-                            m/
-                                \A
-                                use \s \S+ \s \(\@\{
-                                (
-                                    \s*\#line\ \d+\ \".*"\s*
-                                )?
-                                \$args\[0\];\}\);
-                                \n
-                                \Z
-                            /x;
+                            if $use_dec =~ /^use \S+ \(@\{\$args\[0\];\}\);/;
 
 		$use_dec =~ s/^(use|no)\b/$self->keyword($1)/e;
 	    }
@@ -645,9 +611,6 @@ sub begin_is_use {
 
     my $req_op = $lineseq->first->sibling;
     return if $req_op->name ne "require";
-
-    # maybe it's C<require expr> rather than C<require 'foo'>
-    return if ($req_op->first->name ne 'const');
 
     my $module;
     if ($req_op->first->private & OPpCONST_BARE) {
@@ -813,14 +776,6 @@ sub print_protos {
     my $ar;
     my @ret;
     foreach $ar (@{$self->{'protos_todo'}}) {
-	if (ref $ar->[1]) {
-	    # Only print a constant if it occurs in the same package as a
-	    # dumped sub.  This is not perfect, but a heuristic that will
-	    # hopefully work most of the time.  Ideally we would use
-	    # CvFILE, but a constant stub has no CvFILE.
-	    my $pack = ($ar->[0] =~ /(.*)::/)[0];
-	    next if $pack and !$self->{packs}{$pack}
-	}
 	my $body = defined $ar->[1]
 		? ref $ar->[1]
 		    ? " () {\n    " . $self->const($ar->[1]->RV,0) . ";\n}"
@@ -862,7 +817,6 @@ sub new {
     $self->{'ex_const'} = "'???'";
     $self->{'expand'} = 0;
     $self->{'files'} = {};
-    $self->{'packs'} = {};
     $self->{'indent_size'} = 4;
     $self->{'linenums'} = 0;
     $self->{'parens'} = 0;
@@ -1380,6 +1334,7 @@ Carp::confess("SPECIAL in deparse_sub") if $cv->isa("B::SPECIAL");
     }
     if ($cv->CvFLAGS & (CVf_METHOD|CVf_LOCKED|CVf_LVALUE|CVf_ANONCONST)) {
         push @attrs, "lvalue" if $cv->CvFLAGS & CVf_LVALUE;
+        push @attrs, "locked" if $cv->CvFLAGS & CVf_LOCKED;
         push @attrs, "method" if $cv->CvFLAGS & CVf_METHOD;
         push @attrs, "const"  if $cv->CvFLAGS & CVf_ANONCONST;
     }
@@ -2694,7 +2649,7 @@ sub pp_delete {
     my($op, $cx) = @_;
     my $arg;
     my $name = $self->keyword("delete");
-    if ($op->private & (OPpSLICE|OPpKVSLICE)) {
+    if ($op->private & OPpSLICE) {
 	if ($op->flags & OPf_SPECIAL) {
 	    # Deleting from an array, not a hash
 	    return $self->maybe_parens_func($name,
@@ -3332,35 +3287,9 @@ sub pp_substr {
     }
     maybe_local(@_, listop(@_, "substr"))
 }
-
-sub pp_index {
-    # Also handles pp_rindex.
-    #
-    # The body of this function includes an unrolled maybe_targmy(),
-    # since the two parts of that sub's actions need to have have the
-    # '== -1' bit in between
-
-    my($self, $op, $cx) = @_;
-
-    my $lex  = ($op->private & OPpTARGET_MY);
-    my $bool = ($op->private & OPpTRUEBOOL);
-
-    my $val = $self->listop($op, ($bool ? 14 : $lex ? 7 : $cx), $op->name);
-
-    # (index() == -1) has op_eq and op_const optimised away
-    if ($bool) {
-        $val .= ($op->private & OPpINDEX_BOOLNEG) ? " == -1" : " != -1";
-        $val = "($val)" if ($op->flags & OPf_PARENS);
-    }
-    if ($lex) {
-	my $var = $self->padname($op->targ);
-	$val = $self->maybe_parens("$var = $val", $cx, 7);
-    }
-    $val;
-}
-
-sub pp_rindex { pp_index(@_); }
 sub pp_vec { maybe_targmy(@_, \&maybe_local, listop(@_, "vec")) }
+sub pp_index { maybe_targmy(@_, \&listop, "index") }
+sub pp_rindex { maybe_targmy(@_, \&listop, "rindex") }
 sub pp_sprintf { maybe_targmy(@_, \&listop, "sprintf") }
 sub pp_formline { listop(@_, "formline") } # see also deparse_format
 sub pp_crypt { maybe_targmy(@_, \&listop, "crypt") }
@@ -3588,167 +3517,9 @@ BEGIN {
     delete @uses_intro{qw( lvref lvrefslice lvavref entersub )};
 }
 
-
-# Look for a my attribute declaration in a list or ex-list. Returns undef
-# if not found, 'my($x, @a) :Foo(bar)' etc otherwise.
-#
-# There are three basic tree structs that are expected:
-#
-# my $x :foo;
-#      <1> ex-list vK/LVINTRO ->c
-#         <0> ex-pushmark v ->3
-#         <1> entersub[t2] vKRS*/TARG ->b
-#                ....
-#         <0> padsv[$x:64,65] vM/LVINTRO ->c
-#
-# my @a :foo;
-# my %h :foo;
-#
-#      <1> ex-list vK ->c
-#         <0> ex-pushmark v ->3
-#         <0> padav[@a:64,65] vM/LVINTRO ->4
-#         <1> entersub[t2] vKRS*/TARG ->c
-#            ....
-#
-# my ($x,@a,%h) :foo;
-#
-#      <;> nextstate(main 64 -e:1) v:{ ->3
-#      <@> list vKP ->w
-#         <0> pushmark vM/LVINTRO ->4
-#         <0> padsv[$x:64,65] vM/LVINTRO ->5
-#         <0> padav[@a:64,65] vM/LVINTRO ->6
-#         <0> padhv[%h:64,65] vM/LVINTRO ->7
-#         <1> entersub[t4] vKRS*/TARG ->f
-#            ....
-#         <1> entersub[t5] vKRS*/TARG ->n
-#            ....
-#         <1> entersub[t6] vKRS*/TARG ->v
-#           ....
-# where the entersub in all cases looks like
-#        <1> entersub[t2] vKRS*/TARG ->c
-#           <0> pushmark s ->5
-#           <$> const[PV "attributes"] sM ->6
-#           <$> const[PV "main"] sM ->7
-#           <1> srefgen sKM/1 ->9
-#              <1> ex-list lKRM ->8
-#                 <0> padsv[@a:64,65] sRM ->8
-#           <$> const[PV "foo"] sM ->a
-#           <.> method_named[PV "import"] ->b
-
-sub maybe_my_attr {
-    my ($self, $op, $cx) = @_;
-
-    my $kid = $op->first->sibling; # skip pushmark
-    return if class($kid) eq 'NULL';
-
-    my $lop;
-    my $type;
-
-    # Extract out all the pad ops and entersub ops into
-    # @padops and @entersubops. Return if anything else seen.
-    # Also determine what class (if any) all the pad vars belong to
-    my $class;
-    my (@padops, @entersubops);
-    for ($lop = $kid; !null($lop); $lop = $lop->sibling) {
-	my $lopname = $lop->name;
-	my $loppriv = $lop->private;
-        if ($lopname =~ /^pad[sah]v$/) {
-            return unless $loppriv & OPpLVAL_INTRO;
-            return if     $loppriv & OPpPAD_STATE;
-
-            my $padname = $self->padname_sv($lop->targ);
-            my $thisclass = ($padname->FLAGS & SVpad_TYPED)
-                                ? $padname->SvSTASH->NAME : 'main';
-
-            # all pad vars must be in the same class
-            $class //= $thisclass;
-            return unless $thisclass eq $class;
-
-            push @padops, $lop;
-        }
-        elsif ($lopname eq 'entersub') {
-            push @entersubops, $lop;
-        }
-        else {
-            return;
-        }
-    }
-
-    return unless @padops && @padops == @entersubops;
-
-    # there should be a balance: each padop has a corresponding
-    # 'attributes'->import() method call, in the same order.
-
-    my @varnames;
-    my $attr_text;
-
-    for my $i (0..$#padops) {
-        my $padop = $padops[$i];
-        my $esop  = $entersubops[$i];
-
-        push @varnames, $self->padname($padop->targ);
-
-        return unless ($esop->flags & OPf_KIDS);
-
-        my $kid = $esop->first;
-        return unless $kid->type == OP_PUSHMARK;
-
-        $kid = $kid->sibling;
-        return unless $$kid && $kid->type == OP_CONST;
-	return unless $self->const_sv($kid)->PV eq 'attributes';
-
-        $kid = $kid->sibling;
-        return unless $$kid && $kid->type == OP_CONST; # __PACKAGE__
-
-        $kid = $kid->sibling;
-        return unless  $$kid
-                    && $kid->name eq "srefgen"
-                    && ($kid->flags & OPf_KIDS)
-                    && ($kid->first->flags & OPf_KIDS)
-                    && $kid->first->first->name =~ /^pad[sah]v$/
-                    && $kid->first->first->targ == $padop->targ;
-
-        $kid = $kid->sibling;
-        my @attr;
-        while ($$kid) {
-            last if ($kid->type != OP_CONST);
-            push @attr, $self->const_sv($kid)->PV;
-            $kid = $kid->sibling;
-        }
-        return unless @attr;
-        my $thisattr = ":" . join(' ', @attr);
-        $attr_text //= $thisattr;
-        # all import calls must have the same list of attributes
-        return unless $attr_text eq $thisattr;
-
-        return unless $kid->name eq 'method_named';
-	return unless $self->meth_sv($kid)->PV eq 'import';
-
-        $kid = $kid->sibling;
-        return if $$kid;
-    }
-
-    my $res = 'my';
-    $res .= " $class " if $class ne 'main';
-    $res .=
-            (@varnames > 1)
-            ? "(" . join(', ', @varnames) . ')'
-            : " $varnames[0]";
-
-    return "$res $attr_text";
-}
-
-
 sub pp_list {
     my $self = shift;
     my($op, $cx) = @_;
-
-    {
-        # might be my ($s,@a,%h) :Foo(bar);
-        my $my_attr = maybe_my_attr($self, $op, $cx);
-        return $my_attr if defined $my_attr;
-    }
-
     my($expr, @exprs);
     my $kid = $op->first->sibling; # skip pushmark
     return '' if class($kid) eq 'NULL';
@@ -4042,13 +3813,6 @@ sub _op_is_or_was {
 
 sub pp_null {
     my($self, $op, $cx) = @_;
-
-    # might be 'my $s :Foo(bar);'
-    if ($op->targ == OP_LIST) {
-        my $my_attr = maybe_my_attr($self, $op, $cx);
-        return $my_attr if defined $my_attr;
-    }
-
     if (class($op) eq "OP") {
 	# old value is lost
 	return $self->{'ex_const'} if $op->targ == OP_CONST;
@@ -4125,17 +3889,7 @@ sub pp_padsv {
 }
 
 sub pp_padav { pp_padsv(@_) }
-
-sub pp_padhv {
-    my $op = $_[1];
-    my $keys = '';
-    # with OPpPADHV_ISKEYS the keys op is optimised away, except
-    # in scalar context the old op is kept (but not executed) so its targ
-    # can be used.
-    $keys = 'keys ' if (     ($op->private & OPpPADHV_ISKEYS)
-                            && !(($op->flags & OPf_WANT) == OPf_WANT_SCALAR));
-    $keys . pp_padsv(@_);
-}
+sub pp_padhv { pp_padsv(@_) }
 
 sub gv_or_padgv {
     my $self = shift;
@@ -4218,13 +3972,8 @@ sub rv2x {
 }
 
 sub pp_rv2sv { maybe_local(@_, rv2x(@_, "\$")) }
+sub pp_rv2hv { maybe_local(@_, rv2x(@_, "%")) }
 sub pp_rv2gv { maybe_local(@_, rv2x(@_, "*")) }
-
-sub pp_rv2hv {
-    my $op = $_[1];
-    (($op->private & OPpRV2HV_ISKEYS) ? 'keys ' : '')
-        . maybe_local(@_, rv2x(@_, "%"))
-}
 
 # skip rv2av
 sub pp_av2arylen {
@@ -4571,9 +4320,8 @@ sub slice {
     } else {
 	$list = $self->elem_or_slice_single_index($kid);
     }
-    my $lead = (   _op_is_or_was($op, OP_KVHSLICE)
-                || _op_is_or_was($op, OP_KVASLICE))
-               ? '%' : '@';
+    my $lead = '@';
+    $lead = '%' if $op->name =~ /^kv/i;
     return $lead . $array . $left . $list . $right;
 }
 
@@ -5060,33 +4808,11 @@ sub unback {
 
 # Remove backslashes which precede literal control characters,
 # to avoid creating ambiguity when we escape the latter.
-#
-# Don't remove a backslash from escaped whitespace: where the T represents
-# a literal tab character, /T/x is not equivalent to /\T/x
-
 sub re_unback {
     my($str) = @_;
 
     # the insane complexity here is due to the behaviour of "\c\"
-    $str =~ s/
-                # these two lines ensure that the backslash we're about to
-                # remove isn't preceeded by something which makes it part
-                # of a \c
-
-                (^ | [^\\] | \\c\\)             # $1
-                (?<!\\c)
-
-                # the backslash to remove
-                \\
-
-                # keep pairs of backslashes
-                (\\\\)*                         # $2
-
-                # only remove if the thing following is a control char
-                (?=[[:^print:]])
-                # and not whitespace
-                (?=\S)
-            /$1$2/xg;
+    $str =~ s/(^|[^\\]|\\c\\)(?<!\\c)\\(\\\\)*(?=[[:^print:]])/$1$2/g;
     return $str;
 }
 

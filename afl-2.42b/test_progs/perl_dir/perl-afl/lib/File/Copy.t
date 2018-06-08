@@ -66,14 +66,12 @@ for my $cross_partition_test (0..1) {
   unlink "copy-$$" or die "unlink: $!";
 
   open(F, "<", "file-$$");
-  binmode F;
   copy(*F, "copy-$$");
-  open(R, "<:raw", "copy-$$") or die "open copy-$$: $!"; $foo = <R>; close(R);
+  open(R, "<", "copy-$$") or die "open copy-$$: $!"; $foo = <R>; close(R);
   is $foo, "ok\n", 'copy(*F, fn): same contents';
   unlink "copy-$$" or die "unlink: $!";
 
   open(F, "<", "file-$$");
-  binmode F;
   copy(\*F, "copy-$$");
   close(F) or die "close: $!";
   open(R, "<", "copy-$$") or die; $foo = <R>; close(R) or die "close: $!";
@@ -347,7 +345,6 @@ SKIP: {
             chmod $c_perm3 => $copy6 or die $!;
 
             open my $fh => "<", $src or die $!;
-            binmode $fh;
 
             copy ($src, $copy1);
             copy ($fh,  $copy2);
@@ -468,8 +465,6 @@ SKIP: {
 
     open(my $IN, "-|") || exec $^X, '-e', 'print "Hello, world!\n"';
     open(my $OUT, "|-") || exec $^X, '-ne', 'exit(/Hello/ ? 55 : 0)';
-    binmode $IN;
-    binmode $OUT;
 
     ok(copy($IN, $OUT), "copy pipe to another");
     close($OUT);

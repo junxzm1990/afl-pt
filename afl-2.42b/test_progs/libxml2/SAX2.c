@@ -982,60 +982,60 @@ xmlSAX2SetDocumentLocator(void *ctx ATTRIBUTE_UNUSED, xmlSAXLocatorPtr loc ATTRI
 void
 xmlSAX2StartDocument(void *ctx)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlDocPtr doc;
+  xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+  xmlDocPtr doc;
 
-    if (ctx == NULL) return;
+  if (ctx == NULL) return;
 
 #ifdef DEBUG_SAX
-    xmlGenericError(xmlGenericErrorContext,
-	    "SAX.xmlSAX2StartDocument()\n");
+  xmlGenericError(xmlGenericErrorContext,
+                  "SAX.xmlSAX2StartDocument()\n");
 #endif
-    if (ctxt->html) {
+  if (ctxt->html) {
 #ifdef LIBXML_HTML_ENABLED
-	if (ctxt->myDoc == NULL)
+    if (ctxt->myDoc == NULL)
 	    ctxt->myDoc = htmlNewDocNoDtD(NULL, NULL);
-	if (ctxt->myDoc == NULL) {
+    if (ctxt->myDoc == NULL) {
 	    xmlSAX2ErrMemory(ctxt, "xmlSAX2StartDocument");
 	    return;
-	}
-	ctxt->myDoc->properties = XML_DOC_HTML;
-	ctxt->myDoc->parseFlags = ctxt->options;
+    }
+    ctxt->myDoc->properties = XML_DOC_HTML;
+    ctxt->myDoc->parseFlags = ctxt->options;
 #else
-        xmlGenericError(xmlGenericErrorContext,
-		"libxml2 built without HTML support\n");
-	ctxt->errNo = XML_ERR_INTERNAL_ERROR;
-	ctxt->instate = XML_PARSER_EOF;
-	ctxt->disableSAX = 1;
-	return;
+    xmlGenericError(xmlGenericErrorContext,
+                    "libxml2 built without HTML support\n");
+    ctxt->errNo = XML_ERR_INTERNAL_ERROR;
+    ctxt->instate = XML_PARSER_EOF;
+    ctxt->disableSAX = 1;
+    return;
 #endif
-    } else {
-	doc = ctxt->myDoc = xmlNewDoc(ctxt->version);
-	if (doc != NULL) {
+  } else {
+    doc = ctxt->myDoc = xmlNewDoc(ctxt->version);
+    if (doc != NULL) {
 	    doc->properties = 0;
 	    if (ctxt->options & XML_PARSE_OLD10)
-	        doc->properties |= XML_DOC_OLD10;
+        doc->properties |= XML_DOC_OLD10;
 	    doc->parseFlags = ctxt->options;
 	    if (ctxt->encoding != NULL)
-		doc->encoding = xmlStrdup(ctxt->encoding);
+        doc->encoding = xmlStrdup(ctxt->encoding);
 	    else
-		doc->encoding = NULL;
+        doc->encoding = NULL;
 	    doc->standalone = ctxt->standalone;
-	} else {
+    } else {
 	    xmlSAX2ErrMemory(ctxt, "xmlSAX2StartDocument");
 	    return;
-	}
-	if ((ctxt->dictNames) && (doc != NULL)) {
+    }
+    if ((ctxt->dictNames) && (doc != NULL)) {
 	    doc->dict = ctxt->dict;
 	    xmlDictReference(doc->dict);
-	}
     }
-    if ((ctxt->myDoc != NULL) && (ctxt->myDoc->URL == NULL) &&
-	(ctxt->input != NULL) && (ctxt->input->filename != NULL)) {
-	ctxt->myDoc->URL = xmlPathToURI((const xmlChar *)ctxt->input->filename);
-	if (ctxt->myDoc->URL == NULL)
+  }
+  if ((ctxt->myDoc != NULL) && (ctxt->myDoc->URL == NULL) &&
+      (ctxt->input != NULL) && (ctxt->input->filename != NULL)) {
+    ctxt->myDoc->URL = xmlPathToURI((const xmlChar *)ctxt->input->filename);
+    if (ctxt->myDoc->URL == NULL)
 	    xmlSAX2ErrMemory(ctxt, "xmlSAX2StartDocument");
-    }
+  }
 }
 
 /**
@@ -1849,80 +1849,80 @@ xmlSAX2EndElement(void *ctx, const xmlChar *name ATTRIBUTE_UNUSED)
  */
 static xmlNodePtr
 xmlSAX2TextNode(xmlParserCtxtPtr ctxt, const xmlChar *str, int len) {
-    xmlNodePtr ret;
-    const xmlChar *intern = NULL;
+  xmlNodePtr ret;
+  const xmlChar *intern = NULL;
 
-    /*
-     * Allocate
-     */
-    if (ctxt->freeElems != NULL) {
-	ret = ctxt->freeElems;
-	ctxt->freeElems = ret->next;
-	ctxt->freeElemsNr--;
-    } else {
-	ret = (xmlNodePtr) xmlMalloc(sizeof(xmlNode));
-    }
-    if (ret == NULL) {
-        xmlErrMemory(ctxt, "xmlSAX2Characters");
-	return(NULL);
-    }
-    memset(ret, 0, sizeof(xmlNode));
-    /*
-     * intern the formatting blanks found between tags, or the
-     * very short strings
-     */
-    if (ctxt->dictNames) {
-        xmlChar cur = str[len];
+  /*
+   * Allocate
+   */
+  if (ctxt->freeElems != NULL) {
+    ret = ctxt->freeElems;
+    ctxt->freeElems = ret->next;
+    ctxt->freeElemsNr--;
+  } else {
+    ret = (xmlNodePtr) xmlMalloc(sizeof(xmlNode));
+  }
+  if (ret == NULL) {
+    xmlErrMemory(ctxt, "xmlSAX2Characters");
+    return(NULL);
+  }
+  memset(ret, 0, sizeof(xmlNode));
+  /*
+   * intern the formatting blanks found between tags, or the
+   * very short strings
+   */
+  if (ctxt->dictNames) {
+    xmlChar cur = str[len];
 
-	if ((len < (int) (2 * sizeof(void *))) &&
-	    (ctxt->options & XML_PARSE_COMPACT)) {
+    if ((len < (int) (2 * sizeof(void *))) &&
+        (ctxt->options & XML_PARSE_COMPACT)) {
 	    /* store the string in the node overriding properties and nsDef */
 	    xmlChar *tmp = (xmlChar *) &(ret->properties);
 	    memcpy(tmp, str, len);
 	    tmp[len] = 0;
 	    intern = tmp;
-	} else if ((len <= 3) && ((cur == '"') || (cur == '\'') ||
-	    ((cur == '<') && (str[len + 1] != '!')))) {
+    } else if ((len <= 3) && ((cur == '"') || (cur == '\'') ||
+                              ((cur == '<') && (str[len + 1] != '!')))) {
 	    intern = xmlDictLookup(ctxt->dict, str, len);
-	} else if (IS_BLANK_CH(*str) && (len < 60) && (cur == '<') &&
-	           (str[len + 1] != '!')) {
+    } else if (IS_BLANK_CH(*str) && (len < 60) && (cur == '<') &&
+               (str[len + 1] != '!')) {
 	    int i;
 
 	    for (i = 1;i < len;i++) {
-		if (!IS_BLANK_CH(str[i])) goto skip;
+        if (!IS_BLANK_CH(str[i])) goto skip;
 	    }
 	    intern = xmlDictLookup(ctxt->dict, str, len);
-	}
     }
-skip:
-    ret->type = XML_TEXT_NODE;
+  }
+ skip:
+  ret->type = XML_TEXT_NODE;
 
-    ret->name = xmlStringText;
-    if (intern == NULL) {
-	ret->content = xmlStrndup(str, len);
-	if (ret->content == NULL) {
+  ret->name = xmlStringText;
+  if (intern == NULL) {
+    ret->content = xmlStrndup(str, len);
+    if (ret->content == NULL) {
 	    xmlSAX2ErrMemory(ctxt, "xmlSAX2TextNode");
 	    xmlFree(ret);
 	    return(NULL);
-	}
-    } else
-	ret->content = (xmlChar *) intern;
-
-    if (ctxt->linenumbers) {
-	if (ctxt->input != NULL) {
-	    if (ctxt->input->line < 65535)
-		ret->line = (short) ctxt->input->line;
-	    else {
-	        ret->line = 65535;
-		if (ctxt->options & XML_PARSE_BIG_LINES)
-		    ret->psvi = (void *) (ptrdiff_t) ctxt->input->line;
-	    }
-	}
     }
+  } else
+    ret->content = (xmlChar *) intern;
 
-    if ((__xmlRegisterCallbacks) && (xmlRegisterNodeDefaultValue))
-	xmlRegisterNodeDefaultValue(ret);
-    return(ret);
+  if (ctxt->linenumbers) {
+    if (ctxt->input != NULL) {
+	    if (ctxt->input->line < 65535)
+        ret->line = (short) ctxt->input->line;
+	    else {
+        ret->line = 65535;
+        if (ctxt->options & XML_PARSE_BIG_LINES)
+          ret->psvi = (void *) (ptrdiff_t) ctxt->input->line;
+	    }
+    }
+  }
+
+  if ((__xmlRegisterCallbacks) && (xmlRegisterNodeDefaultValue))
+    xmlRegisterNodeDefaultValue(ret);
+  return(ret);
 }
 
 #ifdef LIBXML_VALID_ENABLED
@@ -2554,87 +2554,87 @@ xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
      * elements. Use an attribute in the structure !!!
      */
     if (lastChild == NULL) {
-        lastChild = xmlSAX2TextNode(ctxt, ch, len);
-	if (lastChild != NULL) {
-	    ctxt->node->children = lastChild;
-	    ctxt->node->last = lastChild;
-	    lastChild->parent = ctxt->node;
-	    lastChild->doc = ctxt->node->doc;
-	    ctxt->nodelen = len;
-	    ctxt->nodemem = len + 1;
-	} else {
-	    xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
-	    return;
-	}
+      lastChild = xmlSAX2TextNode(ctxt, ch, len);
+      if (lastChild != NULL) {
+        ctxt->node->children = lastChild;
+        ctxt->node->last = lastChild;
+        lastChild->parent = ctxt->node;
+        lastChild->doc = ctxt->node->doc;
+        ctxt->nodelen = len;
+        ctxt->nodemem = len + 1;
+      } else {
+        xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
+        return;
+      }
     } else {
-	int coalesceText = (lastChild != NULL) &&
-	    (lastChild->type == XML_TEXT_NODE) &&
-	    (lastChild->name == xmlStringText);
-	if ((coalesceText) && (ctxt->nodemem != 0)) {
-	    /*
-	     * The whole point of maintaining nodelen and nodemem,
-	     * xmlTextConcat is too costly, i.e. compute length,
-	     * reallocate a new buffer, move data, append ch. Here
-	     * We try to minimaze realloc() uses and avoid copying
-	     * and recomputing length over and over.
-	     */
-	    if (lastChild->content == (xmlChar *)&(lastChild->properties)) {
-		lastChild->content = xmlStrdup(lastChild->content);
-		lastChild->properties = NULL;
-	    } else if ((ctxt->nodemem == ctxt->nodelen + 1) &&
-	               (xmlDictOwns(ctxt->dict, lastChild->content))) {
-		lastChild->content = xmlStrdup(lastChild->content);
-	    }
-	    if (lastChild->content == NULL) {
-		xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: xmlStrdup returned NULL");
-		return;
- 	    }
-            if (((size_t)ctxt->nodelen + (size_t)len > XML_MAX_TEXT_LENGTH) &&
-                ((ctxt->options & XML_PARSE_HUGE) == 0)) {
-                xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: huge text node");
-                return;
-            }
-	    if ((size_t)ctxt->nodelen > SIZE_T_MAX - (size_t)len ||
-	        (size_t)ctxt->nodemem + (size_t)len > SIZE_T_MAX / 2) {
-                xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters overflow prevented");
-                return;
-	    }
-	    if (ctxt->nodelen + len >= ctxt->nodemem) {
-		xmlChar *newbuf;
-		size_t size;
+      int coalesceText = (lastChild != NULL) &&
+        (lastChild->type == XML_TEXT_NODE) &&
+        (lastChild->name == xmlStringText);
+      if ((coalesceText) && (ctxt->nodemem != 0)) {
+        /*
+         * The whole point of maintaining nodelen and nodemem,
+         * xmlTextConcat is too costly, i.e. compute length,
+         * reallocate a new buffer, move data, append ch. Here
+         * We try to minimaze realloc() uses and avoid copying
+         * and recomputing length over and over.
+         */
+        if (lastChild->content == (xmlChar *)&(lastChild->properties)) {
+          lastChild->content = xmlStrdup(lastChild->content);
+          lastChild->properties = NULL;
+        } else if ((ctxt->nodemem == ctxt->nodelen + 1) &&
+                   (xmlDictOwns(ctxt->dict, lastChild->content))) {
+          lastChild->content = xmlStrdup(lastChild->content);
+        }
+        if (lastChild->content == NULL) {
+          xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: xmlStrdup returned NULL");
+          return;
+        }
+        if (((size_t)ctxt->nodelen + (size_t)len > XML_MAX_TEXT_LENGTH) &&
+            ((ctxt->options & XML_PARSE_HUGE) == 0)) {
+          xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: huge text node");
+          return;
+        }
+        if ((size_t)ctxt->nodelen > SIZE_T_MAX - (size_t)len ||
+            (size_t)ctxt->nodemem + (size_t)len > SIZE_T_MAX / 2) {
+          xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters overflow prevented");
+          return;
+        }
+        if (ctxt->nodelen + len >= ctxt->nodemem) {
+          xmlChar *newbuf;
+          size_t size;
 
-		size = ctxt->nodemem + len;
-		size *= 2;
-                newbuf = (xmlChar *) xmlRealloc(lastChild->content,size);
-		if (newbuf == NULL) {
-		    xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
-		    return;
-		}
-		ctxt->nodemem = size;
-		lastChild->content = newbuf;
-	    }
-	    memcpy(&lastChild->content[ctxt->nodelen], ch, len);
-	    ctxt->nodelen += len;
-	    lastChild->content[ctxt->nodelen] = 0;
-	} else if (coalesceText) {
-	    if (xmlTextConcat(lastChild, ch, len)) {
-		xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
-	    }
-	    if (ctxt->node->children != NULL) {
-		ctxt->nodelen = xmlStrlen(lastChild->content);
-		ctxt->nodemem = ctxt->nodelen + 1;
-	    }
-	} else {
-	    /* Mixed content, first time */
-	    lastChild = xmlSAX2TextNode(ctxt, ch, len);
-	    if (lastChild != NULL) {
-		xmlAddChild(ctxt->node, lastChild);
-		if (ctxt->node->children != NULL) {
-		    ctxt->nodelen = len;
-		    ctxt->nodemem = len + 1;
-		}
-	    }
-	}
+          size = ctxt->nodemem + len;
+          size *= 2;
+          newbuf = (xmlChar *) xmlRealloc(lastChild->content,size);
+          if (newbuf == NULL) {
+            xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
+            return;
+          }
+          ctxt->nodemem = size;
+          lastChild->content = newbuf;
+        }
+        memcpy(&lastChild->content[ctxt->nodelen], ch, len);
+        ctxt->nodelen += len;
+        lastChild->content[ctxt->nodelen] = 0;
+      } else if (coalesceText) {
+        if (xmlTextConcat(lastChild, ch, len)) {
+          xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
+        }
+        if (ctxt->node->children != NULL) {
+          ctxt->nodelen = xmlStrlen(lastChild->content);
+          ctxt->nodemem = ctxt->nodelen + 1;
+        }
+      } else {
+        /* Mixed content, first time */
+        lastChild = xmlSAX2TextNode(ctxt, ch, len);
+        if (lastChild != NULL) {
+          xmlAddChild(ctxt->node, lastChild);
+          if (ctxt->node->children != NULL) {
+            ctxt->nodelen = len;
+            ctxt->nodemem = len + 1;
+          }
+        }
+      }
     }
 }
 

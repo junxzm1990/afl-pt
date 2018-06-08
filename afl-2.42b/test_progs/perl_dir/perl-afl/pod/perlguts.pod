@@ -56,7 +56,7 @@ The seven routines are:
     SV*  newSVpvf(const char*, ...);
     SV*  newSVsv(SV*);
 
-C<STRLEN> is an integer type (C<Size_t>, usually defined as C<size_t> in
+C<STRLEN> is an integer type (Size_t, usually defined as size_t in
 F<config.h>) guaranteed to be large enough to represent the size of
 any string that perl can handle.
 
@@ -79,7 +79,7 @@ To change the value of an I<already-existing> SV, there are eight routines:
     void  sv_setpvn(SV*, const char*, STRLEN)
     void  sv_setpvf(SV*, const char*, ...);
     void  sv_vsetpvfn(SV*, const char*, STRLEN, va_list *,
-                                        SV **, Size_t, bool *);
+                                                    SV **, I32, bool *);
     void  sv_setsv(SV*, SV*);
 
 Notice that you can choose to specify the length of the string to be
@@ -2675,7 +2675,7 @@ whatever the compiler has.
 If you are printing addresses of pointers, use UVxf combined
 with PTR2UV(), do not use %lx or %p.
 
-=head2 Formatted Printing of C<Size_t> and C<SSize_t>
+=head2 Formatted Printing of Size_t and SSize_t
 
 The most general way to do this is to cast them to a UV or IV, and
 print as in the

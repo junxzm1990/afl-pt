@@ -369,9 +369,7 @@ Perl_sv_peek(pTHX_ SV *sv)
 	sv_catpv(t, "WILD");
 	goto finish;
     }
-    else if (  sv == &PL_sv_undef || sv == &PL_sv_no || sv == &PL_sv_yes
-            || sv == &PL_sv_zero || sv == &PL_sv_placeholder)
-    {
+    else if (sv == &PL_sv_undef || sv == &PL_sv_no || sv == &PL_sv_yes || sv == &PL_sv_placeholder) {
 	if (sv == &PL_sv_undef) {
 	    sv_catpv(t, "SV_UNDEF");
 	    if (!(SvFLAGS(sv) & (SVf_OK|SVf_OOK|SVs_OBJECT|
@@ -398,17 +396,6 @@ Perl_sv_peek(pTHX_ SV *sv)
 		SvCUR(sv) == 1 &&
 		SvPVX_const(sv) && *SvPVX_const(sv) == '1' &&
 		SvNVX(sv) == 1.0)
-		goto finish;
-	}
-	else if (sv == &PL_sv_zero) {
-	    sv_catpv(t, "SV_ZERO");
-	    if (!(SvFLAGS(sv) & (SVf_ROK|SVf_OOK|SVs_OBJECT|
-				 SVs_GMG|SVs_SMG|SVs_RMG)) &&
-		!(~SvFLAGS(sv) & (SVf_POK|SVf_NOK|SVf_READONLY|
-				  SVp_POK|SVp_NOK)) &&
-		SvCUR(sv) == 1 &&
-		SvPVX_const(sv) && *SvPVX_const(sv) == '0' &&
-		SvNVX(sv) == 0.0)
 		goto finish;
 	}
 	else {
@@ -578,10 +565,7 @@ S_opdump_indent(pTHX_ const OP *o, I32 level, UV bar, PerlIO *file,
         /* output preceding blank line */
         PerlIO_puts(file, "     ");
         for (i = level-1; i >= 0; i--)
-            PerlIO_puts(file,  (   i == 0
-                                || (i < UVSIZE*8 && (bar & ((UV)1 << i)))
-                               )
-                                    ?  "|   " : "    ");
+            PerlIO_puts(file,  i == 0 || (bar & (1 << i)) ?  "|   " : "    ");
         PerlIO_puts(file, "\n");
 
         /* output sequence number */
@@ -1839,12 +1823,7 @@ Perl_do_sv_dump(pTHX_ I32 level, PerlIO *file, SV *sv, I32 nest, I32 maxnest, bo
                 PerlIO_printf(file, "\n");
             }
 	    Perl_dump_indent(aTHX_ level, file, "  CUR = %" IVdf "\n", (IV)SvCUR(sv));
-	    if (re && type == SVt_PVLV)
-                /* LV-as-REGEXP usurps len field to store pointer to
-                 * regexp struct */
-		Perl_dump_indent(aTHX_ level, file, "  REGEXP = 0x%" UVxf "\n",
-                   PTR2UV(((XPV*)SvANY(sv))->xpv_len_u.xpvlenu_rx));
-            else
+	    if (!re)
 		Perl_dump_indent(aTHX_ level, file, "  LEN = %" IVdf "\n",
 				       (IV)SvLEN(sv));
 #ifdef PERL_COPY_ON_WRITE
@@ -2434,29 +2413,15 @@ Perl_sv_dump(pTHX_ SV *sv)
 int
 Perl_runops_debug(pTHX)
 {
-#if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
-    SSize_t orig_stack_hwm = PL_curstackinfo->si_stack_hwm;
-
-    PL_curstackinfo->si_stack_hwm = PL_stack_sp - PL_stack_base;
-#endif
-
     if (!PL_op) {
 	Perl_ck_warner_d(aTHX_ packWARN(WARN_DEBUGGING), "NULL OP IN RUN");
 	return 0;
     }
+
     DEBUG_l(Perl_deb(aTHX_ "Entering new RUNOPS level\n"));
     do {
 #ifdef PERL_TRACE_OPS
         ++PL_op_exec_cnt[PL_op->op_type];
-#endif
-#if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
-        if (PL_curstackinfo->si_stack_hwm < PL_stack_sp - PL_stack_base)
-            Perl_croak_nocontext(
-                "panic: previous op failed to extend arg stack: "
-                "base=%p, sp=%p, hwm=%p\n",
-                    PL_stack_base, PL_stack_sp,
-                    PL_stack_base + PL_curstackinfo->si_stack_hwm);
-        PL_curstackinfo->si_stack_hwm = PL_stack_sp - PL_stack_base;
 #endif
 	if (PL_debug) {
             ENTER;
@@ -2487,10 +2452,6 @@ Perl_runops_debug(pTHX)
     DEBUG_l(Perl_deb(aTHX_ "leaving RUNOPS level\n"));
     PERL_ASYNC_CHECK();
 
-#if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
-    if (PL_curstackinfo->si_stack_hwm < orig_stack_hwm)
-        PL_curstackinfo->si_stack_hwm = orig_stack_hwm;
-#endif
     TAINT_NOT;
     return 0;
 }

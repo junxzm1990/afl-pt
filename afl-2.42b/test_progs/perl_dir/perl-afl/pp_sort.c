@@ -46,7 +46,6 @@
 #define SORTf_DESC   1
 #define SORTf_STABLE 2
 #define SORTf_QSORT  4
-#define SORTf_UNSTABLE 8
 
 /*
  * The mergesort implementation is by Peter M. Mcilroy <pmcilroy@lucent.com>.
@@ -558,7 +557,7 @@ S_mergesortsv(pTHX_ gptr *base, size_t nmemb, SVCOMPARE_t cmp, U32 flags)
     }
   done:
     if (aux != small) Safefree(aux);	/* free iff allocated */
-    if (savecmp != NULL) {
+    if (flags) {
 	 PL_sort_RealCmp = savecmp;	/* Restore current comparison routine, if any */
     }
     return;
@@ -788,7 +787,7 @@ S_qsortsvu(pTHX_ SV ** array, size_t num_elts, SVCOMPARE_t compare)
       size_t n;
       SV ** const q = array;
       for (n = num_elts; n > 1; ) {
-         const size_t j = (size_t)(n-- * Perl_internal_drand48());
+         const size_t j = (size_t)(n-- * Drand01());
          temp = q[j];
          q[j] = q[n];
          q[n] = temp;
@@ -1495,8 +1494,6 @@ PP(pp_sort)
 	sort_flags |= SORTf_QSORT;
     if ((priv & OPpSORT_STABLE) != 0)
 	sort_flags |= SORTf_STABLE;
-    if ((priv & OPpSORT_UNSTABLE) != 0)
-	sort_flags |= SORTf_UNSTABLE;
 
     if (gimme != G_ARRAY) {
 	SP = MARK;
@@ -1769,9 +1766,6 @@ PP(pp_sort)
                     base[i] = newSVsv(sv);
                 else
                     SvREFCNT_inc_simple_void_NN(sv);
-
-                if (SvWEAKREF(sv))
-                    sv_rvunweaken(sv);
             }
             av_clear(av);
             if (max > 0) {

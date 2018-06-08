@@ -626,42 +626,6 @@ Perl_mg_free_type(pTHX_ SV *sv, int how)
     mg_magical(sv);
 }
 
-/*
-=for apidoc mg_freeext
-
-Remove any magic of type C<how> using virtual table C<vtbl> from the
-SV C<sv>.  See L</sv_magic>.
-
-C<mg_freeext(sv, how, NULL)> is equivalent to C<mg_free_type(sv, how)>.
-
-=cut
-*/
-
-void
-Perl_mg_freeext(pTHX_ SV *sv, int how, const MGVTBL *vtbl)
-{
-    MAGIC *mg, *prevmg, *moremg;
-    PERL_ARGS_ASSERT_MG_FREEEXT;
-    for (prevmg = NULL, mg = SvMAGIC(sv); mg; prevmg = mg, mg = moremg) {
-	MAGIC *newhead;
-	moremg = mg->mg_moremagic;
-	if (mg->mg_type == how && (vtbl == NULL || mg->mg_virtual == vtbl)) {
-	    /* temporarily move to the head of the magic chain, in case
-	       custom free code relies on this historical aspect of mg_free */
-	    if (prevmg) {
-		prevmg->mg_moremagic = moremg;
-		mg->mg_moremagic = SvMAGIC(sv);
-		SvMAGIC_set(sv, mg);
-	    }
-	    newhead = mg->mg_moremagic;
-	    mg_free_struct(sv, mg);
-	    SvMAGIC_set(sv, newhead);
-	    mg = prevmg;
-	}
-    }
-    mg_magical(sv);
-}
-
 #include <signal.h>
 
 U32
@@ -674,8 +638,8 @@ Perl_magic_regdata_cnt(pTHX_ SV *sv, MAGIC *mg)
     if (PL_curpm) {
         REGEXP * const rx = PM_GETRE(PL_curpm);
 	if (rx) {
-            const SSize_t n = (SSize_t)mg->mg_obj;
-            if (n == '+') {          /* @+ */
+            UV uv= (UV)mg->mg_obj;
+            if (uv == '+') {          /* @+ */
 		/* return the number possible */
 		return RX_NPARENS(rx);
             } else {   /* @- @^CAPTURE  @{^CAPTURE} */
@@ -686,7 +650,7 @@ Perl_magic_regdata_cnt(pTHX_ SV *sv, MAGIC *mg)
 			&& (RX_OFFS(rx)[paren].start == -1
 			    || RX_OFFS(rx)[paren].end == -1) )
 		    paren--;
-                if (n == '-') {
+                if (uv == '-') {
                     /* @- */
                     return (U32)paren;
                 } else {
@@ -710,10 +674,10 @@ Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
     if (PL_curpm) {
         REGEXP * const rx = PM_GETRE(PL_curpm);
 	if (rx) {
-            const SSize_t n = (SSize_t)mg->mg_obj;
+            const UV uv= (UV)mg->mg_obj;
             /* @{^CAPTURE} does not contain $&, so we need to increment by 1 */
             const I32 paren = mg->mg_len
-                            + (n == '\003' ? 1 : 0);
+                            + (uv == '\003' ? 1 : 0);
 	    SSize_t s;
 	    SSize_t t;
 	    if (paren < 0)
@@ -724,9 +688,9 @@ Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
 		{
 		    SSize_t i;
 
-                    if (n == '+')                /* @+ */
+                    if (uv == '+')                /* @+ */
 			i = t;
-                    else if (n == '-')           /* @- */
+                    else if (uv == '-')           /* @- */
 			i = s;
                     else {                        /* @^CAPTURE @{^CAPTURE} */
                         CALLREG_NUMBUF_FETCH(rx,paren,sv);
@@ -746,7 +710,7 @@ Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
 		}
 	}
     }
-    sv_set_undef(sv);
+    sv_setsv(sv, NULL);
     return 0;
 }
 
@@ -823,73 +787,15 @@ S_fixup_errno_string(pTHX_ SV* sv)
          * UTF-8 validity test"
          * (http://en.wikipedia.org/wiki/Charset_detection).  There is a
          * potential that we will get it wrong however, especially on short
-         * error message text, so do an additional check. */
-        if (   ! IN_BYTES  /* respect 'use bytes' */
+         * error message text.  (If it turns out to be necessary, we could also
+         * keep track if the current LC_MESSAGES locale is UTF-8) */
+        if (! IN_BYTES  /* respect 'use bytes' */
             && ! is_utf8_invariant_string((U8*) SvPVX_const(sv), SvCUR(sv))
-            &&   is_utf8_string((U8*) SvPVX_const(sv), SvCUR(sv))
-
-#ifdef USE_LOCALE_MESSAGES
-
-            &&   _is_cur_LC_category_utf8(LC_MESSAGES)
-
-#elif defined(USE_LOCLAE_CTYPE)
-
-                 /* For systems that don't have a separate message category,
-                  * this assumes that they follow the CTYPE one */
-            &&   _is_cur_LC_category_utf8(LC_CTYPE)
-
-#endif
-
-        ) {
+            && is_utf8_string((U8*) SvPVX_const(sv), SvCUR(sv)))
+        {
             SvUTF8_on(sv);
         }
     }
-}
-
-/*
-=for apidoc Am|SV *|sv_string_from_errnum|int errnum|SV *tgtsv
-
-Generates the message string describing an OS error and returns it as
-an SV.  C<errnum> must be a value that C<errno> could take, identifying
-the type of error.
-
-If C<tgtsv> is non-null then the string will be written into that SV
-(overwriting existing content) and it will be returned.  If C<tgtsv>
-is a null pointer then the string will be written into a new mortal SV
-which will be returned.
-
-The message will be taken from whatever locale would be used by C<$!>,
-and will be encoded in the SV in whatever manner would be used by C<$!>.
-The details of this process are subject to future change.  Currently,
-the message is taken from the C locale by default (usually producing an
-English message), and from the currently selected locale when in the scope
-of the C<use locale> pragma.  A heuristic attempt is made to decode the
-message from the locale's character encoding, but it will only be decoded
-as either UTF-8 or ISO-8859-1.  It is always correctly decoded in a UTF-8
-locale, usually in an ISO-8859-1 locale, and never in any other locale.
-
-The SV is always returned containing an actual string, and with no other
-OK bits set.  Unlike C<$!>, a message is even yielded for C<errnum> zero
-(meaning success), and if no useful message is available then a useless
-string (currently empty) is returned.
-
-=cut
-*/
-
-SV *
-Perl_sv_string_from_errnum(pTHX_ int errnum, SV *tgtsv)
-{
-    char const *errstr;
-    if(!tgtsv)
-	tgtsv = sv_newmortal();
-    errstr = my_strerror(errnum);
-    if(errstr) {
-	sv_setpv(tgtsv, errstr);
-	fixup_errno_string(tgtsv);
-    } else {
-	SvPVCLEAR(tgtsv);
-    }
-    return tgtsv;
 }
 
 #ifdef VMS
@@ -943,7 +849,7 @@ Perl_magic_get(pTHX_ SV *sv, MAGIC *mg)
     case '\005':  /* ^E */
 	 if (nextchar != '\0') {
             if (strEQ(remaining, "NCODING"))
-                sv_set_undef(sv);
+                sv_setsv(sv, NULL);
             break;
         }
 
@@ -994,7 +900,6 @@ Perl_magic_get(pTHX_ SV *sv, MAGIC *mg)
 	break;
 #endif  /* End of platforms with special handling for $^E; others just fall
            through to $! */
-    /* FALLTHROUGH */
 
     case '!':
 	{
@@ -1013,12 +918,14 @@ Perl_magic_get(pTHX_ SV *sv, MAGIC *mg)
                 SvPVCLEAR(sv);
             }
             else {
-                sv_string_from_errnum(errno, sv);
-                /* If no useful string is available, don't
-                 * claim to have a string part.  The SvNOK_on()
+
+                /* Strerror can return NULL on some platforms, which will
+                 * result in 'sv' not being considered SvOK.  The SvNOK_on()
                  * below will cause just the number part to be valid */
-                if (!SvCUR(sv))
-                    SvPOK_off(sv);
+                sv_setpv(sv, my_strerror(errno));
+                if (SvOK(sv)) {
+                    fixup_errno_string(sv);
+                }
             }
             RESTORE_ERRNO;
 	}
@@ -1044,7 +951,7 @@ Perl_magic_get(pTHX_ SV *sv, MAGIC *mg)
 	break;
     case '\014':		/* ^LAST_FH */
 	if (strEQ(remaining, "AST_FH")) {
-	    if (PL_last_in_gv && (SV*)PL_last_in_gv != &PL_sv_undef) {
+	    if (PL_last_in_gv) {
 		assert(isGV_with_GP(PL_last_in_gv));
 		SV_CHECK_THINKFIRST_COW_DROP(sv);
 		prepare_SV_for_RV(sv);
@@ -1053,8 +960,7 @@ Perl_magic_get(pTHX_ SV *sv, MAGIC *mg)
 		SvROK_on(sv);
 		sv_rvweaken(sv);
 	    }
-	    else
-                sv_set_undef(sv);
+	    else sv_setsv_nomg(sv, NULL);
 	}
 	break;
     case '\017':		/* ^O & ^OPEN */
@@ -2155,7 +2061,7 @@ Perl_magic_getarylen(pTHX_ SV *sv, const MAGIC *mg)
     if (obj) {
 	sv_setiv(sv, AvFILL(obj));
     } else {
-        sv_set_undef(sv);
+	sv_setsv(sv, NULL);
     }
     return 0;
 }
@@ -2233,7 +2139,7 @@ Perl_magic_getpos(pTHX_ SV *sv, MAGIC *mg)
 	    sv_setuv(sv, i);
 	    return 0;
     }
-    sv_set_undef(sv);
+    sv_setsv(sv,NULL);
     return 0;
 }
 
@@ -2291,8 +2197,8 @@ Perl_magic_getsubstr(pTHX_ SV *sv, MAGIC *mg)
     const char * const tmps = SvPV_const(lsv,len);
     STRLEN offs = LvTARGOFF(sv);
     STRLEN rem = LvTARGLEN(sv);
-    const bool negoff = LvFLAGS(sv) & LVf_NEG_OFF;
-    const bool negrem = LvFLAGS(sv) & LVf_NEG_LEN;
+    const bool negoff = LvFLAGS(sv) & 1;
+    const bool negrem = LvFLAGS(sv) & 2;
 
     PERL_ARGS_ASSERT_MAGIC_GETSUBSTR;
     PERL_UNUSED_ARG(mg);
@@ -2323,8 +2229,8 @@ Perl_magic_setsubstr(pTHX_ SV *sv, MAGIC *mg)
     SV * const lsv = LvTARG(sv);
     STRLEN lvoff = LvTARGOFF(sv);
     STRLEN lvlen = LvTARGLEN(sv);
-    const bool negoff = LvFLAGS(sv) & LVf_NEG_OFF;
-    const bool neglen = LvFLAGS(sv) & LVf_NEG_LEN;
+    const bool negoff = LvFLAGS(sv) & 1;
+    const bool neglen = LvFLAGS(sv) & 2;
 
     PERL_ARGS_ASSERT_MAGIC_SETSUBSTR;
     PERL_UNUSED_ARG(mg);
@@ -2405,7 +2311,7 @@ Perl_magic_getvec(pTHX_ SV *sv, MAGIC *mg)
     PERL_UNUSED_ARG(mg);
 
     /* non-zero errflags implies deferred out-of-range condition */
-    assert(!(errflags & ~(LVf_NEG_OFF|LVf_OUT_OF_RANGE)));
+    assert(!(errflags & ~(1|4)));
     sv_setuv(sv, errflags ? 0 : do_vecget(lsv, LvTARGOFF(sv), LvTARGLEN(sv)));
 
     return 0;
@@ -2821,8 +2727,13 @@ Perl_magic_set(pTHX_ SV *sv, MAGIC *mg)
 #  endif
 #endif
 	}
-	else if (strEQ(mg->mg_ptr + 1, "NCODING") && SvOK(sv))
-            Perl_croak(aTHX_ "${^ENCODING} is no longer supported");
+	else {
+            if (strEQ(mg->mg_ptr + 1, "NCODING") && SvOK(sv))
+                        if (PL_localizing != 2) {
+                            deprecate_fatal_in("5.28",
+                               "${^ENCODING} is no longer supported");
+                        }
+        }
 	break;
     case '\006':	/* ^F */
 	PL_maxsysfd = SvIV(sv);
@@ -3004,9 +2915,10 @@ Perl_magic_set(pTHX_ SV *sv, MAGIC *mg)
 	break;
     case '/':
         {
+            SV *tmpsv= sv;
             if (SvROK(sv)) {
-                SV *referent = SvRV(sv);
-                const char *reftype = sv_reftype(referent, 0);
+                SV *referent= SvRV(sv);
+                const char *reftype= sv_reftype(referent, 0);
                 /* XXX: dodgy type check: This leaves me feeling dirty, but
                  * the alternative is to copy pretty much the entire
                  * sv_reftype() into this routine, or to do a full string
@@ -3015,21 +2927,23 @@ Perl_magic_set(pTHX_ SV *sv, MAGIC *mg)
                  * without reviewing the corresponding comment in
                  * sv_reftype(). - Yves */
                 if (reftype[0] == 'S' || reftype[0] == 'L') {
-                    IV val = SvIV(referent);
+                    IV val= SvIV(referent);
                     if (val <= 0) {
-                        sv_setsv(sv, PL_rs);
-                        Perl_croak(aTHX_ "Setting $/ to a reference to %s is forbidden",
-                                         val < 0 ? "a negative integer" : "zero");
+                        tmpsv= &PL_sv_undef;
+                        Perl_ck_warner_d(aTHX_ packWARN(WARN_DEPRECATED),
+                            "Setting $/ to a reference to %s as a form of slurp is deprecated, treating as undef. This will be fatal in Perl 5.28",
+                            SvIV(SvRV(sv)) < 0 ? "a negative integer" : "zero"
+                        );
                     }
                 } else {
                     sv_setsv(sv, PL_rs);
-                    /* diag_listed_as: Setting $/ to %s reference is forbidden */
+              /* diag_listed_as: Setting $/ to %s reference is forbidden */
                     Perl_croak(aTHX_ "Setting $/ to a%s %s reference is forbidden",
                                       *reftype == 'A' ? "n" : "", reftype);
                 }
             }
             SvREFCNT_dec(PL_rs);
-            PL_rs = newSVsv(sv);
+            PL_rs = newSVsv(tmpsv);
         }
 	break;
     case '\\':

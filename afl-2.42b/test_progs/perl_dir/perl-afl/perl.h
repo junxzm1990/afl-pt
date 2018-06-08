@@ -109,7 +109,7 @@
 
 /* Use the reentrant APIs like localtime_r and getpwent_r */
 /* Win32 has naturally threadsafe libraries, no need to use any _r variants. */
-#if defined(USE_ITHREADS) && !defined(USE_REENTRANT_API) && !defined(NETWARE) && !defined(WIN32)
+#if defined(USE_ITHREADS) && !defined(USE_REENTRANT_API) && !defined(NETWARE) && !defined(WIN32) && !defined(PERL_DARWIN)
 #   define USE_REENTRANT_API
 #endif
 
@@ -403,12 +403,12 @@
  * clang only pretends to be GCC 4.2, but still supports push/pop.
  *
  * Note on usage: on non-gcc (or lookalike, like clang) compilers
- * one cannot use these with a semicolon at file (global) level without
- * warnings since they are defined as empty, which leads into the terminating
+ * one cannot use these at file (global) level without warnings
+ * since they are defined as empty, which leads into the terminating
  * semicolon being left alone on a line:
  * ;
  * which makes compilers mildly cranky.  Therefore at file level one
- * should use the GCC_DIAG_IGNORE and GCC_DIAG_RESTORE macros *without*
+ * should use the GCC_DIAG_IGNORE and GCC_DIAG_RESTORE_FILE *without*
  * the semicolons.
  *
  * (A dead-on-arrival solution would be to try to define the macros as
@@ -760,6 +760,9 @@
 #   endif
 #   if !defined(NO_LOCALE_TIME) && defined(LC_TIME)
 #	define USE_LOCALE_TIME
+#   endif
+#   ifndef WIN32    /* No wrapper except on Windows */
+#       define my_setlocale(a,b) setlocale(a,b)
 #   endif
 #endif /* !NO_LOCALE && HAS_SETLOCALE */
 
@@ -1566,7 +1569,7 @@ EXTERN_C char *crypt(const char *, const char *);
  * that should be true only if the snprintf()/vsnprintf() are true
  * to the standard. */
 
-#define PERL_SNPRINTF_CHECK(len, max, api) STMT_START { if ((max) > 0 && (Size_t)len > (max)) Perl_croak_nocontext("panic: %s buffer overflow", STRINGIFY(api)); } STMT_END
+#define PERL_SNPRINTF_CHECK(len, max, api) STMT_START { if ((max) > 0 && (Size_t)len >= (max)) Perl_croak_nocontext("panic: %s buffer overflow", STRINGIFY(api)); } STMT_END
 
 #ifdef USE_QUADMATH
 #  define my_snprintf Perl_my_snprintf
@@ -3688,24 +3691,24 @@ EXTERN_C int perl_tsa_mutex_unlock(perl_mutex* mutex)
 /* placeholder */
 #endif
 
-/* STATIC_ASSERT_DECL/STATIC_ASSERT_STMT are like assert(), but for compile
+/* STATIC_ASSERT_GLOBAL/STATIC_ASSERT_STMT are like assert(), but for compile
    time invariants. That is, their argument must be a constant expression that
    can be verified by the compiler. This expression can contain anything that's
    known to the compiler, e.g. #define constants, enums, or sizeof (...). If
    the expression evaluates to 0, compilation fails.
    Because they generate no runtime code (i.e.  their use is "free"), they're
    always active, even under non-DEBUGGING builds.
-   STATIC_ASSERT_DECL expands to a declaration and is suitable for use at
+   STATIC_ASSERT_GLOBAL expands to a declaration and is suitable for use at
    file scope (outside of any function).
    STATIC_ASSERT_STMT expands to a statement and is suitable for use inside a
    function.
 */
 #if (defined(static_assert) || (defined(__cplusplus) && __cplusplus >= 201103L)) && (!defined(__IBMC__) || __IBMC__ >= 1210)
 /* static_assert is a macro defined in <assert.h> in C11 or a compiler
-   builtin in C++11.  But IBM XL C V11 does not support _Static_assert, no
-   matter what <assert.h> says.
+   builtin in C++11.
 */
-#  define STATIC_ASSERT_DECL(COND) static_assert(COND, #COND)
+/* IBM XL C V11 does not support _Static_assert, no matter what <assert.h> says */
+#  define STATIC_ASSERT_GLOBAL(COND) static_assert(COND, #COND)
 #else
 /* We use a bit-field instead of an array because gcc accepts
    'typedef char x[n]' where n is not a compile-time constant.
@@ -3716,12 +3719,12 @@ EXTERN_C int perl_tsa_mutex_unlock(perl_mutex* mutex)
         unsigned int _static_assertion_failed_##SUFFIX : (COND) ? 1 : -1; \
     } _static_assertion_failed_##SUFFIX PERL_UNUSED_DECL
 #  define STATIC_ASSERT_1(COND, SUFFIX) STATIC_ASSERT_2(COND, SUFFIX)
-#  define STATIC_ASSERT_DECL(COND)    STATIC_ASSERT_1(COND, __LINE__)
+#  define STATIC_ASSERT_GLOBAL(COND)    STATIC_ASSERT_1(COND, __LINE__)
 #endif
 /* We need this wrapper even in C11 because 'case X: static_assert(...);' is an
    error (static_assert is a declaration, and only statements can have labels).
 */
-#define STATIC_ASSERT_STMT(COND)      STMT_START { STATIC_ASSERT_DECL(COND); } STMT_END
+#define STATIC_ASSERT_STMT(COND)      do { STATIC_ASSERT_GLOBAL(COND); } while (0)
 
 #ifndef __has_builtin
 #  define __has_builtin(x) 0 /* not a clang style compiler */
@@ -3753,14 +3756,7 @@ EXTERN_C int perl_tsa_mutex_unlock(perl_mutex* mutex)
 #  define ASSUME(x) assert(x)
 #endif
 
-#if defined(__sun)      /* ASSUME() generates warnings on Solaris */
-#  define NOT_REACHED
-#elif defined(DEBUGGING) && (__has_builtin(__builtin_unreachable) \
-     || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5 || __GNUC__ > 4)) /* 4.5 -> */
-#  define NOT_REACHED STMT_START { ASSUME(0); __builtin_unreachable(); } STMT_END
-#else
-#  define NOT_REACHED ASSUME(0)
-#endif
+#define NOT_REACHED ASSUME(0)
 
 /* Some unistd.h's give a prototype for pause() even though
    HAS_PAUSE ends up undefined.  This causes the #define
@@ -3891,12 +3887,12 @@ typedef        struct crypt_data {     /* straight from /usr/include/crypt.h */
 #endif
 
 /* [perl #22371] Algorimic Complexity Attack on Perl 5.6.1, 5.8.0.
- * Note that the USE_HASH_SEED and similar defines are *NOT* defined by
- * Configure, despite their names being similar to other defines like
- * USE_ITHREADS.  Configure in fact knows nothing about the randomised
- * hashes.  Therefore to enable/disable the hash randomisation defines
- * use the Configure -Accflags=... instead. */
-#if !defined(NO_HASH_SEED) && !defined(USE_HASH_SEED)
+ * Note that the USE_HASH_SEED and USE_HASH_SEED_EXPLICIT are *NOT*
+ * defined by Configure, despite their names being similar to the
+ * other defines like USE_ITHREADS.  Configure in fact knows nothing
+ * about the randomised hashes.  Therefore to enable/disable the hash
+ * randomisation defines use the Configure -Accflags=... instead. */
+#if !defined(NO_HASH_SEED) && !defined(USE_HASH_SEED) && !defined(USE_HASH_SEED_EXPLICIT)
 #  define USE_HASH_SEED
 #endif
 
@@ -4171,7 +4167,7 @@ Gid_t getegid (void);
 #define DEBUG_u_FLAG		0x00000800 /*   2048 */
 /* U is reserved for Unofficial, exploratory hacking */
 #define DEBUG_U_FLAG		0x00001000 /*   4096 */
-/* spare                                        8192 */
+#define DEBUG_H_FLAG		0x00002000 /*   8192 */
 #define DEBUG_X_FLAG		0x00004000 /*  16384 */
 #define DEBUG_D_FLAG		0x00008000 /*  32768 */
 #define DEBUG_S_FLAG		0x00010000 /*  65536 */
@@ -4204,6 +4200,7 @@ Gid_t getegid (void);
 #  define DEBUG_x_TEST_ UNLIKELY(PL_debug & DEBUG_x_FLAG)
 #  define DEBUG_u_TEST_ UNLIKELY(PL_debug & DEBUG_u_FLAG)
 #  define DEBUG_U_TEST_ UNLIKELY(PL_debug & DEBUG_U_FLAG)
+#  define DEBUG_H_TEST_ UNLIKELY(PL_debug & DEBUG_H_FLAG)
 #  define DEBUG_X_TEST_ UNLIKELY(PL_debug & DEBUG_X_FLAG)
 #  define DEBUG_D_TEST_ UNLIKELY(PL_debug & DEBUG_D_FLAG)
 #  define DEBUG_S_TEST_ UNLIKELY(PL_debug & DEBUG_S_FLAG)
@@ -4238,6 +4235,7 @@ Gid_t getegid (void);
 #  define DEBUG_x_TEST DEBUG_x_TEST_
 #  define DEBUG_u_TEST DEBUG_u_TEST_
 #  define DEBUG_U_TEST DEBUG_U_TEST_
+#  define DEBUG_H_TEST DEBUG_H_TEST_
 #  define DEBUG_X_TEST DEBUG_X_TEST_
 #  define DEBUG_D_TEST DEBUG_D_TEST_
 #  define DEBUG_S_TEST DEBUG_S_TEST_
@@ -4298,6 +4296,7 @@ Gid_t getegid (void);
 #  define DEBUG_x(a) DEBUG__(DEBUG_x_TEST, a)
 #  define DEBUG_u(a) DEBUG__(DEBUG_u_TEST, a)
 #  define DEBUG_U(a) DEBUG__(DEBUG_U_TEST, a)
+#  define DEBUG_H(a) DEBUG__(DEBUG_H_TEST, a)
 #  define DEBUG_X(a) DEBUG__(DEBUG_X_TEST, a)
 #  define DEBUG_D(a) DEBUG__(DEBUG_D_TEST, a)
 #  define DEBUG_Xv(a) DEBUG__(DEBUG_Xv_TEST, a)
@@ -4332,6 +4331,7 @@ Gid_t getegid (void);
 #  define DEBUG_x_TEST (0)
 #  define DEBUG_u_TEST (0)
 #  define DEBUG_U_TEST (0)
+#  define DEBUG_H_TEST (0)
 #  define DEBUG_X_TEST (0)
 #  define DEBUG_D_TEST (0)
 #  define DEBUG_S_TEST (0)
@@ -4367,6 +4367,7 @@ Gid_t getegid (void);
 #  define DEBUG_x(a)
 #  define DEBUG_u(a)
 #  define DEBUG_U(a)
+#  define DEBUG_H(a)
 #  define DEBUG_X(a)
 #  define DEBUG_D(a)
 #  define DEBUG_S(a)
@@ -4769,8 +4770,6 @@ EXTCONST char PL_Yes[]
   INIT("1");
 EXTCONST char PL_No[]
   INIT("");
-EXTCONST char PL_Zero[]
-  INIT("0");
 EXTCONST char PL_hexdigit[]
   INIT("0123456789abcdef0123456789ABCDEF");
 
@@ -5411,8 +5410,7 @@ typedef enum {
 #define HINT_SORT_SORT_BITS	0x000000FF /* allow 256 different ones */
 #define HINT_SORT_QUICKSORT	0x00000001
 #define HINT_SORT_MERGESORT	0x00000002
-#define HINT_SORT_STABLE	0x00000100 /* sort styles */
-#define HINT_SORT_UNSTABLE	0x00000200
+#define HINT_SORT_STABLE	0x00000100 /* sort styles (currently one) */
 
 /* flags for PL_sawampersand */
 
@@ -5633,10 +5631,6 @@ struct tempsym; /* defined in pp_pack.c */
 START_EXTERN_C
 #  include "intrpvar.h"
 END_EXTERN_C
-#  define PL_sv_yes   (PL_sv_immortals[0])
-#  define PL_sv_undef (PL_sv_immortals[1])
-#  define PL_sv_no    (PL_sv_immortals[2])
-#  define PL_sv_zero  (PL_sv_immortals[3])
 #endif
 
 #ifdef PERL_CORE
@@ -5723,7 +5717,7 @@ PL_valid_types_IVX[]    = { 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
 EXTCONST bool
 PL_valid_types_NVX[]    = { 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
 EXTCONST bool
-PL_valid_types_PVX[]    = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1 };
+PL_valid_types_PVX[]    = { 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
 EXTCONST bool
 PL_valid_types_RV[]     = { 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1 };
 EXTCONST bool
@@ -5893,27 +5887,12 @@ typedef struct am_table_short AMTS;
 #ifdef USE_LOCALE
 /* These locale things are all subject to change */
 
+#   define LOCALE_INIT   MUTEX_INIT(&PL_locale_mutex)
 
-#  if      defined(HAS_NEWLOCALE)               \
-      &&   defined(LC_ALL_MASK)                 \
-      &&   defined(HAS_FREELOCALE)              \
-      &&   defined(HAS_USELOCALE)               \
-      && ! defined(NO_POSIX_2008_LOCALE)
-
-    /* The code is written for simplicity to assume that any platform advanced
-     * enough to have the Posix 2008 locale functions has LC_ALL.  The test
-     * above makes sure that assumption is valid */
-
-#    define HAS_POSIX_2008_LOCALE
-#  endif
-
-/* We create a C locale object unconditionally if we have the functions to do
- * so; hence must destroy it unconditionally at the end */
-#  ifndef HAS_POSIX_2008_LOCALE
-#    define _LOCALE_TERM_POSIX_2008  NOOP
-#  else
-#    define _LOCALE_TERM_POSIX_2008                                         \
+#   ifdef USE_THREAD_SAFE_LOCALE
+#       define LOCALE_TERM                                                  \
                     STMT_START {                                            \
+                        MUTEX_DESTROY(&PL_locale_mutex);                    \
                         if (PL_C_locale_obj) {                              \
                             /* Make sure we aren't using the locale         \
                              * space we are about to free */                \
@@ -5921,28 +5900,14 @@ typedef struct am_table_short AMTS;
                             freelocale(PL_C_locale_obj);                    \
                             PL_C_locale_obj = (locale_t) NULL;              \
                         }                                                   \
-                    } STMT_END
-#  endif
+                     } STMT_END
+    }
+#   else
+#       define LOCALE_TERM   MUTEX_DESTROY(&PL_locale_mutex)
+#   endif
 
-#  ifndef USE_ITHREADS
-#    define LOCALE_INIT
-#    define LOCALE_LOCK
-#    define LOCALE_UNLOCK
-#    define LOCALE_TERM  STMT_START { _LOCALE_TERM_POSIX_2008; } STMT_END
-#  else /* Below is do use threads */
-#    define LOCALE_INIT         MUTEX_INIT(&PL_locale_mutex)
-#    define LOCALE_LOCK         MUTEX_LOCK(&PL_locale_mutex)
-#    define LOCALE_UNLOCK       MUTEX_UNLOCK(&PL_locale_mutex)
-#    define LOCALE_TERM                                                     \
-                    STMT_START {                                            \
-                        MUTEX_DESTROY(&PL_locale_mutex);                    \
-                        _LOCALE_TERM_POSIX_2008;                            \
-                    } STMT_END
-#    ifdef HAS_POSIX_2008_LOCALE
-#      define USE_POSIX_2008_LOCALE
-#      define USE_THREAD_SAFE_LOCALE
-#    endif
-#  endif
+#   define LOCALE_LOCK   MUTEX_LOCK(&PL_locale_mutex)
+#   define LOCALE_UNLOCK MUTEX_UNLOCK(&PL_locale_mutex)
 
 /* Returns TRUE if the plain locale pragma without a parameter is in effect
  */
@@ -5991,7 +5956,7 @@ typedef struct am_table_short AMTS;
 #           define _CHECK_AND_WARN_PROBLEMATIC_LOCALE                         \
                 STMT_START {                                                  \
                     if (UNLIKELY(PL_warn_locale)) {                           \
-                        Perl__warn_problematic_locale();                      \
+                        _warn_problematic_locale();                           \
                     }                                                         \
                 }  STMT_END
 #       else
@@ -6026,6 +5991,20 @@ typedef struct am_table_short AMTS;
         }  STMT_END
 
 #   endif   /* PERL_CORE or PERL_IN_XSUB_RE */
+
+#if      defined(USE_ITHREADS)              \
+    &&   defined(HAS_NEWLOCALE)             \
+    &&   defined(LC_ALL_MASK)               \
+    &&   defined(HAS_FREELOCALE)            \
+    &&   defined(HAS_USELOCALE)             \
+    && ! defined(NO_THREAD_SAFE_USELOCALE)
+
+    /* The code is written for simplicity to assume that any platform advanced
+     * enough to have the Posix 2008 locale functions has LC_ALL.  The test
+     * above makes sure that assumption is valid */
+
+#   define USE_THREAD_SAFE_LOCALE
+#endif
 
 #else   /* No locale usage */
 #   define LOCALE_INIT
@@ -6161,7 +6140,7 @@ expression, but with an empty argument list, like this:
 #define STORE_LC_NUMERIC_SET_TO_NEEDED()                                    \
     if (IN_LC(LC_NUMERIC)) {                                                \
         if (_NOT_IN_NUMERIC_UNDERLYING) {                                   \
-            Perl_set_numeric_local(aTHX);                                   \
+            set_numeric_local();                                            \
             _restore_LC_NUMERIC_function = &Perl_set_numeric_standard;      \
         }                                                                   \
     }                                                                       \
@@ -6180,32 +6159,31 @@ expression, but with an empty argument list, like this:
 /* The next two macros set unconditionally.  These should be rarely used, and
  * only after being sure that this is what is needed */
 #define SET_NUMERIC_STANDARD()                                              \
-	STMT_START { if (_NOT_IN_NUMERIC_STANDARD)                          \
-                                          Perl_set_numeric_standard(aTHX);  \
-                   } STMT_END
+	STMT_START { if (_NOT_IN_NUMERIC_STANDARD) set_numeric_standard();  \
+                                                                 } STMT_END
 
 #define SET_NUMERIC_UNDERLYING()                                            \
 	STMT_START { if (_NOT_IN_NUMERIC_UNDERLYING)                        \
-                                Perl_set_numeric_local(aTHX); } STMT_END
+                                            set_numeric_local(); } STMT_END
 
 /* The rest of these LC_NUMERIC macros toggle to one or the other state, with
  * the RESTORE_foo ones called to switch back, but only if need be */
 #define STORE_LC_NUMERIC_UNDERLYING_SET_STANDARD()                          \
 	bool _was_local = _NOT_IN_NUMERIC_STANDARD;                         \
-	if (_was_local) Perl_set_numeric_standard(aTHX);
+	if (_was_local) set_numeric_standard();
 
 /* Doesn't change to underlying locale unless within the scope of some form of
  * 'use locale'.  This is the usual desired behavior. */
 #define STORE_LC_NUMERIC_STANDARD_SET_UNDERLYING()                          \
 	bool _was_standard = _NOT_IN_NUMERIC_UNDERLYING                     \
                             && IN_LC(LC_NUMERIC);                           \
-	if (_was_standard) Perl_set_numeric_local(aTHX);
+	if (_was_standard) set_numeric_local();
 
 /* Rarely, we want to change to the underlying locale even outside of 'use
  * locale'.  This is principally in the POSIX:: functions */
 #define STORE_LC_NUMERIC_FORCE_TO_UNDERLYING()                              \
     if (_NOT_IN_NUMERIC_UNDERLYING) {                                       \
-        Perl_set_numeric_local(aTHX);                                       \
+        set_numeric_local();                                                \
         _restore_LC_NUMERIC_function = &Perl_set_numeric_standard;          \
     }
 
@@ -6225,7 +6203,7 @@ expression, but with an empty argument list, like this:
             } STMT_END
 
 #define RESTORE_LC_NUMERIC_UNDERLYING()                     \
-	if (_was_local) Perl_set_numeric_local(aTHX);
+	if (_was_local) set_numeric_local();
 
 #define RESTORE_LC_NUMERIC_STANDARD()                       \
     if (_restore_LC_NUMERIC_function) {                     \
@@ -6893,26 +6871,6 @@ extern void moncontrol(int);
 #  ifdef LONGDOUBLE_VAX_ENDIAN
 #    define NV_VAX_ENDIAN
 #  endif
-#endif
-
-/* We have somehow managed not to define the denormal/subnormal
- * detection.
- *
- * This may happen if the compiler doesn't expose the C99 math like
- * the fpclassify() without some special switches.  Perl tries to
- * stay C89, so for example -std=c99 is not an option.
- *
- * The Perl_isinf() and Perl_isnan() should have been defined even if
- * the C99 isinf() and isnan() are unavailable, and the NV_MIN becomes
- * from the C89 DBL_MIN or moral equivalent. */
-#if !defined(Perl_fp_class_denorm) && defined(Perl_isinf) && defined(Perl_isnan) && defined(NV_MIN)
-#  define Perl_fp_class_denorm(x) ((x) != 0.0 && !Perl_isinf(x) && !Perl_isnan(x) && PERL_ABS(x) < NV_MIN)
-#endif
-
-/* This is not a great fallback: subnormals tests will fail,
- * but at least Perl will link and 99.999% of tests will work. */
-#if !defined(Perl_fp_class_denorm)
-#  define Perl_fp_class_denorm(x) FALSE
 #endif
 
 #ifdef DOUBLE_IS_IEEE_FORMAT

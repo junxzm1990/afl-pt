@@ -399,9 +399,9 @@ leave nothing to doubt:
 
     $element_count = scalar(@whatever);
 
-If you evaluate a hash in scalar context, it returns a false value if
-the hash is empty.  If there are any key/value pairs, it returns a
-true value.  A more precise definition is version dependent.
+If you evaluate a hash in scalar context, it returns false if the
+hash is empty.  If there are any key/value pairs, it returns true.
+A more precise definition is version dependent.
 
 Prior to Perl 5.25 the value returned was a string consisting of the
 number of used buckets and the number of allocated buckets, separated
@@ -1014,11 +1014,8 @@ returning a list of key/value pairs rather than just values:
     %h = (blonk => 2, foo => 3, squink => 5, bar => 8);
     %subset = %h{'foo', 'bar'}; # key/value hash slice
     # %subset is now (foo => 3, bar => 8)
-    %removed = delete %h{'foo', 'bar'};
-    # %removed is now (foo => 3, bar => 8)
-    # %h is now (blonk => 2, squink => 5)
 
-However, the result of such a slice cannot be localized or used
+However, the result of such a slice cannot be localized, deleted or used
 in assignment.  These are otherwise very much consistent with hash slices
 using the @ symbol.
 
@@ -1031,12 +1028,6 @@ of index/value pairs:
     @a = "a".."z";
     @list = %a[3,4,6];
     # @list is now (3, "d", 4, "e", 6, "g")
-    @removed = delete %a[3,4,6]
-    # @removed is now (3, "d", 4, "e", 6, "g")
-    # @list[3,4,6] are now undef
-
-Note that calling L<C<delete>|perlfunc/delete EXPR> on array values is
-strongly discouraged.
 
 =head2 Typeglobs and Filehandles
 X<typeglob> X<filehandle> X<*>

@@ -3354,8 +3354,9 @@ Perl_find_script(pTHX_ const char *scriptname, bool dosearch,
 	    if (len < sizeof tmpbuf)
 		tmpbuf[len] = '\0';
 #  else
-	    s = delimcpy_no_escape(tmpbuf, tmpbuf + sizeof tmpbuf, s, bufend,
-                                   ':', &len);
+	    s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf, s, bufend,
+			':',
+			&len);
 #  endif
 	    if (s < bufend)
 		s++;
@@ -3795,8 +3796,6 @@ Perl_mini_mktime(struct tm *ptm)
  * This algorithm also fails to handle years before A.D. 1 gracefully, but
  * that's still outside the scope for POSIX time manipulation, so I don't
  * care.
- *
- * - lwall
  */
 
     year = 1900 + ptm->tm_year;
@@ -3905,13 +3904,7 @@ Perl_my_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, in
 {
 #ifdef HAS_STRFTIME
 
-  /* strftime(), but with a different API so that the return value is a pointer
-   * to the formatted result (which MUST be arranged to be FREED BY THE
-   * CALLER).  This allows this function to increase the buffer size as needed,
-   * so that the caller doesn't have to worry about that.
-   *
-   * Note that yday and wday effectively are ignored by this function, as
-   * mini_mktime() overwrites them */
+  /* Note that yday and wday effectively are ignored by this function, as mini_mktime() overwrites them */
 
   char *buf;
   int buflen;
@@ -4641,6 +4634,7 @@ Perl_get_hash_seed(pTHX_ unsigned char * const seed_buffer)
     env_pv= PerlEnv_getenv("PERL_HASH_SEED");
 
     if ( env_pv )
+#  ifndef USE_HASH_SEED_EXPLICIT
     {
         /* ignore leading spaces */
         while (isSPACE(*env_pv))
@@ -4675,10 +4669,13 @@ Perl_get_hash_seed(pTHX_ unsigned char * const seed_buffer)
         /* should we warn about insufficient hex? */
     }
     else
-#endif /* NO_PERL_HASH_ENV */
+#  endif
+#endif
     {
+        (void)seedDrand01((Rand_seed_t)seed());
+
         for( i = 0; i < PERL_HASH_SEED_BYTES; i++ ) {
-            seed_buffer[i] = (unsigned char)(Perl_internal_drand48() * (U8_MAX+1));
+            seed_buffer[i] = (unsigned char)(Drand01() * (U8_MAX+1));
         }
     }
 #ifdef USE_PERL_PERTURB_KEYS
@@ -5345,9 +5342,13 @@ Perl_my_cxt_init(pTHX_ int *index, size_t size)
     PERL_ARGS_ASSERT_MY_CXT_INIT;
     if (*index == -1) {
 	/* this module hasn't been allocated an index yet */
+#if defined(USE_ITHREADS)
 	MUTEX_LOCK(&PL_my_ctx_mutex);
+#endif
 	*index = PL_my_cxt_index++;
+#if defined(USE_ITHREADS)
 	MUTEX_UNLOCK(&PL_my_ctx_mutex);
+#endif
     }
     
     /* make sure the array is big enough */
@@ -5404,9 +5405,13 @@ Perl_my_cxt_init(pTHX_ const char *my_cxt_key, size_t size)
     index = Perl_my_cxt_index(aTHX_ my_cxt_key);
     if (index == -1) {
 	/* this module hasn't been allocated an index yet */
+#if defined(USE_ITHREADS)
 	MUTEX_LOCK(&PL_my_ctx_mutex);
+#endif
 	index = PL_my_cxt_index++;
+#if defined(USE_ITHREADS)
 	MUTEX_UNLOCK(&PL_my_ctx_mutex);
+#endif
     }
 
     /* make sure the array is big enough */
@@ -5789,40 +5794,6 @@ Perl_my_dirfd(DIR * dir) {
 #endif 
 }
 
-#ifndef HAS_MKSTEMP
-
-#define TEMP_FILE_CH "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789"
-#define TEMP_FILE_CH_COUNT (sizeof(TEMP_FILE_CH)-1)
-
-int
-Perl_my_mkstemp(char *templte) {
-    dTHX;
-    STRLEN len = strlen(templte);
-    int fd;
-    int attempts = 0;
-
-    PERL_ARGS_ASSERT_MY_MKSTEMP;
-
-    if (len < 6 ||
-        templte[len-1] != 'X' || templte[len-2] != 'X' || templte[len-3] != 'X' ||
-        templte[len-4] != 'X' || templte[len-5] != 'X' || templte[len-6] != 'X') {
-        errno = EINVAL;
-        return -1;
-    }
-
-    do {
-        int i;
-        for (i = 1; i <= 6; ++i) {
-            templte[len-i] = TEMP_FILE_CH[(int)(Perl_internal_drand48() * TEMP_FILE_CH_COUNT)];
-        }
-        fd = PerlLIO_open3(templte, O_RDWR | O_CREAT | O_EXCL, 0600);
-    } while (fd == -1 && errno == EEXIST && ++attempts <= 100);
-
-    return fd;
-}
-
-#endif
-
 REGEXP *
 Perl_get_re_arg(pTHX_ SV *sv) {
 
@@ -6136,17 +6107,17 @@ static const char* atos_parse(const char* p,
     UV uv;
 
     /* Skip trailing whitespace. */
-    while (p > start && isSPACE(*p)) p--;
+    while (p > start && isspace(*p)) p--;
     /* Now we should be at the close paren. */
     if (p == start || *p != ')')
         return NULL;
     close_paren = p;
     p--;
     /* Now we should be in the line number. */
-    if (p == start || !isDIGIT(*p))
+    if (p == start || !isdigit(*p))
         return NULL;
     /* Skip over the digits. */
-    while (p > start && isDIGIT(*p))
+    while (p > start && isdigit(*p))
         p--;
     /* Now we should be at the colon. */
     if (p == start || *p != ':')
@@ -6191,7 +6162,7 @@ static void atos_symbolize(atos_context* ctx,
      * the object name (used as "-o '%s'" ), leave since at least
      * partially the user controls it. */
     for (p = ctx->fname; *p; p++) {
-        if (*p == '\'' || isCNTRL(*p)) {
+        if (*p == '\'' || iscntrl(*p)) {
             ctx->unavail = TRUE;
             return;
         }

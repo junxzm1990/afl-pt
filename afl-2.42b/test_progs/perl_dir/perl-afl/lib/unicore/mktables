@@ -45,7 +45,7 @@ sub NON_ASCII_PLATFORM { ord("A") != 65 }
 # expected, a warning will be generated.  If an older version is being
 # compiled, any bounds tests that fail in the generated test file (-maketest
 # option) will be marked as TODO.
-my $version_of_mk_invlist_bounds = v10.0.0;
+my $version_of_mk_invlist_bounds = v9.0.0;
 
 ##########################################################################
 #
@@ -660,7 +660,7 @@ sub stack_trace() {
 # common to both releases, and you can see the changes caused just by the
 # underlying release semantic changes.  For versions earlier than 3.2, you
 # must copy a version of DAge.txt into the directory.
-my $string_compare_versions = DEBUG && ""; #  e.g., "2.1";
+my $string_compare_versions = DEBUG && 0; #  e.g., "2.1";
 my $compare_versions = DEBUG
                        && $string_compare_versions
                        && pack "C*", split /\./, $string_compare_versions;
@@ -1140,16 +1140,17 @@ my $MAX_UNICODE_CODEPOINT_STRING = ($v_version ge v2.0.0)
 my $MAX_UNICODE_CODEPOINT = hex $MAX_UNICODE_CODEPOINT_STRING;
 my $MAX_UNICODE_CODEPOINTS = $MAX_UNICODE_CODEPOINT + 1;
 
-# We work with above-Unicode code points, up to IV_MAX, but we may want to use
-# sentinels above that number.  Therefore for internal use, we use a much
-# smaller number, translating it to IV_MAX only for output.  The exact number
-# is immaterial (all Unicode code points are treated exactly the same), but
-# the algorithm requires it to be at least 2 * $MAX_UNICODE_CODEPOINTS + 1;
+# We work with above-Unicode code points, up to UV_MAX.   But when you get
+# that high, above IV_MAX, some operations don't work, and you can easily get
+# overflow.  Therefore for internal use, we use a much smaller number,
+# translating it to UV_MAX only for output.  The exact number is immaterial
+# (all Unicode code points are treated exactly the same), but the algorithm
+# requires it to be at least 2 * $MAX_UNICODE_CODEPOINTS + 1;
 my $MAX_WORKING_CODEPOINTS= $MAX_UNICODE_CODEPOINT * 8;
 my $MAX_WORKING_CODEPOINT = $MAX_WORKING_CODEPOINTS - 1;
 my $MAX_WORKING_CODEPOINT_STRING = sprintf("%X", $MAX_WORKING_CODEPOINT);
 
-my $MAX_PLATFORM_CODEPOINT = ~0 >> 1;
+my $MAX_PLATFORM_CODEPOINT = ~0;
 
 # Matches legal code point.  4-6 hex numbers, If there are 6, the first
 # two must be 10; if there are 5, the first must not be a 0.  Written this way
@@ -1528,7 +1529,7 @@ sub populate_char_info ($) {
 
     $viacode[$i] = $perl_charname->value_of($i) || "";
     $age[$i] = (defined $age)
-               ? (($age->value_of($i) =~ / ^ \d+ \. \d+ $ /x)
+               ? (($age->value_of($i) =~ / ^ \d \. \d $ /x)
                   ? $age->value_of($i)
                   : "")
                : "";
@@ -5323,14 +5324,6 @@ use parent '-norequire', '_Range_List_Base';
         return $self->_add_delete('+', @_);
     }
 
-    sub replace_map {
-        # Replace a range
-
-        my $self = shift;
-
-        return $self->_add_delete('+', @_, Replace => $UNCONDITIONALLY);
-    }
-
     sub add_duplicate {
         # Adds entry to a range list which can duplicate an existing entry
 
@@ -7740,7 +7733,6 @@ END
     # Accessors for the underlying list that should fail if locked.
     for my $sub (qw(
                     add_duplicate
-                    replace_map
                 ))
     {
         no strict "refs";
@@ -9375,7 +9367,6 @@ sub trace { return main::trace(@_) if main::DEBUG && $to_trace }
                     range_count
                     ranges
                     range_size_1
-                    replace_map
                     reset_each_range
                     set_comment
                     set_default_map
@@ -13907,10 +13898,8 @@ sub handle_compare_versions () {
     # since the first compare version.
     my $delta = Range_List->new();
     foreach my $table ($age->tables) {
-        use version;
         next if $table == $age->table('Unassigned');
-        next if version->parse($table->name)
-             le version->parse($string_compare_versions);
+        next if $table->name le $string_compare_versions;
         $delta += $table;
     }
     if ($delta->is_empty) {
@@ -13933,9 +13922,6 @@ sub handle_compare_versions () {
         next if     $this_block == $no_block
                 ||  ! ($this_block & $Assigned)->is_empty;
         $this_block->set_fate($SUPPRESSED, $after_first_version);
-        foreach my $range ($this_block->ranges) {
-            $block->replace_map($range->start, $range->end, 'No_Block')
-        }
         $no_block += $this_block;
     }
 
@@ -19066,14 +19052,6 @@ my @input_file_objects = (
                     Property => 'Joining_Type',
                     Has_Missings_Defaults => $NOT_IGNORED,
                    ),
-    Input_file->new("${EXTRACTED}DName.txt", v10.0.0,
-                    Skip => 'This file adds no new information not already'
-                          . ' present in other files',
-                    # And it's unnecessary programmer work to handle this new
-                    # format.  Previous Derived files actually had bug fixes
-                    # in them that were useful, but that should not be the
-                    # case here.
-                   ),
     Input_file->new('Jamo.txt', v2.0.0,
                     Property => 'Jamo_Short_Name',
                     Each_Line_Handler => \&filter_jamo_line,
@@ -19511,13 +19489,6 @@ my @input_file_objects = (
                           . ' and components. This data file also includes'
                           . ' informative radical-stroke values that are used'
                           . ' internally by Unicode',
-                   ),
-    Input_file->new('VerticalOrientation.txt', v10.0.0,
-                    Property => 'Vertical_Orientation',
-                    Has_Missings_Defaults => $NOT_IGNORED,
-                   ),
-    Input_file->new('NushuSources.txt', v10.0.0,
-                    Skip => 'Specifies source material for Nushu characters',
                    ),
 );
 

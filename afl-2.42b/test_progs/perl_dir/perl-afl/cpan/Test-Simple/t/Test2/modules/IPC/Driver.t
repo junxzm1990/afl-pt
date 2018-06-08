@@ -25,8 +25,6 @@ for my $meth (qw/send cull add_hub drop_hub waiting is_viable/) {
     );
 }
 
-SKIP: {
-    last SKIP if $] lt "5.008";
 tests abort => sub {
     my $one = Test2::IPC::Driver->new(no_fatal => 1);
     my ($err, $out) = ("", "");
@@ -55,6 +53,5 @@ tests abort => sub {
     is($out, "not ok - IPC Fatal Error\n", "got 'not ok' on stdout");
     like($err, qr/IPC Fatal Error: foo/, "Got error");
 };
-}
 
 done_testing;

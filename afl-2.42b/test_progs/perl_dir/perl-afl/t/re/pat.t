@@ -23,7 +23,7 @@ BEGIN {
     skip_all('no re module') unless defined &DynaLoader::boot_DynaLoader;
     skip_all_without_unicode_tables();
 
-plan tests => 844;  # Update this when adding/deleting tests.
+plan tests => 838;  # Update this when adding/deleting tests.
 
 run_tests() unless caller;
 
@@ -138,21 +138,6 @@ sub run_tests {
         $null = "";
         $xyz =~ /$null/;
         is($&, $xyz, $message);
-
-        # each entry: regexp, match string, $&, //o match success
-        my @tests =
-          (
-           [ "", "xy", "x", 1 ],
-           [ "y", "yz", "y", !1 ],
-          );
-        for my $test (@tests) {
-            my ($re, $str, $matched, $omatch) = @$test;
-            $xyz =~ /x/o;
-            ok($str =~ /$re/, "$str matches /$re/");
-            is($&, $matched, "on $matched");
-            $xyz =~ /x/o;
-            is($str =~ /$re/o, $omatch, "$str matches /$re/o (or not)");
-        }
     }
 
     {
@@ -1829,6 +1814,11 @@ EOP
             ok($AE =~ $re, '/[\xE6\s]/i matches \xC6 when in UTF-8');
         }
 
+        {   # [perl #126606 crashed the interpreter
+            no warnings 'deprecated';
+            like("sS", qr/\N{}Ss|/i, "\N{} with empty branch alternation works");
+        }
+
         {
             is(0+("\n" =~ m'\n'), 1, q|m'\n' should interpolate escapes|);
         }
@@ -1930,9 +1920,6 @@ EOP
         my $text = "=t=\x{5000}";
         pos($text) = 3;
         ok(scalar($text !~ m{(~*=[a-z]=)}g), "RT #131575");
-    }
-    {
-        fresh_perl_is('"AA" =~ m/AA{1,0}/','',{},"handle OPFAIL insert properly");
     }
 
 } # End of sub run_tests

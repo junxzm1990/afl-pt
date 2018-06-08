@@ -2,14 +2,12 @@ package Test2::API;
 use strict;
 use warnings;
 
-use Test2::Util qw/USE_THREADS/;
-
 BEGIN {
     $ENV{TEST_ACTIVE} ||= 1;
     $ENV{TEST2_ACTIVE} = 1;
 }
 
-our $VERSION = '1.302101';
+our $VERSION = '1.302073';
 
 
 my $INST;
@@ -18,21 +16,10 @@ sub test2_set_is_end { ($ENDING) = @_ ? @_ : (1) }
 sub test2_get_is_end { $ENDING }
 
 use Test2::API::Instance(\$INST);
-
 # Set the exit status
 END {
     test2_set_is_end(); # See gh #16
     $INST->set_exit();
-}
-
-sub CLONE {
-    my $init = test2_init_done();
-    my $load = test2_load_done();
-
-    return if $init && $load;
-
-    require Carp;
-    Carp::croak "Test2 must be fully loaded before you start a new thread!\n";
 }
 
 # See gh #16
@@ -51,8 +38,7 @@ BEGIN {
     }
 }
 
-use Test2::EventFacet::Trace();
-use Test2::Util::Trace(); # Legacy
+use Test2::Util::Trace();
 
 use Test2::Hub::Subtest();
 use Test2::Hub::Interceptor();
@@ -68,23 +54,19 @@ use Test2::Event::Waiting();
 use Test2::Event::Skip();
 use Test2::Event::Subtest();
 
-use Carp qw/carp croak confess/;
+use Carp qw/carp croak confess longmess/;
 use Scalar::Util qw/blessed weaken/;
-use Test2::Util qw/get_tid clone_io pkg_to_file/;
+use Test2::Util qw/get_tid/;
 
 our @EXPORT_OK = qw{
     context release
     context_do
     no_context
-    intercept intercept_deep
+    intercept
     run_subtest
 
     test2_init_done
     test2_load_done
-    test2_load
-    test2_start_preload
-    test2_stop_preload
-    test2_in_preload
 
     test2_set_is_end
     test2_get_is_end
@@ -115,18 +97,12 @@ our @EXPORT_OK = qw{
     test2_ipc_enable_polling
     test2_ipc_get_pending
     test2_ipc_set_pending
-    test2_ipc_get_timeout
-    test2_ipc_set_timeout
     test2_ipc_enable_shm
 
     test2_formatter
     test2_formatters
     test2_formatter_add
     test2_formatter_set
-
-    test2_stdout
-    test2_stderr
-    test2_reset_io
 };
 BEGIN { require Exporter; our @ISA = qw(Exporter) }
 
@@ -135,28 +111,8 @@ my $CONTEXTS    = $INST->contexts;
 my $INIT_CBS    = $INST->context_init_callbacks;
 my $ACQUIRE_CBS = $INST->context_acquire_callbacks;
 
-my $STDOUT = clone_io(\*STDOUT);
-my $STDERR = clone_io(\*STDERR);
-sub test2_stdout { $STDOUT ||= clone_io(\*STDOUT) }
-sub test2_stderr { $STDERR ||= clone_io(\*STDERR) }
-
-sub test2_post_preload_reset {
-    test2_reset_io();
-    $INST->post_preload_reset;
-}
-
-sub test2_reset_io {
-    $STDOUT = clone_io(\*STDOUT);
-    $STDERR = clone_io(\*STDERR);
-}
-
 sub test2_init_done { $INST->finalized }
 sub test2_load_done { $INST->loaded }
-
-sub test2_load          { $INST->load }
-sub test2_start_preload { $ENV{T2_IN_PRELOAD} = 1; $INST->start_preload }
-sub test2_stop_preload  { $ENV{T2_IN_PRELOAD} = 0; $INST->stop_preload }
-sub test2_in_preload    { $INST->preload }
 
 sub test2_pid     { $INST->pid }
 sub test2_tid     { $INST->tid }
@@ -187,21 +143,9 @@ sub test2_ipc_enable_polling  { $INST->enable_ipc_polling }
 sub test2_ipc_disable_polling { $INST->disable_ipc_polling }
 sub test2_ipc_get_pending     { $INST->get_ipc_pending }
 sub test2_ipc_set_pending     { $INST->set_ipc_pending(@_) }
-sub test2_ipc_set_timeout     { $INST->set_ipc_timeout(@_) }
-sub test2_ipc_get_timeout     { $INST->ipc_timeout() }
 sub test2_ipc_enable_shm      { $INST->ipc_enable_shm }
 
-sub test2_formatter     {
-    if ($ENV{T2_FORMATTER} && $ENV{T2_FORMATTER} =~ m/^(\+)?(.*)$/) {
-        my $formatter = $1 ? $2 : "Test2::Formatter::$2";
-        my $file = pkg_to_file($formatter);
-        require $file;
-        return $formatter;
-    }
-
-    return $INST->formatter;
-}
-
+sub test2_formatter     { $INST->formatter }
 sub test2_formatters    { @{$INST->formatters} }
 sub test2_formatter_add { $INST->add_formatter(@_) }
 sub test2_formatter_set {
@@ -263,11 +207,10 @@ sub no_context(&;$) {
     return;
 };
 
-my $CID = 1;
 sub context {
     # We need to grab these before anything else to ensure they are not
     # changed.
-    my ($errno, $eval_error, $child_error, $extended_error) = (0 + $!, $@, $?, $^E);
+    my ($errno, $eval_error, $child_error) = (0 + $!, $@, $?);
 
     my %params = (level => 0, wrapped => 0, @_);
 
@@ -309,7 +252,7 @@ sub context {
     }
 
     # I know this is ugly....
-    ($!, $@, $?, $^E) = ($errno, $eval_error, $child_error, $extended_error) and return bless(
+    ($!, $@, $?) = ($errno, $eval_error, $child_error) and return bless(
         {
             %$current,
             _is_canon   => undef,
@@ -340,15 +283,11 @@ sub context {
     # hit with how often this needs to be called.
     my $trace = bless(
         {
-            frame    => [$pkg, $file, $line, $sub],
-            pid      => $$,
-            tid      => get_tid(),
-            cid      => 'C' . $CID++,
-            hid      => $hid,
-            nested   => $hub->{nested},
-            buffered => $hub->{buffered},
+            frame => [$pkg, $file, $line, $sub],
+            pid   => $$,
+            tid   => get_tid(),
         },
-        'Test2::EventFacet::Trace'
+        'Test2::Util::Trace'
     );
 
     # Directly bless the object here, calling new is a noticeable performance
@@ -378,7 +317,7 @@ sub context {
 
     $params{on_init}->($current) if $params{on_init};
 
-    ($!, $@, $?, $^E) = ($errno, $eval_error, $child_error, $extended_error);
+    ($!, $@, $?) = ($errno, $eval_error, $child_error);
 
     return $current;
 }
@@ -406,8 +345,7 @@ sub _existing_error {
     my $oldframe = $ctx->{trace}->frame;
     my $olddepth = $ctx->{_depth};
 
-    # Older versions of Carp do not export longmess() function, so it needs to be called with package name
-    my $mess = Carp::longmess();
+    my $mess = longmess();
 
     warn <<"    EOT";
 $msg
@@ -436,29 +374,7 @@ sub release($;$) {
 
 sub intercept(&) {
     my $code = shift;
-    my $ctx = context();
 
-    my $events = _intercept($code, deep => 0);
-
-    $ctx->release;
-
-    return $events;
-}
-
-sub intercept_deep(&) {
-    my $code = shift;
-    my $ctx = context();
-
-    my $events = _intercept($code, deep => 1);
-
-    $ctx->release;
-
-    return $events;
-}
-
-sub _intercept {
-    my $code = shift;
-    my %params = @_;
     my $ctx = context();
 
     my $ipc;
@@ -473,7 +389,7 @@ sub _intercept {
     );
 
     my @events;
-    $hub->listen(sub { push @events => $_[1] }, inherit => $params{deep});
+    $hub->listen(sub { push @events => $_[1] });
 
     $ctx->stack->top; # Make sure there is a top hub before we begin.
     $ctx->stack->push($hub);
@@ -511,25 +427,23 @@ sub run_subtest {
     my ($name, $code, $params, @args) = @_;
 
     $params = {buffered => $params} unless ref $params;
+    my $buffered      = delete $params->{buffered};
     my $inherit_trace = delete $params->{inherit_trace};
 
     my $ctx = context();
 
-    my $parent = $ctx->hub;
-
-    # If a parent is buffered then the child must be as well.
-    my $buffered = $params->{buffered} || $parent->{buffered};
-
     $ctx->note($name) unless $buffered;
+
+    my $parent = $ctx->hub;
 
     my $stack = $ctx->stack || $STACK;
     my $hub = $stack->new_hub(
         class => 'Test2::Hub::Subtest',
         %$params,
-        buffered => $buffered,
     );
 
     my @events;
+    $hub->set_nested( $parent->isa('Test2::Hub::Subtest') ? $parent->nested + 1 : 1 );
     $hub->listen(sub { push @events => $_[1] });
 
     if ($buffered) {
@@ -538,15 +452,21 @@ sub run_subtest {
             $hub->format(undef) if $hide;
         }
     }
+    elsif (! $parent->format) {
+        # If our parent has no format that means we're in a buffered subtest
+        # and now we're trying to run a streaming subtest. There's really no
+        # way for that to work, so we need to force the use of a buffered
+        # subtest here as
+        # well. https://github.com/Test-More/test-more/issues/721
+        $buffered = 1;
+    }
 
     if ($inherit_trace) {
         my $orig = $code;
         $code = sub {
-            my $base_trace = $ctx->trace;
-            my $trace = $base_trace->snapshot(nested => 1 + $base_trace->nested);
             my $st_ctx = Test2::API::Context->new(
-                trace  => $trace,
-                hub    => $hub,
+                trace => $ctx->trace,
+                hub   => $hub,
             );
             $st_ctx->do_in_context($orig, @args);
         };
@@ -567,44 +487,20 @@ sub run_subtest {
             $finished = 1;
         }
     }
-
-    if ($params->{no_fork}) {
-        if ($$ != $ctx->trace->pid) {
-            warn $ok ? "Forked inside subtest, but subtest never finished!\n" : $err;
-            exit 255;
-        }
-
-        if (get_tid() != $ctx->trace->tid) {
-            warn $ok ? "Started new thread inside subtest, but thread never finished!\n" : $err;
-            exit 255;
-        }
-    }
-    elsif (!$parent->is_local && !$parent->ipc) {
-        warn $ok ? "A new process or thread was started inside subtest, but IPC is not enabled!\n" : $err;
-        exit 255;
-    }
-
     $stack->pop($hub);
 
     my $trace = $ctx->trace;
 
-    my $bailed = $hub->bailed_out;
-
     if (!$finished) {
-        if ($bailed && !$buffered) {
+        if(my $bailed = $hub->bailed_out) {
             $ctx->bail($bailed->reason);
         }
-        elsif ($bailed && $buffered) {
-            $ok = 1;
-        }
-        else {
-            my $code = $hub->exit_code;
-            $ok = !$code;
-            $err = "Subtest ended with exit code $code" if $code;
-        }
+        my $code = $hub->exit_code;
+        $ok = !$code;
+        $err = "Subtest ended with exit code $code" if $code;
     }
 
-    $hub->finalize($trace->snapshot(hid => $hub->hid, nested => $hub->nested, buffered => $buffered), 1)
+    $hub->finalize($trace, 1)
         if $ok
         && !$hub->no_ending
         && !$hub->ended;
@@ -629,8 +525,6 @@ sub run_subtest {
 
     $ctx->diag("Bad subtest plan, expected " . $hub->plan . " but ran " . $hub->count)
         if defined($plan_ok) && !$plan_ok;
-
-    $ctx->bail($bailed->reason) if $bailed && $buffered;
 
     $ctx->release;
     return $pass;
@@ -723,35 +617,6 @@ generated by the test system:
     my_ok(@$events == 2, "got 2 events, the pass and the fail");
     my_ok($events->[0]->pass, "first event passed");
     my_ok(!$events->[1]->pass, "second event failed");
-
-=head3 DEEP EVENT INTERCEPTION
-
-Normally C<intercept { ... }> only intercepts events sent to the main hub (as
-added by intercept itself). Nested hubs, such as those created by subtests,
-will not be intercepted. This is normally what you will still see the nested
-events by inspecting the subtest event. However there are times where you want
-to verify each event as it is sent, in that case use C<intercept_deep { ... }>.
-
-    my $events = intercept_Deep {
-        buffered_subtest foo => sub {
-            ok(1, "pass");
-        };
-    };
-
-C<$events> in this case will contain 3 items:
-
-=over 4
-
-=item The event from C<ok(1, "pass")>
-
-=item The plan event for the subtest
-
-=item The subtest event itself, with the first 2 events nested inside it as children.
-
-=back
-
-This lets you see the order in which the events were sent, unlike
-C<intercept { ... }> which only lets you see events as the main hub sees them.
 
 =head2 OTHER API FUNCTIONS
 
@@ -1093,12 +958,6 @@ created for the hub that shares the same trace as the current context.
 Set this to true if your tool is producing subtests without user-specified
 subs.
 
-=item 'no_fork' => $bool
-
-Defaults to off. Normally forking inside a subtest will actually fork the
-subtest, resulting in 2 final subtest events. This parameter will turn off that
-behavior, only the original process/thread will return a final subtest event.
-
 =back
 
 =item @ARGS
@@ -1214,23 +1073,6 @@ This can be used to get/set the no_wait status. Waiting is turned on by
 default. Waiting will cause the parent process/thread to wait until all child
 processes and threads are finished before exiting. You will almost never want
 to turn this off.
-
-=item $fh = test2_stdout()
-
-=item $fh = test2_stderr()
-
-These functions return the filehandles that test output should be written to.
-They are primarily useful when writing a custom formatter and code that turns
-events into actual output (TAP, etc.)  They will return a dupe of the original
-filehandles that formatted output can be sent to regardless of whatever state
-the currently running test may have left STDOUT and STDERR in.
-
-=item test2_reset_io()
-
-Re-dupe the internal filehandles returned by C<test2_stdout()> and
-C<test2_stderr()> from the current STDOUT and STDERR.  You shouldn't need to do
-this except in very peculiar situations (for example, you're testing a new
-formatter and you need control over where the formatter is sending its output.)
 
 =back
 
@@ -1371,15 +1213,6 @@ This returns 0 if there are (most likely) no pending events.
 This returns 1 if there are (likely) pending events. Upon return it will reset,
 nothing else will be able to see that there were pending events.
 
-=item $timeout = test2_ipc_get_timeout()
-
-=item test2_ipc_set_timeout($timeout)
-
-Get/Set the timeout value for the IPC system. This timeout is how long the IPC
-system will wait for child processes and threads to finish before aborting.
-
-The default value is C<30> seconds.
-
 =back
 
 =head2 MANAGING FORMATTERS
@@ -1467,7 +1300,7 @@ F<http://github.com/Test-More/test-more/>.
 
 =head1 COPYRIGHT
 
-Copyright 2017 Chad Granum E<lt>exodist@cpan.orgE<gt>.
+Copyright 2016 Chad Granum E<lt>exodist@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

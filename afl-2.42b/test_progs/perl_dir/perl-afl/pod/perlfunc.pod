@@ -2661,12 +2661,9 @@ A special token that returns the name of the file in which it occurs.
 =item fileno FILEHANDLE
 X<fileno>
 
-=item fileno DIRHANDLE
-
 =for Pod::Functions return file descriptor from filehandle
 
-Returns the file descriptor for a filehandle or directory handle,
-or undefined if the
+Returns the file descriptor for a filehandle, or undefined if the
 filehandle is not open.  If there is no real file descriptor at the OS
 level, as can happen with filehandles connected to memory objects via
 L<C<open>|/open FILEHANDLE,EXPR> with a reference for the third
@@ -2763,8 +2760,8 @@ Here's a mailbox appender for BSD systems.
     sub lock {
         my ($fh) = @_;
         flock($fh, LOCK_EX) or die "Cannot lock mailbox - $!\n";
-        # and, in case we're running on a very old UNIX
-        # variant without the modern O_APPEND semantics...
+
+        # and, in case someone appended while we were waiting...
         seek($fh, 0, SEEK_END) or die "Cannot seek - $!\n";
     }
 
@@ -2988,9 +2985,6 @@ X<getpriority> X<priority> X<nice>
 Returns the current priority for a process, a process group, or a user.
 (See L<getpriority(2)>.)  Will raise a fatal exception if used on a
 machine that doesn't implement L<getpriority(2)>.
-
-C<WHICH> can be any of C<PRIO_PROCESS>, C<PRIO_PGRP> or C<PRIO_USER>
-imported from L<POSIX/RESOURCE CONSTANTS>.
 
 Portability issues: L<perlport/getpriority>.
 
@@ -4077,11 +4071,12 @@ X<map>
 =for Pod::Functions apply a change to a list to get back a new list with the changes
 
 Evaluates the BLOCK or EXPR for each element of LIST (locally setting
-L<C<$_>|perlvar/$_> to each element) and composes a list of the results of
-each such evaluation.  Each element of LIST may produce zero, one, or more
-elements in the generated list, so the number of elements in the generated
-list may differ from that in LIST.  In scalar context, returns the total
-number of elements so generated.  In list context, returns the generated list.
+L<C<$_>|perlvar/$_> to each element) and returns the list value composed
+of the
+results of each such evaluation.  In scalar context, returns the
+total number of elements so generated.  Evaluates BLOCK or EXPR in
+list context, so each element of LIST may produce zero, one, or
+more elements in the returned value.
 
     my @chars = map(chr, @numbers);
 
@@ -4535,13 +4530,6 @@ To (re)open C<STDOUT> or C<STDERR> as an in-memory file, close it first:
     open(STDOUT, ">", \$variable)
 	or die "Can't open STDOUT: $!";
 
-The scalars for in-memory files are treated as octet strings: unless
-the file is being opened with truncation the scalar may not contain
-any code points over 0xFF.
-
-Opening in-memory files I<can> fail for a variety of reasons.  As with
-any other C<open>, check the return value for success.
-
 See L<perliol> for detailed info on PerlIO.
 
 General examples:
@@ -4787,8 +4775,7 @@ DIRHANDLE may be an expression whose value can be used as an indirect
 dirhandle, usually the real dirhandle name.  If DIRHANDLE is an undefined
 scalar variable (or array or hash element), the variable is assigned a
 reference to a new anonymous dirhandle; that is, it's autovivified.
-Dirhandles are the same objects as filehandles; an I/O object can only
-be open as one of these handle types at once.
+DIRHANDLEs have their own namespace separate from FILEHANDLEs.
 
 See the example at L<C<readdir>|/readdir DIRHANDLE>.
 
@@ -4972,7 +4959,7 @@ of values, as follows:
           those.  Raises an exception otherwise.)
 
     i  A signed integer value.
-    I  An unsigned integer value.
+    I  A unsigned integer value.
          (This 'integer' is _at_least_ 32 bits wide.  Its exact
           size depends on what a local C compiler calls 'int'.)
 
@@ -7039,9 +7026,6 @@ Sets the current priority for a process, a process group, or a user.
 (See L<setpriority(2)>.)  Raises an exception when used on a machine
 that doesn't implement L<setpriority(2)>.
 
-C<WHICH> can be any of C<PRIO_PROCESS>, C<PRIO_PGRP> or C<PRIO_USER>
-imported from L<POSIX/RESOURCE CONSTANTS>.
-
 Portability issues: L<perlport/setpriority>.
 
 =item setsockopt SOCKET,LEVEL,OPTNAME,OPTVAL
@@ -7631,14 +7615,6 @@ only a single space character to be a separator.  In earlier Perls this
 special case was restricted to the use of a plain S<C<" ">> as the
 pattern argument to split; in Perl 5.18.0 and later this special case is
 triggered by any expression which evaluates to the simple string S<C<" ">>.
-
-As of Perl 5.28, this special-cased whitespace splitting works as expected in
-the scope of L<< S<C<"use feature 'unicode_strings">>|feature/The
-'unicode_strings' feature >>. In previous versions, and outside the scope of
-that feature, it exhibits L<perlunicode/The "Unicode Bug">: characters that are
-whitespace according to Unicode rules but not according to ASCII rules can be
-treated as part of fields rather than as field separators, depending on the
-string's internal encoding.
 
 If omitted, PATTERN defaults to a single space, S<C<" ">>, triggering
 the previously described I<awk> emulation.
@@ -9595,9 +9571,8 @@ If the string happens to be encoded as UTF-8 internally (and thus has
 the UTF8 flag set), L<C<vec>|/vec EXPR,OFFSET,BITS> tries to convert it
 to use a one-byte-per-character internal representation. However, if the
 string contains characters with values of 256 or higher, that conversion
-will fail, and a deprecation message will be raised.  In that situation,
-C<vec> will operate on the underlying buffer regardless, in its internal
-UTF-8 representation.  In Perl 5.32, this will be a fatal error.
+will fail. In that situation, C<vec> will operate on the underlying buffer
+regardless, in its internal UTF-8 representation.
 
 Strings created with L<C<vec>|/vec EXPR,OFFSET,BITS> can also be
 manipulated with the logical

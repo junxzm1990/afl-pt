@@ -6,11 +6,6 @@ use List::Util qw/shuffle/;
 use strict;
 use warnings;
 
-if ($] lt "5.008") {
-    print "1..0 # SKIP Test cannot run on perls below 5.8.0\n";
-    exit 0;
-}
-
 sub simple_capture(&) {
     my $code = shift;
 
@@ -186,7 +181,7 @@ ok(!-d $tmpdir, "cleaned up temp dir");
     $out = simple_capture {
         my $ipc = Test2::IPC::Driver::Files->new();
         $ipc->add_hub($hid);
-        my $trace = Test2::EventFacet::Trace->new(frame => [__PACKAGE__, __FILE__, __LINE__, 'foo']);
+        my $trace = Test2::Util::Trace->new(frame => [__PACKAGE__, __FILE__, __LINE__, 'foo']);
         my $e = eval { $ipc->send($hid, bless({glob => \*ok, trace => $trace}, 'Foo')); 1 };
         print STDERR $@ unless $e || $@ =~ m/^255/;
         $ipc->drop_hub($hid);

@@ -4,7 +4,7 @@ use warnings;
 
 our ($AUTOLOAD, %SIGRT);
 
-our $VERSION = '1.78';
+our $VERSION = '1.76';
 
 require XSLoader;
 
@@ -436,8 +436,6 @@ my %other_export_tags = ( # cf. exports policy below
                    EAI_SYSTEM)],
 
     stdlib_h_c99 => [ @{$default_export_tags{stdlib_h}}, 'strtold' ],
-
-    sys_resource_h => [qw(PRIO_PROCESS PRIO_PGRP PRIO_USER)],
 
     sys_socket_h => [qw(
         MSG_CTRUNC MSG_DONTROUTE MSG_EOR MSG_OOB MSG_PEEK MSG_TRUNC MSG_WAITALL

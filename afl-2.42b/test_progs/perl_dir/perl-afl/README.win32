@@ -159,7 +159,7 @@ using, e.g.
 (assuming the default installation location was chosen).
 
 Perl should now build using the win32/Makefile.  You will need to edit that
-file to set CCTYPE to one of MSVC90-MSVC141 first.
+file to set CCTYPE to one of MSVC90FREE-MSVC141FREE first.
 
 =item Microsoft Visual C++ 2005 Express Edition
 
@@ -201,7 +201,7 @@ while the latest versions install into version-specific locations such as
 Perl should now build using the win32/Makefile.  You will need to edit that
 file to set
 
- CCTYPE = MSVC80
+ CCTYPE = MSVC80FREE
 
 and to set CCHOME, CCINCDIR and CCLIBDIR as per the environment setup above.
 
@@ -394,7 +394,7 @@ Be sure to read the instructions near the top of the makefiles carefully.
 Type "dmake" (or "nmake" if you are using that make).
 
 This should build everything.  Specifically, it will create perl.exe,
-perl527.dll at the perl toplevel, and various other extension dll's
+perl526.dll at the perl toplevel, and various other extension dll's
 under the lib\auto directory.  If the build fails for any reason, make
 sure you have done the previous steps correctly.
 

@@ -4,7 +4,7 @@ use Carp;
 use warnings;
 use strict;
 use vars qw($VERSION $AUTOLOAD);
-$VERSION = '1.00'; # remember to update version in POD!
+$VERSION = '0.99'; # remember to update version in POD!
 # $DB::single=1;
 
 my %symcache;
@@ -139,9 +139,7 @@ sub AUTOLOAD {
 	croak "Attribute handler '$2' doesn't handle $1 attributes";
 }
 
-my $builtin = $] ge '5.027000'
-    ? qr/lvalue|method|shared/
-    : qr/lvalue|method|locked|shared|unique/;
+my $builtin = qr/lvalue|method|locked|unique|shared/;
 
 sub _gen_handler_AH_() {
 	return sub {
@@ -272,7 +270,7 @@ Attribute::Handlers - Simpler definition of attribute handlers
 
 =head1 VERSION
 
-This document describes version 1.00 of Attribute::Handlers.
+This document describes version 0.99 of Attribute::Handlers.
 
 =head1 SYNOPSIS
 

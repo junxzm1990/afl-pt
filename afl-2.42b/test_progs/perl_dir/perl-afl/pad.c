@@ -1019,7 +1019,7 @@ Perl_pad_findmy_sv(pTHX_ SV *name, U32 flags)
 
 Until the lexical C<$_> feature was removed, this function would
 find the position of the lexical C<$_> in the pad of the
-currently-executing function and return the offset in the current pad,
+currently-executing function and returns the offset in the current pad,
 or C<NOT_IN_PAD>.
 
 Now it always returns C<NOT_IN_PAD>.
@@ -2001,7 +2001,7 @@ S_cv_clone_pad(pTHX_ CV *proto, CV *cv, CV *outside, HV *cloned,
 		    {
 			/* my sub */
 			/* Just provide a stub, but name it.  It will be
-			   upgraded to the real thing on scope entry. */
+			   upgrade to the real thing on scope entry. */
                         dVAR;
 			U32 hash;
 			PERL_HASH(hash, PadnamePV(namesv)+1,
@@ -2295,10 +2295,7 @@ Perl_cv_name(pTHX_ CV *cv, SV *sv, U32 flags)
 		if (CvLEXICAL(cv) || flags & CV_NAME_NOTQUAL)
 		    sv_sethek(retsv, CvNAME_HEK(cv));
 		else {
-		    if (CvSTASH(cv) && HvNAME_HEK(CvSTASH(cv)))
-			sv_sethek(retsv, HvNAME_HEK(CvSTASH(cv)));
-		    else
-			sv_setpvs(retsv, "__ANON__");
+		    sv_sethek(retsv, HvNAME_HEK(CvSTASH(cv)));
 		    sv_catpvs(retsv, "::");
 		    sv_cathek(retsv, CvNAME_HEK(cv));
 		}

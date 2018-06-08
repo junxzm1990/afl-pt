@@ -629,7 +629,8 @@ PP(pp_open)
 	IoFLAGS(GvIOp(gv)) &= ~IOf_UNTAINT;
 
 	if (IoDIRP(io))
-	    Perl_croak(aTHX_ "Cannot open %" HEKf " as a filehandle: it is already open as a dirhandle",
+	    Perl_ck_warner_d(aTHX_ packWARN2(WARN_IO, WARN_DEPRECATED),
+			     "Opening dirhandle %" HEKf " also as a file. This will be a fatal error in Perl 5.28",
 			     HEKfARG(GvENAME_HEK(gv)));
 
 	mg = SvTIED_mg((const SV *)io, PERL_MAGIC_tiedscalar);
@@ -655,7 +656,7 @@ PP(pp_open)
     if (ok)
 	PUSHi( (I32)PL_forkprocess );
     else if (PL_forkprocess == 0)		/* we are a new child */
-	PUSHs(&PL_sv_zero);
+	PUSHi(0);
     else
 	RETPUSHUNDEF;
     RETURN;
@@ -664,8 +665,6 @@ PP(pp_open)
 PP(pp_close)
 {
     dSP;
-    /* pp_coreargs pushes a NULL to indicate no args passed to
-     * CORE::close() */
     GV * const gv =
 	MAXARG == 0 || (!TOPs && !POPs) ? PL_defoutgv : MUTABLE_GV(POPs);
 
@@ -1371,8 +1370,6 @@ PP(pp_select)
 PP(pp_getc)
 {
     dSP; dTARGET;
-    /* pp_coreargs pushes a NULL to indicate no args passed to
-     * CORE::getc() */
     GV * const gv =
 	MAXARG==0 || (!TOPs && !POPs) ? PL_stdingv : MUTABLE_GV(POPs);
     IO *const io = GvIO(gv);
@@ -1567,8 +1564,6 @@ PP(pp_leavewrite)
     retop = cx->blk_sub.retop;
     CX_POP(cx);
 
-    EXTEND(SP, 1);
-
     if (is_return)
         /* XXX the semantics of doing 'return' in a format aren't documented.
          * Currently we ignore any args to 'return' and just return
@@ -1673,7 +1668,7 @@ PP(pp_sysopen)
 
     /* Need TIEHANDLE method ? */
     const char * const tmps = SvPV_const(sv, len);
-    if (do_open_raw(gv, tmps, len, mode, perm, NULL)) {
+    if (do_open_raw(gv, tmps, len, mode, perm)) {
 	IoLINES(GvIOp(gv)) = 0;
 	PUSHs(&PL_sv_yes);
     }
@@ -1773,7 +1768,7 @@ PP(pp_sysread)
 	char namebuf[MAXPATHLEN];
         if (fd < 0) {
             SETERRNO(EBADF,SS_IVCHAN);
-            goto say_undef;
+            RETPUSHUNDEF;
         }
 #if (defined(VMS_DO_SOCKETS) && defined(DECCRTL_SOCKETS)) || defined(__QNXNTO__)
 	bufsize = sizeof (struct sockaddr_in);
@@ -1789,7 +1784,7 @@ PP(pp_sysread)
 	count = PerlSock_recvfrom(fd, buffer, length, offset,
 				  (struct sockaddr *)namebuf, &bufsize);
 	if (count < 0)
-            goto say_undef;
+	    RETPUSHUNDEF;
 	/* MSG_TRUNC can give oversized count; quietly lose it */
 	if (count > length)
 	    count = length;
@@ -3297,7 +3292,7 @@ PP(pp_ftis)
 	    break;
 	}
 	SvSETMAGIC(TARG);
-	return SvTRUE_nomg_NN(TARG)
+	return SvTRUE_nomg(TARG)
             ? S_ft_return_true(aTHX_ TARG) : S_ft_return_false(aTHX_ TARG);
     }
 }
@@ -3664,7 +3659,7 @@ PP(pp_chdir)
                                 "chdir() on unopened filehandle %" SVf, sv);
                 }
                 SETERRNO(EBADF,RMS_IFI);
-                PUSHs(&PL_sv_zero);
+                PUSHi(0);
                 TAINT_PROPER("chdir");
                 RETURN;
             }
@@ -3687,7 +3682,7 @@ PP(pp_chdir)
             tmps = SvPV_nolen_const(*svp);
         }
         else {
-            PUSHs(&PL_sv_zero);
+            PUSHi(0);
             SETERRNO(EINVAL, LIB_INVARG);
             TAINT_PROPER("chdir");
             RETURN;
@@ -3732,7 +3727,7 @@ PP(pp_chdir)
  nuts:
     report_evil_fh(gv);
     SETERRNO(EBADF,RMS_IFI);
-    PUSHs(&PL_sv_zero);
+    PUSHi(0);
     RETURN;
 #endif
 }
@@ -4035,8 +4030,9 @@ PP(pp_open_dir)
     IO * const io = GvIOn(gv);
 
     if ((IoIFP(io) || IoOFP(io)))
-	Perl_croak(aTHX_ "Cannot open %" HEKf " as a dirhandle: it is already open as a filehandle",
-			 HEKfARG(GvENAME_HEK(gv)));
+	Perl_ck_warner_d(aTHX_ packWARN2(WARN_IO, WARN_DEPRECATED),
+			 "Opening filehandle %" HEKf " also as a directory. This will be a fatal error in Perl 5.28",
+			     HEKfARG(GvENAME_HEK(gv)) );
     if (IoDIRP(io))
 	PerlDir_close(IoDIRP(io));
     if (!(IoDIRP(io) = PerlDir_open(dirname)))
@@ -4875,7 +4871,7 @@ PP(pp_sleep)
           Perl_ck_warner_d(aTHX_ packWARN(WARN_MISC),
                            "sleep() with negative argument");
           SETERRNO(EINVAL, LIB_INVARG);
-          XPUSHs(&PL_sv_zero);
+          XPUSHi(0);
           RETURN;
         } else {
           PerlProc_sleep((unsigned int)duration);

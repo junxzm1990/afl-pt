@@ -106,14 +106,9 @@ my $high_mixed_digit = ('A' lt '0') ? '0' : 'A';
 my $colon_hex = sprintf "%02X", ord(":");
 my $tab_hex = sprintf "%02X", ord("\t");
 
-# Key-value pairs of strings eval'd as patterns => warn/error messages that
-# they should generate.  In some cases, the value is an array of multiple
-# messages.  Some groups have the message(s) be default on; others, default
-# off.  This can be overridden on an individual key basis by preceding the
-# pattern string with either 'default_on' or 'default_off'
-#
-# The first set are those that should be fatal errors.
-
+##
+## Key-value pairs of code/error of code that should have fatal errors.
+##
 my @death =
 (
  '/[[=foo=]]/' => 'POSIX syntax [= =] is reserved for future extensions {#} m/[[=foo=]{#}]/',
@@ -288,6 +283,8 @@ my @death =
  '/\w{/' => 'Unescaped left brace in regex is illegal here {#} m/\w{{#}/',
  '/\q{/' => 'Unescaped left brace in regex is illegal here {#} m/\q{{#}/',
  '/\A{/' => 'Unescaped left brace in regex is illegal here {#} m/\A{{#}/',
+ '/:{4,a}/' => 'Unescaped left brace in regex is illegal here {#} m/:{{#}4,a}/',
+ '/xa{3\,4}y/' => 'Unescaped left brace in regex is illegal here {#} m/xa{{#}3\,4}y/',
  '/abc/xix' => "",
  '/(?xmsixp:abc)/' => "",
  '/(?xmsixp)abc/' => "",
@@ -374,12 +371,6 @@ my @death_only_under_strict = (
                                      => 'False [] range "[:digit:]-" {#} m/[[:digit:]-{#}[:alpha:]]\x{100}/',
     '/[a\zb]\x{100}/' => 'Unrecognized escape \z in character class passed through {#} m/[a\z{#}b]\x{100}/',
                       => 'Unrecognized escape \z in character class {#} m/[a\z{#}b]\x{100}/',
-    'default_on/:{4,a}/'     => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/:{{#}4,a}/',
-                             => 'Unescaped left brace in regex is illegal here {#} m/:{{#}4,a}/',
-    'default_on/xa{3\,4}y/'  => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/xa{{#}3\,4}y/',
-                             => 'Unescaped left brace in regex is illegal here {#} m/xa{{#}3\,4}y/',
-  'default_on/\\${[^\\}]*}/' => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/\\${{#}[^\\}]*}/',
-                             => 'Unescaped left brace in regex is illegal here {#} m/\\${{#}[^\\}]*}/',
 );
 
 # These need the character 'ネ' as a marker for mark_as_utf8()
@@ -661,6 +652,7 @@ my @deprecated = (
  '/.{/'         => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/.{{#}/',
  '/[x]{/'       => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/[x]{{#}/',
  '/\p{Latin}{/' => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/\p{Latin}{{#}/',
+ '/\\${[^\\}]*}/' => 'Unescaped left brace in regex is deprecated here (and will be fatal in Perl 5.30), passed through {#} m/\\${{#}[^\\}]*}/',
 );
 
 for my $strict ("", "use re 'strict';") {
@@ -681,7 +673,7 @@ for my $strict ("", "use re 'strict';") {
         }
     }
     for (my $i = 0; $i < @death; $i += 2) {
-        my $regex = $death[$i] =~ s/ default_ (on | off) //rx;
+        my $regex = $death[$i];
         my $expect = fixup_expect($death[$i+1], $strict);
         no warnings 'experimental::regex_sets';
         no warnings 'experimental::re_strict';
@@ -744,11 +736,7 @@ for my $strict ("",  "no warnings 'experimental::re_strict'; use re 'strict';") 
             $default_on = 1;
         }
         for (my $i = 0; $i < @$ref; $i += 2) {
-            my $this_default_on = $default_on;
             my $regex = $ref->[$i];
-            if ($regex =~ s/ default_ (on | off) //x) {
-                $this_default_on = $1 eq 'on';
-            }
             my @expect = fixup_expect($ref->[$i+1], $strict);
 
             # A length-1 array with an empty warning means no warning gets
@@ -802,7 +790,7 @@ for my $strict ("",  "no warnings 'experimental::re_strict'; use re 'strict';") 
                                                         eval "$strict $regex" });
                         # Warning should be on as well if is testing
                         # '(?[...])' which turns on strict
-                        if ($this_default_on || grep { $_ =~ /\Q(?[/ } @expect ) {
+                        if ($default_on || grep { $_ =~ /\Q(?[/ } @expect ) {
                            ok @warns > 0, "... and the warning is on by default";
                         }
                         else {

@@ -14,7 +14,7 @@ use warnings; # uses #3 and #4, since warnings uses Carp
 
 use Exporter (); # use #5
 
-our $VERSION   = "1.002";
+our $VERSION   = "0.999";
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw( set_style set_style_standard add_callback
 		     concise_subref concise_cv concise_main
@@ -145,14 +145,13 @@ sub concise_subref {
 
 sub concise_stashref {
     my($order, $h) = @_;
-    my $name = svref_2object($h)->NAME;
+    local *s;
     foreach my $k (sort keys %$h) {
 	next unless defined $h->{$k};
-	my $coderef = ref $h->{$k} eq 'CODE' ? $h->{$k}
-		    : ref\$h->{$k} eq 'GLOB' ? *{$h->{$k}}{CODE} || next
-		    : next;
+	*s = $h->{$k};
+	my $coderef = *s{CODE} or next;
 	reset_sequence();
-	print "FUNC: *", $name, "::", $k, "\n";
+	print "FUNC: ", *s, "\n";
 	my $codeobj = svref_2object($coderef);
 	next unless ref $codeobj eq 'B::CV';
 	eval { concise_cv_obj($order, $codeobj, $k) };
@@ -728,16 +727,15 @@ sub concise_sv {
 	    }
 	}
 	if (class($sv) eq "SPECIAL") {
-	    $hr->{svval} .= ["Null", "sv_undef", "sv_yes", "sv_no",
-                             '', '', '', "sv_zero"]->[$$sv];
+	    $hr->{svval} .= ["Null", "sv_undef", "sv_yes", "sv_no"]->[$$sv];
 	} elsif ($preferpv
-	      && ($sv->FLAGS & SVf_POK)) {
+	      && ($sv->FLAGS & SVf_POK || class($sv) eq "REGEXP")) {
 	    $hr->{svval} .= cstring($sv->PV);
 	} elsif ($sv->FLAGS & SVf_NOK) {
 	    $hr->{svval} .= $sv->NV;
 	} elsif ($sv->FLAGS & SVf_IOK) {
 	    $hr->{svval} .= $sv->int_value;
-	} elsif ($sv->FLAGS & SVf_POK) {
+	} elsif ($sv->FLAGS & SVf_POK || class($sv) eq "REGEXP") {
 	    $hr->{svval} .= cstring($sv->PV);
 	} elsif (class($sv) eq "HV") {
 	    $hr->{svval} .= 'HASH';
@@ -1105,7 +1103,7 @@ sub tree {
 # to update the corresponding magic number in the next line.
 # Remember, this needs to stay the last things in the module.
 
-my $cop_seq_mnum = 12;
+my $cop_seq_mnum = 16;
 $cop_seq_base = svref_2object(eval 'sub{0;}')->START->cop_seq + $cop_seq_mnum;
 
 1;

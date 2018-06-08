@@ -25,7 +25,7 @@ interface.
 gdbm is available from any GNU archive.  The master site is
 C<ftp.gnu.org>, but you are strongly urged to use one of the many
 mirrors.  You can obtain a list of mirror sites from
-L<http://www.gnu.org/order/ftp.html>.
+http://www.gnu.org/order/ftp.html.
 
 =head1 BUGS
 
@@ -69,7 +69,7 @@ require XSLoader;
 );
 
 # This module isn't dual life, so no need for dev version numbers.
-$VERSION = '1.16';
+$VERSION = '1.15';
 
 XSLoader::load();
 

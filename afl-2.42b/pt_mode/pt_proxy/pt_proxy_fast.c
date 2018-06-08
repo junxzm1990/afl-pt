@@ -368,8 +368,8 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 #ifdef DEBUG
-	char msg[256];
 	off_fd = open("/tmp/test.log", O_RDWR);
+	char msg[256];
 #endif
 
 #ifdef DEBUG_PACKET
@@ -385,9 +385,12 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 			if(bound_snapshot > cursor_pos){
-				//snprintf(msg, 256, "Bound %llx\n", bound_snapshot - cursor_pos);
-				//write(off_fd, msg, strlen(msg));
-				pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				/* snprintf(msg, 256, "address %llx\n", pt_trace_buf +  cursor_pos); */
+				/* write(packet_fd, msg, strlen(msg)); */
+				/* snprintf(msg, 256, "size %llx\n", bound_snapshot - cursor_pos); */
+				/* write(packet_fd, msg, strlen(msg)); */
+        if(cursor_pos+bound_snapshot < pt_trace_buf_size)
+          pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 				cursor_pos = bound_snapshot;
 			}
 
@@ -401,9 +404,11 @@ static void *pt_parse_worker(void *arg)
 #endif
 
 				if(bound_snapshot > cursor_pos ){
-			//	snprintf(msg, 256, "FUCK Bound %llx\n", bound_snapshot - cursor_pos);
-			//	write(off_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos);
-					pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
+				/* snprintf(msg, 256, "address %llx\n", pt_trace_buf + cursor_pos); */
+				/* write(packet_fd, msg, strlen(msg)); */
+				/* write(packet_fd, pt_trace_buf+cursor_pos, bound_snapshot-cursor_pos); */
+          if(cursor_pos+bound_snapshot < pt_trace_buf_size)
+            pt_parse_packet((char*)(pt_trace_buf+cursor_pos), bound_snapshot-cursor_pos, packet_fd, off_fd);
 					cursor_pos = bound_snapshot;
 				}
 

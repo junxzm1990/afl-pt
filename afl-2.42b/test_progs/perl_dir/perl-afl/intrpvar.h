@@ -158,26 +158,12 @@ C<&PL_sv_no>.
 This is the C<true> SV.  See C<L</PL_sv_no>>.  Always refer to this as
 C<&PL_sv_yes>.
 
-=for apidoc Amn|SV|PL_sv_zero
-This readonly SV has a zero numeric value and a C<"0"> string value. It's
-similar to C<L</PL_sv_no>> except for its string value. Can be used as a
-cheap alternative to C<mXPUSHi(0)> for example.  Always refer to this as
-C<&PL_sv_zero>. Introduced in 5.28.
-
 =cut
 */
 
-#ifdef MULTIPLICITY
-PERLVAR(I, sv_yes,	SV)
 PERLVAR(I, sv_undef,	SV)
 PERLVAR(I, sv_no,	SV)
-PERLVAR(I, sv_zero,	SV)
-#else
-/* store the immortals as an array to ensure they are contiguous in
- * memory: makes SvIMMORTAL_INTERP(sv) possible */
-PERLVARA(I, sv_immortals, 4, SV)
-#endif
-
+PERLVAR(I, sv_yes,	SV)
 PERLVAR(I, padname_undef,	PADNAME)
 PERLVAR(I, padname_const,	PADNAME)
 PERLVAR(I, Sv,		SV *)		/* used to hold temporary values */
@@ -202,6 +188,7 @@ PERLVAR(I, na,		STRLEN)		/* for use in SvPV when length is
 					   Not Applicable */
 
 /* stat stuff */
+PERLVAR(I, statbuf,	Stat_t)
 PERLVAR(I, statcache,	Stat_t)		/* _ */
 PERLVAR(I, statgv,	GV *)
 PERLVARI(I, statname,	SV *,	NULL)
@@ -588,9 +575,6 @@ PERLVARI(I, collation_standard, bool, TRUE)
 					/* Assume simple collation */
 #endif /* USE_LOCALE_COLLATE */
 
-PERLVARI(I, langinfo_buf, char *, NULL)
-PERLVARI(I, langinfo_bufsize, Size_t, 0)
-
 #ifdef PERL_SAWAMPERSAND
 PERLVAR(I, sawampersand, U8)		/* must save all match strings */
 #endif
@@ -829,14 +813,6 @@ PERLVARA(I, op_exec_cnt, OP_max+2, UV)	/* Counts of executed OPs of the given ty
 PERLVAR(I, random_state, PL_RANDOM_STATE_TYPE)
 
 PERLVARI(I, dump_re_max_len, STRLEN, 0)
-
-/* For internal uses of randomness, this ensures the sequence of
- * random numbers returned by rand() isn't modified by perl's internal
- * use of randomness.
- * This is important if the user has called srand() with a seed.
- */
-
-PERLVAR(I, internal_random_state, PL_RANDOM_STATE_TYPE)
 
 /* If you are adding a U8 or U16, check to see if there are 'Space' comments
  * above on where there are gaps which currently will be structure padding.  */

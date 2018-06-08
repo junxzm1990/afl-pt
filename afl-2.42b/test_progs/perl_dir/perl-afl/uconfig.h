@@ -536,13 +536,6 @@
  */
 /*#define HAS_STRCOLL	/ **/
 
-/* USE_STRUCT_COPY:
- *	This symbol, if defined, indicates that this C compiler knows how
- *	to copy structures.  If undefined, you'll need to use a block copy
- *	routine of some sort instead.
- */
-/*#define	USE_STRUCT_COPY	/ **/
-
 /* HAS_STRTOD:
  *	This symbol, if defined, indicates that the strtod routine is
  *	available to provide better numeric string conversion than atof().
@@ -1405,8 +1398,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-/*#define ARCHLIB "/usr/local/lib/perl5/5.27/unknown"		/ **/
-/*#define ARCHLIB_EXP "/usr/local/lib/perl5/5.27/unknown"		/ **/
+/*#define ARCHLIB "/usr/local/lib/perl5/5.26/unknown"		/ **/
+/*#define ARCHLIB_EXP "/usr/local/lib/perl5/5.26/unknown"		/ **/
 
 /* BIN:
  *	This symbol holds the path of the bin directory where the package will
@@ -1459,8 +1452,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/usr/local/lib/perl5/5.27"		/**/
-#define PRIVLIB_EXP "/usr/local/lib/perl5/5.27"		/**/
+#define PRIVLIB "/usr/local/lib/perl5/5.26"		/**/
+#define PRIVLIB_EXP "/usr/local/lib/perl5/5.26"		/**/
 
 /* SITEARCH:
  *	This symbol contains the name of the private library for this package.
@@ -1477,8 +1470,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-/*#define SITEARCH "/usr/local/lib/perl5/5.27/unknown"		/ **/
-/*#define SITEARCH_EXP "/usr/local/lib/perl5/5.27/unknown"		/ **/
+/*#define SITEARCH "/usr/local/lib/perl5/5.26/unknown"		/ **/
+/*#define SITEARCH_EXP "/usr/local/lib/perl5/5.26/unknown"		/ **/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -1500,8 +1493,8 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/usr/local/lib/perl5/5.27"		/**/
-#define SITELIB_EXP "/usr/local/lib/perl5/5.27"		/**/
+#define SITELIB "/usr/local/lib/perl5/5.26"		/**/
+#define SITELIB_EXP "/usr/local/lib/perl5/5.26"		/**/
 #define SITELIB_STEM "/usr/local/lib/perl5"		/**/
 
 /* PERL_VENDORARCH:
@@ -2146,6 +2139,13 @@
 #ifndef USE_STAT_BLOCKS
 /*#define USE_STAT_BLOCKS 	/ **/
 #endif
+
+/* USE_STRUCT_COPY:
+ *	This symbol, if defined, indicates that this C compiler knows how
+ *	to copy structures.  If undefined, you'll need to use a block copy
+ *	routine of some sort instead.
+ */
+/*#define	USE_STRUCT_COPY	/ **/
 
 /* HAS_STRERROR:
  *	This symbol, if defined, indicates that the strerror routine is
@@ -2845,27 +2845,6 @@
  */
 /*#define HAS_STRUCT_FS_DATA	/ **/
 
-/* HAS_FCHMODAT:
- *	This symbol is defined if the fchmodat() routine is available.
- */
-/* HAS_LINKAT:
- *	This symbol is defined if the linkat() routine is available.
- */
-/* HAS_OPENAT:
- *	This symbol is defined if the openat() routine is available.
- */
-/* HAS_RENAMEAT:
- *	This symbol is defined if the renameat() routine is available.
- */
-/* HAS_UNLINKAT:
- *	This symbol is defined if the unlinkat() routine is available.
- */
-/*#define	HAS_FCHMODAT	/ **/
-/*#define	HAS_LINKAT	/ **/
-/*#define	HAS_OPENAT	/ **/
-/*#define	HAS_RENAMEAT	/ **/
-/*#define	HAS_UNLINKAT	/ **/
-
 /* HAS_FSEEKO:
  *	This symbol, if defined, indicates that the fseeko routine is
  *	available to fseek beyond 32 bits (useful for ILP32 hosts).
@@ -3205,13 +3184,6 @@
  *	of a substring in a memory area (or NULL if not found).
  */
 /*#define HAS_MEMMEM		/ **/
-
-/* HAS_MEMRCHR:
- *	This symbol, if defined, indicates that the memrchr routine is
- *	available to return a pointer to the last occurrence of a byte in
- *	a memory area (or NULL if not found).
- */
-/*#define HAS_MEMRCHR		/ **/
 
 /* HAS_MKDTEMP:
  *	This symbol, if defined, indicates that the mkdtemp routine is
@@ -5382,6 +5354,6 @@
 #endif
 
 /* Generated from:
- * 2de7484af521c1029bb9853f03e27d74d89b7f91d1ce1228865d6c4808d4131d config_h.SH
- * 7e93e67e8d10f41bf582fd383aa099ab2479b61979a341e2f1bd96f8873442cc uconfig.sh
+ * a0cea6273c16c1c5d8625665c84bda01926ce960c26873d4e5596b5b02a53e92 config_h.SH
+ * b1c042726e6a17692921b6947c4e7c196c5c0cee011667ba719b15af7c31e669 uconfig.sh
  * ex: set ro: */

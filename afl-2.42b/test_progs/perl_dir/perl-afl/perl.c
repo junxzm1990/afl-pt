@@ -273,26 +273,6 @@ perl_construct(pTHXx)
 
     init_stacks();
 
-/* The PERL_INTERNAL_RAND_SEED set-up must be after init_stacks because it calls
- * things that may put SVs on the stack.
- */
-
-#ifdef NO_PERL_INTERNAL_RAND_SEED
-    Perl_drand48_init_r(&PL_internal_random_state, seed());
-#else
-    {
-        UV seed;
-        const char *env_pv;
-        if (PerlProc_getuid() != PerlProc_geteuid() ||
-            PerlProc_getgid() != PerlProc_getegid() ||
-            !(env_pv = PerlEnv_getenv("PERL_INTERNAL_RAND_SEED")) ||
-            grok_number(env_pv, strlen(env_pv), &seed) != IS_NUMBER_IN_UV) {
-            seed = seed();
-        }
-        Perl_drand48_init_r(&PL_internal_random_state, (U32)seed);
-    }
-#endif
-
     init_ids();
 
     S_fixup_platform_bugs();
@@ -304,14 +284,6 @@ perl_construct(pTHXx)
 
 #if defined(LOCAL_PATCH_COUNT)
     PL_localpatches = local_patches;	/* For possible -v */
-#endif
-
-#if defined(LIBM_LIB_VERSION)
-    /*
-     * Some BSDs and Cygwin default to POSIX math instead of IEEE.
-     * This switches them over to IEEE.
-     */
-    _LIB_VERSION = _IEEE_;
 #endif
 
 #ifdef HAVE_INTERP_INTERN
@@ -336,54 +308,27 @@ perl_construct(pTHXx)
 #ifdef USE_REENTRANT_API
     Perl_reentrant_init(aTHX);
 #endif
-    if (PL_hash_seed_set == FALSE) {
-        /* Initialize the hash seed and state at startup. This must be
-         * done very early, before ANY hashes are constructed, and once
-         * setup is fixed for the lifetime of the process.
+#if defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT)
+        /* [perl #22371] Algorimic Complexity Attack on Perl 5.6.1, 5.8.0
+         * This MUST be done before any hash stores or fetches take place.
+         * If you set PL_hash_seed (and presumably also PL_hash_seed_set)
+         * yourself, it is your responsibility to provide a good random seed!
+         * You can also define PERL_HASH_SEED in compile time, see hv.h.
          *
-         * If you decide to disable the seeding process you should choose
-         * a suitable seed yourself and define PERL_HASH_SEED to a well chosen
-         * string. See hv_func.h for details.
-         */
-#if defined(USE_HASH_SEED)
-        /* get the hash seed from the environment or from an RNG */
+         * XXX: fix this comment */
+    if (PL_hash_seed_set == FALSE) {
         Perl_get_hash_seed(aTHX_ PL_hash_seed);
-#else
-        /* they want a hard coded seed, check that it is long enough */
-        assert( strlen(PERL_HASH_SEED) >= PERL_HASH_SEED_BYTES );
-#endif
-
-        /* now we use the chosen seed to initialize the state -
-         * in some configurations this may be a relatively speaking
-         * expensive operation, but we only have to do it once at startup */
-        PERL_HASH_SEED_STATE(PERL_HASH_SEED,PL_hash_state);
-
-#ifdef PERL_USE_SINGLE_CHAR_HASH_CACHE
-        /* we can build a special cache for 0/1 byte keys, if people choose
-         * I suspect most of the time it is not worth it */
-        {
-            char str[2]="\0";
-            int i;
-            for (i=0;i<256;i++) {
-                str[0]= i;
-                PERL_HASH_WITH_STATE(PL_hash_state,PL_hash_chars[i],str,1);
-            }
-            PERL_HASH_WITH_STATE(PL_hash_state,PL_hash_chars[256],str,0);
-        }
-#endif
-        /* at this point we have initialezed the hash function, and we can start
-         * constructing hashes */
         PL_hash_seed_set= TRUE;
     }
+#endif /* #if defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT) */
+
     /* Note that strtab is a rather special HV.  Assumptions are made
        about not iterating on it, and not adding tie magic to it.
        It is properly deallocated in perl_destruct() */
     PL_strtab = newHV();
 
-    /* SHAREKEYS tells us that the hash has its keys shared with PL_strtab,
-     * which is not the case with PL_strtab itself */
     HvSHAREKEYS_off(PL_strtab);			/* mandatory */
-    hv_ksplit(PL_strtab, 1 << 11);
+    hv_ksplit(PL_strtab, 512);
 
     Zero(PL_sv_consts, SV_CONSTS_COUNT, SV*);
 
@@ -476,7 +421,7 @@ perl_construct(pTHXx)
     PL_WB_invlist = _new_invlist_C_array(_Perl_WB_invlist);
     PL_LB_invlist = _new_invlist_C_array(_Perl_LB_invlist);
     PL_Assigned_invlist = _new_invlist_C_array(Assigned_invlist);
-#ifdef HAS_POSIX_2008_LOCALE
+#ifdef USE_THREAD_SAFE_LOCALE
     PL_C_locale_obj = newlocale(LC_ALL_MASK, "C", NULL);
 #endif
 
@@ -1135,11 +1080,6 @@ perl_destruct(pTHXx)
     PL_numeric_radix_sv = NULL;
 #endif
 
-    if (PL_langinfo_buf) {
-        Safefree(PL_langinfo_buf);
-        PL_langinfo_buf = NULL;
-    }
-
     /* clear character classes  */
     for (i = 0; i < POSIX_SWASH_COUNT; i++) {
         SvREFCNT_dec(PL_utf8_swash_ptrs[i]);
@@ -1319,11 +1259,6 @@ perl_destruct(pTHXx)
     sv_clear(&PL_sv_no);
     SvANY(&PL_sv_no) = NULL;
     SvFLAGS(&PL_sv_no) = 0;
-
-    SvREFCNT(&PL_sv_zero) = 0;
-    sv_clear(&PL_sv_zero);
-    SvANY(&PL_sv_zero) = NULL;
-    SvFLAGS(&PL_sv_zero) = 0;
 
     {
         int i;
@@ -1602,7 +1537,7 @@ perl_parse(pTHXx_ XSINIT_t xsinit, int argc, char **argv, char **env)
 #ifndef MULTIPLICITY
     PERL_UNUSED_ARG(my_perl);
 #endif
-#if (defined(USE_HASH_SEED) || defined(USE_HASH_SEED_DEBUG)) && !defined(NO_PERL_HASH_SEED_DEBUG)
+#if (defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT) || defined(USE_HASH_SEED_DEBUG)) && !defined(NO_PERL_HASH_SEED_DEBUG)
     {
         const char * const s = PerlEnv_getenv("PERL_HASH_SEED_DEBUG");
 
@@ -1621,7 +1556,7 @@ perl_parse(pTHXx_ XSINIT_t xsinit, int argc, char **argv, char **env)
             PerlIO_printf(Perl_debug_log, "\n");
         }
     }
-#endif /* #if (defined(USE_HASH_SEED) ... */
+#endif /* #if (defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT) ... */
 
 #ifdef __amigaos4__
     {
@@ -1907,6 +1842,9 @@ S_Internals_V(pTHX_ CV *cv)
 #  ifdef USE_FAST_STDIO
 			     " USE_FAST_STDIO"
 #  endif	       
+#  ifdef USE_HASH_SEED_EXPLICIT
+			     " USE_HASH_SEED_EXPLICIT"
+#  endif
 #  ifdef USE_LOCALE
 			     " USE_LOCALE"
 #  endif
@@ -2221,21 +2159,6 @@ S_parse_body(pTHX_ char **env, XSINIT_t xsinit)
 	}
     }
     }
-
-#ifndef NO_PERL_INTERNAL_RAND_SEED
-    /* If we're not set[ug]id, we might have honored
-       PERL_INTERNAL_RAND_SEED in perl_construct().
-       At this point command-line options have been parsed, so if
-       we're now tainting and not set[ug]id re-seed.
-       This could possibly be wasteful if PERL_INTERNAL_RAND_SEED is invalid,
-       but avoids duplicating the logic from perl_construct().
-    */
-    if (PL_tainting &&
-        PerlProc_getuid() == PerlProc_geteuid() &&
-        PerlProc_getgid() == PerlProc_getegid()) {
-        Perl_drand48_init_r(&PL_internal_random_state, seed());
-    }
-#endif
 
     /* Set $^X early so that it can be used for relocatable paths in @INC  */
     /* and for SITELIB_EXP in USE_SITECUSTOMIZE                            */
@@ -3411,6 +3334,12 @@ Perl_moreswitches(pTHX_ const char *s)
 
     case 'i':
 	Safefree(PL_inplace);
+#if defined(__CYGWIN__) /* do backup extension automagically */
+	if (*(s+1) == '\0') {
+	PL_inplace = savepvs(".bak");
+	return s+1;
+	}
+#endif /* __CYGWIN__ */
 	{
 	    const char * const start = ++s;
 	    while (*s && !isSPACE(*s))
@@ -3823,6 +3752,7 @@ S_init_main_stash(pTHX)
 #endif
     sv_grow(ERRSV, 240);	/* Preallocate - for immediate signals. */
     CLEAR_ERRSV();
+    SET_CURSTASH(PL_defstash);
     CopSTASH_set(&PL_compiling, PL_defstash);
     PL_debstash = GvHV(gv_fetchpvs("DB::", GV_ADDMULTI, SVt_PVHV));
     PL_globalstash = GvHV(gv_fetchpvs("CORE::GLOBAL::", GV_ADDMULTI,
@@ -3921,6 +3851,12 @@ S_open_script(pTHX_ const char *scriptname, bool dosearch, bool *suidscript)
 		close(tmpfd);
 	    } else
 		Perl_croak(aTHX_ err);
+#else
+#  ifdef HAS_MKTEMP
+	    scriptname = mktemp(tmpname);
+	    if (!scriptname)
+		Perl_croak(aTHX_ err);
+#  endif
 #endif
 	}
 #endif
@@ -4201,9 +4137,6 @@ Perl_init_stacks(pTHX)
     PL_curstackinfo = new_stackinfo(REASONABLE(128),
 				 REASONABLE(8192/sizeof(PERL_CONTEXT) - 1));
     PL_curstackinfo->si_type = PERLSI_MAIN;
-#if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
-    PL_curstackinfo->si_stack_hwm = 0;
-#endif
     PL_curstack = PL_curstackinfo->si_stack;
     PL_mainstack = PL_curstack;		/* remember in case we switch stacks */
 

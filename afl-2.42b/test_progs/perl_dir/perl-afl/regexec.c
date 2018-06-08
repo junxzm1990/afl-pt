@@ -707,7 +707,7 @@ Perl_re_intuit_start(pTHX_
 	goto fail;
     }
 
-    RXp_MATCH_UTF8_set(prog, utf8_target);
+    RX_MATCH_UTF8_set(rx,utf8_target);
     reginfo->is_utf8_target = cBOOL(utf8_target);
     reginfo->info_aux = NULL;
     reginfo->strbeg = strbeg;
@@ -841,7 +841,7 @@ Perl_re_intuit_start(pTHX_
 #ifdef DEBUGGING	/* 7/99: reports of failure (with the older version) */
     if (end_shift < 0)
 	Perl_croak(aTHX_ "panic: end_shift: %" IVdf " pattern:\n%s\n ",
-		   (IV)end_shift, RX_PRECOMP(rx));
+		   (IV)end_shift, RX_PRECOMP(prog));
 #endif
 
   restart:
@@ -2771,7 +2771,7 @@ S_reg_set_capture_string(pTHX_ REGEXP * const rx,
             }
             else {
                 /* create new COW SV to share string */
-                RXp_MATCH_COPY_FREE(prog);
+                RX_MATCH_COPY_FREE(rx);
                 prog->saved_copy = sv_setsv_cow(prog->saved_copy, sv);
             }
             prog->subbeg = (char *)SvPVX_const(prog->saved_copy);
@@ -2834,7 +2834,7 @@ S_reg_set_capture_string(pTHX_ REGEXP * const rx,
             assert(min >= 0 && min <= max && min <= strend - strbeg);
             sublen = max - min;
 
-            if (RXp_MATCH_COPIED(prog)) {
+            if (RX_MATCH_COPIED(rx)) {
                 if (sublen > prog->sublen)
                     prog->subbeg =
                             (char*)saferealloc(prog->subbeg, sublen+1);
@@ -2845,7 +2845,7 @@ S_reg_set_capture_string(pTHX_ REGEXP * const rx,
             prog->subbeg[sublen] = '\0';
             prog->suboffset = min;
             prog->sublen = sublen;
-            RXp_MATCH_COPIED_on(prog);
+            RX_MATCH_COPIED_on(rx);
         }
         prog->subcoffset = prog->suboffset;
         if (prog->suboffset && utf8_target) {
@@ -2872,7 +2872,7 @@ S_reg_set_capture_string(pTHX_ REGEXP * const rx,
         }
     }
     else {
-        RXp_MATCH_COPY_FREE(prog);
+        RX_MATCH_COPY_FREE(rx);
         prog->subbeg = strbeg;
         prog->suboffset = 0;
         prog->subcoffset = 0;
@@ -3029,7 +3029,7 @@ Perl_regexec_flags(pTHX_ REGEXP * const rx, char *stringarg, char *strend,
             /* match via INTUIT shouldn't have any captures.
              * Let @-, @+, $^N know */
             prog->lastparen = prog->lastcloseparen = 0;
-            RXp_MATCH_UTF8_set(prog, utf8_target);
+            RX_MATCH_UTF8_set(rx, utf8_target);
             prog->offs[0].start = s - strbeg;
             prog->offs[0].end = utf8_target
                 ? (char*)utf8_hop((U8*)s, prog->minlenret) - strbeg
@@ -3056,8 +3056,8 @@ Perl_regexec_flags(pTHX_ REGEXP * const rx, char *stringarg, char *strend,
 	Perl_croak(aTHX_ "corrupted regexp program");
     }
 
-    RXp_MATCH_TAINTED_off(prog);
-    RXp_MATCH_UTF8_set(prog, utf8_target);
+    RX_MATCH_TAINTED_off(rx);
+    RX_MATCH_UTF8_set(rx, utf8_target);
 
     reginfo->prog = rx;	 /* Yes, sorry that this is confusing.  */
     reginfo->intuit = 0;
@@ -4345,7 +4345,7 @@ S_isGCB(pTHX_ const GCB_enum before, const GCB_enum after, const U8 * const strb
                 /* Do not break within emoji flag sequences. That is, do not
                  * break between regional indicator (RI) symbols if there is an
                  * odd number of RI characters before the break point.
-                 *  GB12   sot (RI RI)* RI × RI
+                 *  GB12     ^ (RI RI)* RI × RI
                  *  GB13 [^RI] (RI RI)* RI × RI */
 
                 while (backup_one_GCB(strbeg,
@@ -4637,7 +4637,7 @@ S_isLB(pTHX_ LB_enum before,
                  * only if there are an even number of regional indicators
                  * preceding the position of the break.
                  *
-                 *    sot (RI RI)* RI × RI
+                 *  sot (RI RI)* RI × RI
                  *  [^RI] (RI RI)* RI × RI */
 
                 while (backup_one_LB(strbeg,
@@ -5167,7 +5167,7 @@ S_isWB(pTHX_ WB_enum previous,
                  * odd number of RI characters before the potential break
                  * point.
                  *
-                 * WB15   sot (RI RI)* RI × RI
+                 * WB15     ^ (RI RI)* RI × RI
                  * WB16 [^RI] (RI RI)* RI × RI */
 
                 while (backup_one_WB(&previous,
@@ -5375,7 +5375,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
     SV *sv_yes_mark = NULL; /* last mark name we have seen 
                                during a successful match */
     U32 lastopen = 0;       /* last open we saw */
-    bool has_cutgroup = RXp_HAS_CUTGROUP(rex) ? 1 : 0;
+    bool has_cutgroup = RX_HAS_CUTGROUP(rex) ? 1 : 0;   
     SV* const oreplsv = GvSVn(PL_replgv);
     /* these three flags are set by various ops to signal information to
      * the very next op. They have a useful lifetime of exactly one loop
@@ -6983,7 +6983,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
 		if (logical == 0)        /*   (?{})/   */
 		    sv_setsv(save_scalar(PL_replgv), ret); /* $^R */
 		else if (logical == 1) { /*   /(?(?{...})X|Y)/    */
-		    sw = cBOOL(SvTRUE_NN(ret));
+		    sw = cBOOL(SvTRUE(ret));
 		    logical = 0;
 		}
 		else {                   /*  /(??{})  */

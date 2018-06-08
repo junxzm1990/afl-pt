@@ -1,6 +1,6 @@
 package if;
 
-$VERSION = '0.0607';
+$VERSION = '0.0606';
 
 sub work {
   my $method = shift() ? 'import' : 'unimport';
@@ -49,15 +49,6 @@ the same effect as:
 The use of C<< => >> above provides necessary quoting of C<MODULE>.
 If you don't use the fat comma (eg you don't have any ARGUMENTS),
 then you'll need to quote the MODULE.
-
-If you wanted ARGUMENTS to be an empty list, i.e. have the effect of:
-
-    use MODULE ();
-
-you can't do this with the C<if> pragma; however, you can achieve
-exactly this effect, at compile time, with:
-
-    BEGIN { require MODULE if CONDITION }
 
 =head2 EXAMPLES
 

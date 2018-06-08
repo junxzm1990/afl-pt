@@ -1,6 +1,6 @@
 package O;
 
-our $VERSION = '1.02';
+our $VERSION = '1.01';
 
 use B qw(minus_c save_BEGINs);
 use Carp;
@@ -37,6 +37,10 @@ sub import {
 	    # "fragile kludge") so that its output still looks
 	    # nice. Thanks. --smcc
 	    use B::].$backend.q[ ();
+	    if ($@) {
+		croak "use of backend $backend failed: $@";
+	    }
+
 
 	    my $compilesub = &{"B::${backend}::compile"}(@options);
 	    if (ref($compilesub) ne "CODE") {
@@ -50,9 +54,7 @@ sub import {
 	    close STDERR if $veryquiet;
 	}
     ];
-    if ($@) {
-        croak "Loading compiler backend 'B::$backend' failed: $@";
-    }
+    die $@ if $@;
 }
 
 1;

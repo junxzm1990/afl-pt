@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '1.302101';
+our $VERSION = '1.302073';
 
 BEGIN {
     if( $] < 5.008 ) {
@@ -42,7 +42,6 @@ our $Test = $ENV{TB_NO_EARLY_INIT} ? undef : Test::Builder->new;
 
 sub _add_ts_hooks {
     my $self = shift;
-
     my $hub = $self->{Stack}->top;
 
     # Take a reference to the hash key, we do this to avoid closing over $self
@@ -85,26 +84,12 @@ sub _add_ts_hooks {
     }, inherit => 1);
 }
 
-{
-    no warnings;
-    INIT {
-        use warnings;
-        Test2::API::test2_load() unless Test2::API::test2_in_preload();
-    }
-}
-
 sub new {
     my($class) = shift;
     unless($Test) {
+        my $ctx = context();
         $Test = $class->create(singleton => 1);
-
-        Test2::API::test2_add_callback_post_load(
-            sub {
-                $Test->{Original_Pid} = $$ if !$Test->{Original_Pid} || $Test->{Original_Pid} == 0;
-                $Test->reset(singleton => 1);
-                $Test->_add_ts_hooks;
-            }
-        );
+        $ctx->release;
 
         # Non-TB tools normally expect 0 added to the level. $Level is normally 1. So
         # we only want the level to change if $Level != 1.
@@ -132,10 +117,9 @@ sub create {
             formatter => Test::Builder::Formatter->new,
             ipc       => Test2::API::test2_ipc(),
         );
-
-        $self->reset(%params);
-        $self->_add_ts_hooks;
     }
+    $self->reset(%params);
+    $self->_add_ts_hooks;
 
     return $self;
 }
@@ -159,8 +143,7 @@ sub parent {
     my $chub = $self->{Hub} || $ctx->hub;
     $ctx->release;
 
-    my $meta = $chub->meta(__PACKAGE__, {});
-    my $parent = $meta->{parent};
+    my $parent = $chub->meta(__PACKAGE__, {})->{parent};
 
     return undef unless $parent;
 
@@ -204,7 +187,7 @@ sub child {
 
     $hub->listen(sub { push @$subevents => $_[1] });
 
-    $hub->set_nested( $parent->nested + 1 );
+    $hub->set_nested( $parent->isa('Test2::Hub::Subtest') ? $parent->nested + 1 : 1 );
 
     my $meta = $hub->meta(__PACKAGE__, {});
     $meta->{Name} = $name;
@@ -219,7 +202,7 @@ sub child {
     $self->_add_ts_hooks;
 
     $ctx->release;
-    return bless { Original_Pid => $$, Stack => $self->{Stack}, Hub => $hub, no_log_results => $self->{no_log_results} }, blessed($self);
+    return bless { Original_Pid => $$, Stack => $self->{Stack}, Hub => $hub }, blessed($self);
 }
 
 sub finalize {
@@ -246,7 +229,7 @@ sub finalize {
     my $trace = $ctx->trace;
     delete $ctx->hub->meta(__PACKAGE__, {})->{child};
 
-    $chub->finalize($trace->snapshot(hid => $chub->hid, nested => $chub->nested), 1)
+    $chub->finalize($trace, 1)
         if $ok
         && $chub->count
         && !$chub->no_ending
@@ -336,7 +319,7 @@ sub subtest {
         }
     }
 
-    if ($start_pid != $$ && !$INC{'Test2/IPC.pm'}) {
+    if ($start_pid != $$ && !$INC{'Test/Sync/IPC.pm'}) {
         warn $ok ? "Forked inside subtest, but subtest never finished!\n" : $err;
         exit 255;
     }
@@ -389,20 +372,14 @@ sub reset {    ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     # hash keys is just asking for pain.  Also, it was documented.
     $Level = 1;
 
-    $self->{no_log_results} = $ENV{TEST_NO_LOG_RESULTS} ? 1 : 0
-        unless $params{singleton};
-
-    $self->{Original_Pid} = Test2::API::test2_in_preload() ? -1 : $$;
+    $self->{Original_Pid} = $$;
 
     my $ctx = $self->ctx;
-    my $hub = $ctx->hub;
-    $ctx->release;
     unless ($params{singleton}) {
-        $hub->reset_state();
-        $hub->_tb_reset();
+        $ctx->hub->reset_state();
+        $ctx->hub->set_pid($$);
+        $ctx->hub->set_tid(get_tid);
     }
-
-    $ctx = $self->ctx;
 
     my $meta = $ctx->hub->meta(__PACKAGE__, {});
     %$meta = (
@@ -411,10 +388,9 @@ sub reset {    ## no critic (Subroutines::ProhibitBuiltinHomonyms)
         Done_Testing => undef,
         Skip_All     => 0,
         Test_Results => [],
-        parent       => $meta->{parent},
     );
 
-    $self->{Exported_To} = undef unless $params{singleton};
+    $self->{Exported_To} = undef;
 
     $self->{Orig_Handles} ||= do {
         my $format = $ctx->hub->format;
@@ -426,8 +402,8 @@ sub reset {    ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     };
 
     $self->use_numbers(1);
-    $self->no_header(0) unless $params{singleton};
-    $self->no_ending(0) unless $params{singleton};
+    $self->no_header(0);
+    $self->no_ending(0);
     $self->reset_outputs;
 
     $ctx->release;
@@ -653,7 +629,7 @@ sub ok {
         (name => defined($name) ? $name : ''),
     };
 
-    $hub->{_meta}->{+__PACKAGE__}->{Test_Results}[ $hub->{count} ] = $result unless $self->{no_log_results};
+    $hub->{_meta}->{+__PACKAGE__}->{Test_Results}[ $hub->{count} ] = $result;
 
     my $orig_name = $name;
 
@@ -668,7 +644,7 @@ sub ok {
     }
 
     my $e = bless {
-        trace => bless( {%$trace}, 'Test2::EventFacet::Trace'),
+        trace => bless( {%$trace}, 'Test2::Util::Trace'),
         pass  => $test,
         name  => $name,
         _meta => {'Test::Builder' => $result},
@@ -690,6 +666,9 @@ sub _ok_debug {
     my $is_todo = defined($self->todo);
 
     my $msg = $is_todo ? "Failed (TODO)" : "Failed";
+
+    my $dfh = $self->_diag_fh;
+    print $dfh "\n" if $ENV{HARNESS_ACTIVE} && $dfh;
 
     my (undef, $file, $line) = $trace->call;
     if (defined $orig_name) {
@@ -1025,7 +1004,7 @@ sub skip {
         name      => $name,
         type      => 'skip',
         reason    => $why,
-    } unless $self->{no_log_results};
+    };
 
     $name =~ s|#|\\#|g;    # # in a name can confuse Test::Harness.
     $name =~ s{\n}{\n# }sg;
@@ -1050,7 +1029,7 @@ sub todo_skip {
         name      => '',
         type      => 'todo_skip',
         reason    => $why,
-    } unless $self->{no_log_results};
+    };
 
     $why =~ s{\n}{\n# }sg;
     my $tctx = $ctx->snapshot;
@@ -1217,17 +1196,8 @@ sub diag {
     my $self = shift;
     return unless @_;
 
-    my $text = join '' => map {defined($_) ? $_ : 'undef'} @_;
-
-    if (Test2::API::test2_in_preload()) {
-        chomp($text);
-        $text =~ s/^/# /msg;
-        print STDERR $text, "\n";
-        return 0;
-    }
-
     my $ctx = $self->ctx;
-    $ctx->diag($text);
+    $ctx->diag(join '' => map {defined($_) ? $_ : 'undef'} @_);
     $ctx->release;
     return 0;
 }
@@ -1237,17 +1207,8 @@ sub note {
     my $self = shift;
     return unless @_;
 
-    my $text = join '' => map {defined($_) ? $_ : 'undef'} @_;
-
-    if (Test2::API::test2_in_preload()) {
-        chomp($text);
-        $text =~ s/^/# /msg;
-        print STDOUT $text, "\n";
-        return 0;
-    }
-
     my $ctx = $self->ctx;
-    $ctx->note($text);
+    $ctx->note(join '' => map {defined($_) ? $_ : 'undef'} @_);
     $ctx->release;
     return 0;
 }
@@ -1390,25 +1351,23 @@ sub current_test {
     if( defined $num ) {
         $hub->set_count($num);
 
-        unless ($self->{no_log_results}) {
-            # If the test counter is being pushed forward fill in the details.
-            my $test_results = $ctx->hub->meta(__PACKAGE__, {})->{Test_Results};
-            if ($num > @$test_results) {
-                my $start = @$test_results ? @$test_results : 0;
-                for ($start .. $num - 1) {
-                    $test_results->[$_] = {
-                        'ok'      => 1,
-                        actual_ok => undef,
-                        reason    => 'incrementing test number',
-                        type      => 'unknown',
-                        name      => undef
-                    };
-                }
+        # If the test counter is being pushed forward fill in the details.
+        my $test_results = $ctx->hub->meta(__PACKAGE__, {})->{Test_Results};
+        if( $num > @$test_results ) {
+            my $start = @$test_results ? @$test_results : 0;
+            for( $start .. $num - 1 ) {
+                $test_results->[$_] = {
+                    'ok'      => 1,
+                    actual_ok => undef,
+                    reason    => 'incrementing test number',
+                    type      => 'unknown',
+                    name      => undef
+                };
             }
-            # If backward, wipe history.  Its their funeral.
-            elsif ($num < @$test_results) {
-                $#{$test_results} = $num - 1;
-            }
+        }
+        # If backward, wipe history.  Its their funeral.
+        elsif( $num < @$test_results ) {
+            $#{$test_results} = $num - 1;
         }
     }
     return release $ctx, $hub->count;
@@ -1434,20 +1393,15 @@ sub is_passing {
 sub summary {
     my($self) = shift;
 
-    return if $self->{no_log_results};
-
     my $ctx = $self->ctx;
     my $data = $ctx->hub->meta(__PACKAGE__, {})->{Test_Results};
     $ctx->release;
-    return map { $_ ? $_->{'ok'} : () } @$data;
+    return map { $_->{'ok'} } @$data;
 }
 
 
 sub details {
     my $self = shift;
-
-    return if $self->{no_log_results};
-
     my $ctx = $self->ctx;
     my $data = $ctx->hub->meta(__PACKAGE__, {})->{Test_Results};
     $ctx->release;
@@ -1748,14 +1702,11 @@ sub coordinate_forks {
     }
     Test2::IPC->import;
     Test2::API::test2_ipc_enable_polling();
-    Test2::API::test2_load();
     my $ipc = Test2::IPC::apply_ipc($self->{Stack});
     $ipc->set_no_fatal(1);
     Test2::API::test2_no_wait(1);
     Test2::API::test2_ipc_enable_shm();
 }
-
-sub no_log_results { $_[0]->{no_log_results} = 1 }
 
 1;
 
@@ -2131,7 +2082,7 @@ test failed.
 
 Defaults to 1.
 
-Setting C<$Test::Builder::Level> overrides.  This is typically useful
+Setting L<$Test::Builder::Level> overrides.  This is typically useful
 localized:
 
     sub my_ok {
@@ -2299,16 +2250,6 @@ point where the original test function was called (C<< $tb->caller >>).
 =head2 Test Status and Info
 
 =over 4
-
-=item B<no_log_results>
-
-This will turn off result long-term storage. Calling this method will make
-C<details> and C<summary> useless. You may want to use this if you are running
-enough tests to fill up all available memory.
-
-    Test::Builder->new->no_log_results();
-
-There is no way to turn it back on.
 
 =item B<current_test>
 

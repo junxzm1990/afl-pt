@@ -1,5 +1,5 @@
 /*
- $Id: Encode.xs,v 2.41 2017/06/10 17:23:50 dankogai Exp $
+ $Id: Encode.xs,v 2.39 2016/11/29 23:29:23 dankogai Exp dankogai $
  */
 
 #define PERL_NO_GET_CONTEXT
@@ -34,6 +34,17 @@ UNIMPLEMENTED(_encoded_bytes_to_utf8, I32)
 #ifndef SvIV_nomg
 #define SvIV_nomg SvIV
 #endif
+
+#ifdef UTF8_DISALLOW_ILLEGAL_INTERCHANGE
+#   define UTF8_ALLOW_STRICT UTF8_DISALLOW_ILLEGAL_INTERCHANGE
+#else
+#   define UTF8_ALLOW_STRICT 0
+#endif
+
+#define UTF8_ALLOW_NONSTRICT (UTF8_ALLOW_ANY &                    \
+                              ~(UTF8_ALLOW_CONTINUATION |         \
+                                UTF8_ALLOW_NON_CONTINUATION |     \
+                                UTF8_ALLOW_LONG))
 
 static void
 Encode_XSEncoding(pTHX_ encode_t * enc)
@@ -103,52 +114,24 @@ utf8_safe_upgrade(pTHX_ SV ** src, U8 ** s, STRLEN * slen, bool modify)
 
 #define ERR_ENCODE_NOMAP "\"\\x{%04" UVxf "}\" does not map to %s"
 #define ERR_DECODE_NOMAP "%s \"\\x%02" UVXf "\" does not map to Unicode"
-#define ERR_DECODE_STR_NOMAP "%s \"%s\" does not map to Unicode"
 
 static SV *
 do_fallback_cb(pTHX_ UV ch, SV *fallback_cb)
 {
     dSP;
     int argc;
-    SV *retval;
+    SV *retval = newSVpv("",0);
     ENTER;
     SAVETMPS;
     PUSHMARK(sp);
-    XPUSHs(sv_2mortal(newSVuv(ch)));
+    XPUSHs(sv_2mortal(newSVnv((UV)ch)));
     PUTBACK;
     argc = call_sv(fallback_cb, G_SCALAR);
     SPAGAIN;
     if (argc != 1){
 	croak("fallback sub must return scalar!");
     }
-    retval = POPs;
-    SvREFCNT_inc(retval);
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-    return retval;
-}
-
-static SV *
-do_bytes_fallback_cb(pTHX_ U8 *s, STRLEN slen, SV *fallback_cb)
-{
-    dSP;
-    int argc;
-    STRLEN i;
-    SV *retval;
-    ENTER;
-    SAVETMPS;
-    PUSHMARK(sp);
-    for (i=0; i<slen; ++i)
-        XPUSHs(sv_2mortal(newSVuv(s[i])));
-    PUTBACK;
-    argc = call_sv(fallback_cb, G_SCALAR);
-    SPAGAIN;
-    if (argc != 1){
-        croak("fallback sub must return scalar!");
-    }
-    retval = POPs;
-    SvREFCNT_inc(retval);
+    sv_catsv(retval, POPs);
     PUTBACK;
     FREETMPS;
     LEAVE;
@@ -258,22 +241,16 @@ encode_method(pTHX_ const encode_t * enc, const encpage_t * dir, SV * src, U8 * 
             goto ENCODE_SET_SRC;
         }
         if (check & (ENCODE_PERLQQ|ENCODE_HTMLCREF|ENCODE_XMLCREF)){
-            STRLEN sublen;
-            char *substr;
             SV* subchar = 
             (fallback_cb != &PL_sv_undef)
 		? do_fallback_cb(aTHX_ ch, fallback_cb)
 		: newSVpvf(check & ENCODE_PERLQQ ? "\\x{%04" UVxf "}" :
                  check & ENCODE_HTMLCREF ? "&#%" UVuf ";" :
                  "&#x%" UVxf ";", (UV)ch);
-            substr = SvPV(subchar, sublen);
-            if (SvUTF8(subchar) && sublen && !utf8_to_bytes((U8 *)substr, &sublen)) { /* make sure no decoded string gets in */
-                SvREFCNT_dec(subchar);
-                croak("Wide character");
-            }
+	    SvUTF8_off(subchar); /* make sure no decoded string gets in */
             sdone += slen + clen;
-            ddone += dlen + sublen;
-            sv_catpvn(dst, substr, sublen);
+            ddone += dlen + SvCUR(subchar);
+            sv_catsv(dst, subchar);
             SvREFCNT_dec(subchar);
         } else {
             /* fallback char */
@@ -300,21 +277,18 @@ encode_method(pTHX_ const encode_t * enc, const encpage_t * dir, SV * src, U8 * 
         }
         if (check &
             (ENCODE_PERLQQ|ENCODE_HTMLCREF|ENCODE_XMLCREF)){
-            STRLEN sublen;
-            char *substr;
             SV* subchar = 
             (fallback_cb != &PL_sv_undef)
 		? do_fallback_cb(aTHX_ (UV)s[slen], fallback_cb) 
 		: newSVpvf("\\x%02" UVXf, (UV)s[slen]);
-            substr = SvPVutf8(subchar, sublen);
             sdone += slen + 1;
-            ddone += dlen + sublen;
-            sv_catpvn(dst, substr, sublen);
+            ddone += dlen + SvCUR(subchar);
+            sv_catsv(dst, subchar);
             SvREFCNT_dec(subchar);
         } else {
             sdone += slen + 1;
             ddone += dlen + strlen(FBCHAR_UTF8);
-            sv_catpvn(dst, FBCHAR_UTF8, strlen(FBCHAR_UTF8));
+            sv_catpv(dst, FBCHAR_UTF8);
         }
         }
         /* settle variables when fallback */
@@ -408,7 +382,7 @@ convert_utf8_multi_seq(U8* s, STRLEN len, STRLEN *rlen)
     U8 *ptr = s;
     bool overflowed = 0;
 
-    uv = NATIVE_TO_UTF(*s) & UTF_START_MASK(UTF8SKIP(s));
+    uv = NATIVE_TO_UTF(*s) & UTF_START_MASK(len);
 
     len--;
     s++;
@@ -427,6 +401,7 @@ convert_utf8_multi_seq(U8* s, STRLEN len, STRLEN *rlen)
     *rlen = s-ptr;
 
     if (overflowed || *rlen > (STRLEN)UNISKIP(uv)) {
+        *rlen = 1;
         return 0;
     }
 
@@ -443,8 +418,6 @@ process_utf8(pTHX_ SV* dst, U8* s, U8* e, SV *check_sv,
     int check;
     U8 *d;
     STRLEN dlen;
-    char esc[UTF8_MAXLEN * 6 + 1];
-    STRLEN i;
 
     if (SvROK(check_sv)) {
 	/* croak("UTF-8 decoder doesn't support callback CHECK"); */
@@ -468,24 +441,22 @@ process_utf8(pTHX_ SV* dst, U8* s, U8* e, SV *check_sv,
             continue;
         }
 
-        uv = 0;
         ulen = 1;
-        if (! UTF8_IS_CONTINUATION(*s)) {
-            /* Not an invariant nor a continuation; must be a start byte.  (We
-             * can't test for UTF8_IS_START as that excludes things like \xC0
-             * which are start bytes, but always lead to overlongs */
-
+        if (UTF8_IS_START(*s)) {
             U8 skip = UTF8SKIP(s);
             if ((s + skip) > e) {
-                /* just calculate ulen, in pathological cases can be smaller then e-s */
-                if (e-s >= 2)
-                    convert_utf8_multi_seq(s, e-s, &ulen);
-                else
-                    ulen = 1;
-
-                if ((stop_at_partial || (check & ENCODE_STOP_AT_PARTIAL)) && ulen == (STRLEN)(e-s))
+                if (stop_at_partial || (check & ENCODE_STOP_AT_PARTIAL)) {
+                    const U8 *p = s + 1;
+                    for (; p < e; p++) {
+                        if (!UTF8_IS_CONTINUATION(*p)) {
+                            ulen = p-s;
+                            goto malformed_byte;
+                        }
+                    }
                     break;
+                }
 
+                ulen = e-s;
                 goto malformed_byte;
             }
 
@@ -504,67 +475,44 @@ process_utf8(pTHX_ SV* dst, U8* s, U8* e, SV *check_sv,
         }
 
         /* If we get here there is something wrong with alleged UTF-8 */
-        /* uv is used only when encoding */
     malformed_byte:
-        if (uv == 0)
-            uv = (UV)*s;
-        if (encode || ulen == 0)
+        uv = (UV)*s;
+        if (ulen == 0)
             ulen = 1;
 
     malformed:
-        if (!encode && (check & (ENCODE_DIE_ON_ERR|ENCODE_WARN_ON_ERR|ENCODE_PERLQQ)))
-            for (i=0; i<ulen; ++i) sprintf(esc+4*i, "\\x%02X", s[i]);
         if (check & ENCODE_DIE_ON_ERR){
             if (encode)
-                Perl_croak(aTHX_ ERR_ENCODE_NOMAP, uv, (strict ? "UTF-8" : "utf8"));
+                Perl_croak(aTHX_ ERR_ENCODE_NOMAP, uv, "utf8");
             else
-                Perl_croak(aTHX_ ERR_DECODE_STR_NOMAP, (strict ? "UTF-8" : "utf8"), esc);
+                Perl_croak(aTHX_ ERR_DECODE_NOMAP, "utf8", uv);
         }
         if (check & ENCODE_WARN_ON_ERR){
             if (encode)
                 Perl_warner(aTHX_ packWARN(WARN_UTF8),
-                            ERR_ENCODE_NOMAP, uv, (strict ? "UTF-8" : "utf8"));
+                            ERR_ENCODE_NOMAP, uv, "utf8");
             else
                 Perl_warner(aTHX_ packWARN(WARN_UTF8),
-                            ERR_DECODE_STR_NOMAP, (strict ? "UTF-8" : "utf8"), esc);
+                            ERR_DECODE_NOMAP, "utf8", uv);
         }
         if (check & ENCODE_RETURN_ON_ERR) {
                 break;
         }
         if (check & (ENCODE_PERLQQ|ENCODE_HTMLCREF|ENCODE_XMLCREF)){
-            STRLEN sublen;
-            char *substr;
-            SV* subchar;
-            if (encode) {
-                subchar =
-                    (fallback_cb != &PL_sv_undef)
-                    ? do_fallback_cb(aTHX_ uv, fallback_cb)
-                    : newSVpvf(check & ENCODE_PERLQQ
-                        ? (ulen == 1 ? "\\x%02" UVXf : "\\x{%04" UVXf "}")
-                        :  check & ENCODE_HTMLCREF ? "&#%" UVuf ";"
-                        : "&#x%" UVxf ";", uv);
-                substr = SvPV(subchar, sublen);
-                if (SvUTF8(subchar) && sublen && !utf8_to_bytes((U8 *)substr, &sublen)) { /* make sure no decoded string gets in */
-                    SvREFCNT_dec(subchar);
-                    croak("Wide character");
-                }
-            } else {
-                if (fallback_cb != &PL_sv_undef) {
-                    /* in decode mode we have sequence of wrong bytes */
-                    subchar = do_bytes_fallback_cb(aTHX_ s, ulen, fallback_cb);
-                } else {
-                    char *ptr = esc;
-                    /* ENCODE_PERLQQ is already stored in esc */
-                    if (check & (ENCODE_HTMLCREF|ENCODE_XMLCREF))
-                        for (i=0; i<ulen; ++i) ptr += sprintf(ptr, ((check & ENCODE_HTMLCREF) ? "&#%u;" : "&#x%02X;"), s[i]);
-                    subchar = newSVpvn(esc, strlen(esc));
-                }
-                substr = SvPVutf8(subchar, sublen);
-            }
-            dlen += sublen - ulen;
+	    SV* subchar =
+		(fallback_cb != &PL_sv_undef)
+		? do_fallback_cb(aTHX_ uv, fallback_cb)
+		: newSVpvf(check & ENCODE_PERLQQ 
+			   ? (ulen == 1 ? "\\x%02" UVXf : "\\x{%04" UVXf "}")
+			   :  check & ENCODE_HTMLCREF ? "&#%" UVuf ";" 
+			   : "&#x%" UVxf ";", uv);
+	    if (encode){
+		SvUTF8_off(subchar); /* make sure no decoded string gets in */
+	    }
+            dlen += SvCUR(subchar) - ulen;
             SvCUR_set(dst, d-(U8 *)SvPVX(dst));
             *SvEND(dst) = '\0';
-            sv_catpvn(dst, substr, sublen);
+            sv_catsv(dst, subchar);
             SvREFCNT_dec(subchar);
             d = (U8 *) SvGROW(dst, dlen) + SvCUR(dst);
         } else {
@@ -591,7 +539,7 @@ MODULE = Encode		PACKAGE = Encode::utf8	PREFIX = Method_
 PROTOTYPES: DISABLE
 
 void
-Method_decode(obj,src,check_sv = &PL_sv_no)
+Method_decode_xs(obj,src,check_sv = &PL_sv_no)
 SV *	obj
 SV *	src
 SV *	check_sv
@@ -603,13 +551,14 @@ PREINIT:
     bool renewed = 0;
     int check;
     bool modify;
-    dSP;
 INIT:
     SvGETMAGIC(src);
     SvGETMAGIC(check_sv);
     check = SvROK(check_sv) ? ENCODE_PERLQQ|ENCODE_LEAVE_SRC : SvIV_nomg(check_sv);
     modify = (check && !(check & ENCODE_LEAVE_SRC));
-PPCODE:
+CODE:
+{
+    dSP;
     if (!SvOK(src))
         XSRETURN_UNDEF;
     s = modify ? (U8 *)SvPV_force_nomg(src, slen) : (U8 *)SvPV_nomg(src, slen);
@@ -651,9 +600,10 @@ PPCODE:
     if (SvTAINTED(src)) SvTAINTED_on(dst); /* propagate taintedness */
     ST(0) = dst;
     XSRETURN(1);
+}
 
 void
-Method_encode(obj,src,check_sv = &PL_sv_no)
+Method_encode_xs(obj,src,check_sv = &PL_sv_no)
 SV *	obj
 SV *	src
 SV *	check_sv
@@ -669,7 +619,8 @@ INIT:
     SvGETMAGIC(check_sv);
     check = SvROK(check_sv) ? ENCODE_PERLQQ|ENCODE_LEAVE_SRC : SvIV_nomg(check_sv);
     modify = (check && !(check & ENCODE_LEAVE_SRC));
-PPCODE:
+CODE:
+{
     if (!SvOK(src))
         XSRETURN_UNDEF;
     s = modify ? (U8 *)SvPV_force_nomg(src, slen) : (U8 *)SvPV_nomg(src, slen);
@@ -722,19 +673,20 @@ PPCODE:
     if (SvTAINTED(src)) SvTAINTED_on(dst); /* propagate taintedness */
     ST(0) = dst;
     XSRETURN(1);
+}
 
 MODULE = Encode		PACKAGE = Encode::XS	PREFIX = Method_
 
-PROTOTYPES: DISABLE
+PROTOTYPES: ENABLE
 
-SV *
+void
 Method_renew(obj)
 SV *	obj
 CODE:
+{
     PERL_UNUSED_VAR(obj);
-    RETVAL = newSVsv(obj);
-OUTPUT:
-    RETVAL
+    XSRETURN(1);
+}
 
 int
 Method_renewed(obj)
@@ -745,19 +697,17 @@ CODE:
 OUTPUT:
     RETVAL
 
-SV *
+void
 Method_name(obj)
 SV *	obj
-PREINIT:
-    encode_t *enc;
-INIT:
-    enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
 CODE:
-    RETVAL = newSVpvn(enc->name[0], strlen(enc->name[0]));
-OUTPUT:
-    RETVAL
+{
+    encode_t *enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
+    ST(0) = sv_2mortal(newSVpvn(enc->name[0],strlen(enc->name[0])));
+    XSRETURN(1);
+}
 
-bool
+void
 Method_cat_decode(obj, dst, src, off, term, check_sv = &PL_sv_no)
 SV *	obj
 SV *	dst
@@ -784,6 +734,7 @@ INIT:
     enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
     offset = (STRLEN)SvIV(off);
 CODE:
+{
     if (!SvOK(src))
         XSRETURN_NO;
     s = modify ? (U8 *)SvPV_force_nomg(src, slen) : (U8 *)SvPV_nomg(src, slen);
@@ -794,9 +745,13 @@ CODE:
     sv_catsv(dst, tmp);
     SvREFCNT_dec(tmp);
     SvIV_set(off, (IV)offset);
-    RETVAL = (code == ENCODE_FOUND_TERM);
-OUTPUT:
-    RETVAL
+    if (code == ENCODE_FOUND_TERM) {
+    ST(0) = &PL_sv_yes;
+    }else{
+    ST(0) = &PL_sv_no;
+    }
+    XSRETURN(1);
+}
 
 SV *
 Method_decode(obj,src,check_sv = &PL_sv_no)
@@ -818,6 +773,7 @@ INIT:
     modify = (check && !(check & ENCODE_LEAVE_SRC));
     enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
 CODE:
+{
     if (!SvOK(src))
         XSRETURN_UNDEF;
     s = modify ? (U8 *)SvPV_force_nomg(src, slen) : (U8 *)SvPV_nomg(src, slen);
@@ -826,6 +782,7 @@ CODE:
     RETVAL = encode_method(aTHX_ enc, enc->t_utf8, src, s, slen, check,
               NULL, Nullsv, NULL, fallback_cb);
     SvUTF8_on(RETVAL);
+}
 OUTPUT:
     RETVAL
 
@@ -849,6 +806,7 @@ INIT:
     modify = (check && !(check & ENCODE_LEAVE_SRC));
     enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
 CODE:
+{
     if (!SvOK(src))
         XSRETURN_UNDEF;
     s = modify ? (U8 *)SvPV_force_nomg(src, slen) : (U8 *)SvPV_nomg(src, slen);
@@ -856,51 +814,76 @@ CODE:
         utf8_safe_upgrade(aTHX_ &src, &s, &slen, modify);
     RETVAL = encode_method(aTHX_ enc, enc->f_utf8, src, s, slen, check,
               NULL, Nullsv, NULL, fallback_cb);
+}
 OUTPUT:
     RETVAL
 
-bool
+void
 Method_needs_lines(obj)
 SV *	obj
 CODE:
+{
+    /* encode_t *enc = INT2PTR(encode_t *, SvIV(SvRV(obj))); */
     PERL_UNUSED_VAR(obj);
-    RETVAL = FALSE;
-OUTPUT:
-    RETVAL
+    ST(0) = &PL_sv_no;
+    XSRETURN(1);
+}
 
-bool
+void
 Method_perlio_ok(obj)
 SV *	obj
 PREINIT:
     SV *sv;
 CODE:
-    PERL_UNUSED_VAR(obj);
-    sv = eval_pv("require PerlIO::encoding", 0);
-    RETVAL = SvTRUE(sv);
-OUTPUT:
-    RETVAL
+{
+    /* encode_t *enc = INT2PTR(encode_t *, SvIV(SvRV(obj))); */
+    /* require_pv(PERLIO_FILENAME); */
 
-SV *
+    PERL_UNUSED_VAR(obj);
+    eval_pv("require PerlIO::encoding", 0);
+    SPAGAIN;
+
+    sv = get_sv("@", 0);
+    if (SvTRUE(sv)) {
+    ST(0) = &PL_sv_no;
+    }else{
+    ST(0) = &PL_sv_yes;
+    }
+    XSRETURN(1);
+}
+
+void
 Method_mime_name(obj)
 SV *	obj
 PREINIT:
-    encode_t *enc;
-INIT:
-    enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
+    SV *sv;
 CODE:
-    ENTER;
-    SAVETMPS;
-    PUSHMARK(sp);
-    XPUSHs(sv_2mortal(newSVpvn(enc->name[0], strlen(enc->name[0]))));
-    PUTBACK;
-    call_pv("Encode::MIME::Name::get_mime_name", G_SCALAR);
+{
+    encode_t *enc = INT2PTR(encode_t *, SvIV(SvRV(obj)));
+    SV *retval;
+    eval_pv("require Encode::MIME::Name", 0);
     SPAGAIN;
-    RETVAL = newSVsv(POPs);
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-OUTPUT:
-    RETVAL
+
+    sv = get_sv("@", 0);
+    if (SvTRUE(sv)) {
+	ST(0) = &PL_sv_undef;
+    }else{
+	ENTER;
+	SAVETMPS;
+	PUSHMARK(sp);
+	XPUSHs(sv_2mortal(newSVpvn(enc->name[0], strlen(enc->name[0]))));
+	PUTBACK;
+	call_pv("Encode::MIME::Name::get_mime_name", G_SCALAR);
+	SPAGAIN;
+	retval = newSVsv(POPs);
+	PUTBACK;
+	FREETMPS;
+	LEAVE;
+	/* enc->name[0] */
+	ST(0) = retval;
+    }
+    XSRETURN(1);
+}
 
 MODULE = Encode         PACKAGE = Encode
 
@@ -909,11 +892,10 @@ PROTOTYPES: ENABLE
 I32
 _bytes_to_utf8(sv, ...)
 SV *    sv
-PREINIT:
-    SV * encoding;
-INIT:
-    encoding = items == 2 ? ST(1) : Nullsv;
 CODE:
+{
+    SV * encoding = items == 2 ? ST(1) : Nullsv;
+
     if (encoding)
     RETVAL = _encoded_bytes_to_utf8(sv, SvPV_nolen(encoding));
     else {
@@ -927,19 +909,18 @@ CODE:
     Safefree(converted);                /* ... so free it */
     RETVAL = len;
     }
+}
 OUTPUT:
     RETVAL
 
 I32
 _utf8_to_bytes(sv, ...)
 SV *    sv
-PREINIT:
-    SV * to;
-    SV * check;
-INIT:
-    to    = items > 1 ? ST(1) : Nullsv;
-    check = items > 2 ? ST(2) : Nullsv;
 CODE:
+{
+    SV * to    = items > 1 ? ST(1) : Nullsv;
+    SV * check = items > 2 ? ST(2) : Nullsv;
+
     if (to) {
     RETVAL = _encoded_utf8_to_bytes(sv, SvPV_nolen(to));
     } else {
@@ -999,6 +980,7 @@ CODE:
         RETVAL = (utf8_to_bytes(s, &len) ? len : 0);
     }
     }
+}
 OUTPUT:
     RETVAL
 
@@ -1010,11 +992,13 @@ PREINIT:
     char *str;
     STRLEN len;
 CODE:
+{
     SvGETMAGIC(sv); /* SvGETMAGIC() can modify SvOK flag */
     str = SvOK(sv) ? SvPV_nomg(sv, len) : NULL; /* SvPV() can modify SvUTF8 flag */
     RETVAL = SvUTF8(sv) ? TRUE : FALSE;
     if (RETVAL && check && (!str || !is_utf8_string((U8 *)str, len)))
         RETVAL = FALSE;
+}
 OUTPUT:
     RETVAL
 
@@ -1022,15 +1006,17 @@ SV *
 _utf8_on(sv)
 SV *	sv
 CODE:
+{
     SvGETMAGIC(sv);
     if (!SvTAINTED(sv) && SvPOKp(sv)) {
         if (SvTHINKFIRST(sv)) sv_force_normal(sv);
-        RETVAL = boolSV(SvUTF8(sv));
+        RETVAL = newSViv(SvUTF8(sv));
         SvUTF8_on(sv);
         SvSETMAGIC(sv);
     } else {
         RETVAL = &PL_sv_undef;
     }
+}
 OUTPUT:
     RETVAL
 
@@ -1038,24 +1024,19 @@ SV *
 _utf8_off(sv)
 SV *	sv
 CODE:
+{
     SvGETMAGIC(sv);
     if (!SvTAINTED(sv) && SvPOKp(sv)) {
         if (SvTHINKFIRST(sv)) sv_force_normal(sv);
-        RETVAL = boolSV(SvUTF8(sv));
+        RETVAL = newSViv(SvUTF8(sv));
         SvUTF8_off(sv);
         SvSETMAGIC(sv);
     } else {
         RETVAL = &PL_sv_undef;
     }
+}
 OUTPUT:
     RETVAL
-
-void
-onBOOT()
-CODE:
-{
-#include "def_t.exh"
-}
 
 BOOT:
 {
@@ -1075,4 +1056,7 @@ BOOT:
     newCONSTSUB(stash, "FB_PERLQQ", newSViv(ENCODE_FB_PERLQQ));
     newCONSTSUB(stash, "FB_HTMLCREF", newSViv(ENCODE_FB_HTMLCREF));
     newCONSTSUB(stash, "FB_XMLCREF", newSViv(ENCODE_FB_XMLCREF));
+}
+{
+#include "def_t.exh"
 }

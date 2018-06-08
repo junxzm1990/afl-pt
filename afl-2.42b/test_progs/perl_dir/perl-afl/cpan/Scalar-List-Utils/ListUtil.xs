@@ -7,33 +7,14 @@
 #include <perl.h>
 #include <XSUB.h>
 
-#ifdef USE_PPPORT_H
-#  define NEED_sv_2pv_flags 1
-#  define NEED_newSVpvn_flags 1
-#  include "ppport.h"
-#endif
+#define NEED_sv_2pv_flags 1
+#include "ppport.h"
 
-#ifndef PERL_VERSION_DECIMAL
-#  define PERL_VERSION_DECIMAL(r,v,s) (r*1000000 + v*1000 + s)
-#endif
-#ifndef PERL_DECIMAL_VERSION
-#  define PERL_DECIMAL_VERSION \
-	  PERL_VERSION_DECIMAL(PERL_REVISION,PERL_VERSION,PERL_SUBVERSION)
-#endif
-#ifndef PERL_VERSION_GE
-#  define PERL_VERSION_GE(r,v,s) \
-	  (PERL_DECIMAL_VERSION >= PERL_VERSION_DECIMAL(r,v,s))
-#endif
-#ifndef PERL_VERSION_LE
-#  define PERL_VERSION_LE(r,v,s) \
-	  (PERL_DECIMAL_VERSION <= PERL_VERSION_DECIMAL(r,v,s))
-#endif
-
-#if PERL_VERSION_GE(5,6,0)
+#if PERL_BCDVERSION >= 0x5006000
 #  include "multicall.h"
 #endif
 
-#if !PERL_VERSION_GE(5,23,8)
+#if PERL_BCDVERSION < 0x5023008
 #  define UNUSED_VAR_newsp PERL_UNUSED_VAR(newsp)
 #else
 #  define UNUSED_VAR_newsp NOOP
@@ -47,7 +28,7 @@
    was not exported. Therefore platforms like win32, VMS etc have problems
    so we redefine it here -- GMB
 */
-#if !PERL_VERSION_GE(5,7,0)
+#if PERL_BCDVERSION < 0x5007000
 /* Not in 5.6.1. */
 #  ifdef cxinc
 #    undef cxinc
@@ -636,9 +617,9 @@ PPCODE:
         SvGETMAGIC(pair);
 
         if(SvTYPE(pair) != SVt_RV)
-            croak("Not a reference at List::Util::unpairs() argument %d", i);
+            croak("Not a reference at List::Util::unpack() argument %d", i);
         if(SvTYPE(SvRV(pair)) != SVt_PVAV)
-            croak("Not an ARRAY reference at List::Util::unpairs() argument %d", i);
+            croak("Not an ARRAY reference at List::Util::unpack() argument %d", i);
 
         /* TODO: assert pair is an ARRAY ref */
         pairav = (AV *)SvRV(pair);
@@ -898,14 +879,13 @@ PPCODE:
 /* This MULTICALL-based code appears to fail on perl 5.10.0 and 5.8.9
  * Skip it on those versions (RT#87857)
  */
-#if defined(dMULTICALL) && (PERL_VERSION_GE(5,10,1) || PERL_VERSION_LE(5,8,8))
+#if defined(dMULTICALL) && (PERL_BCDVERSION > 0x5010000 || PERL_BCDVERSION < 0x5008009)
     assert(cv);
     if(!CvISXSUB(cv)) {
         /* Since MULTICALL is about to move it */
         SV **stack = PL_stack_base + ax;
         I32 ret_gimme = GIMME_V;
         int i;
-        AV *spill = NULL; /* accumulates results if too big for stack */
 
         dMULTICALL;
         I32 gimme = G_ARRAY;
@@ -915,64 +895,41 @@ PPCODE:
         for(; argi < items; argi += 2) {
             int count;
 
-            GvSV(agv) = stack[argi];
-            GvSV(bgv) = argi < items-1 ? stack[argi+1]: &PL_sv_undef;
+            GvSV(agv) = args_copy ? args_copy[argi] : stack[argi];
+            GvSV(bgv) = argi < items-1 ?
+                (args_copy ? args_copy[argi+1] : stack[argi+1]) :
+                &PL_sv_undef;
 
             MULTICALL;
             count = PL_stack_sp - PL_stack_base;
 
-            if (count > 2 || spill) {
+            if(count > 2 && !args_copy) {
                 /* We can't return more than 2 results for a given input pair
-                 * without trashing the remaining arguments on the stack still
-                 * to be processed, or possibly overrunning the stack end.
-                 * So, we'll accumulate the results in a temporary buffer
-                 * instead.
+                 * without trashing the remaining argmuents on the stack still
+                 * to be processed. So, we'll copy them out to a temporary
+                 * buffer and work from there instead.
                  * We didn't do this initially because in the common case, most
                  * code blocks will return only 1 or 2 items so it won't be
                  * necessary
                  */
-                int fill;
+                int n_args = items - argi;
+                Newx(args_copy, n_args, SV *);
+                SAVEFREEPV(args_copy);
 
-                if (!spill) {
-                    spill = newAV();
-                    AvREAL_off(spill); /* don't ref count its contents */
-                    /* can't mortalize here as every nextstate in the code
-                     * block frees temps */
-                    SAVEFREESV(spill);
-                }
+                Copy(stack + argi, args_copy, n_args, SV *);
 
-                fill = (int)AvFILL(spill);
-                av_extend(spill, fill + count);
-                for(i = 0; i < count; i++)
-                    (void)av_store(spill, ++fill,
-                                    newSVsv(PL_stack_base[i + 1]));
+                argi = 0;
+                items = n_args;
             }
-            else
-                for(i = 0; i < count; i++)
-                    stack[reti++] = newSVsv(PL_stack_base[i + 1]);
+
+            for(i = 0; i < count; i++)
+                stack[reti++] = newSVsv(PL_stack_sp[i - count + 1]);
         }
-
-        if (spill)
-            /* the POP_MULTICALL will trigger the SAVEFREESV above;
-             * keep it alive  it on the temps stack instead */
-            SvREFCNT_inc_simple_void_NN(spill);
-            sv_2mortal((SV*)spill);
-
         POP_MULTICALL;
-
-        if (spill) {
-            int n = (int)AvFILL(spill) + 1;
-            SP = &ST(reti - 1);
-            EXTEND(SP, n);
-            for (i = 0; i < n; i++)
-                *++SP = *av_fetch(spill, i, FALSE);
-            reti += n;
-            av_clear(spill);
-        }
 
         if(ret_gimme == G_ARRAY)
             for(i = 0; i < reti; i++)
-                sv_2mortal(ST(i));
+                sv_2mortal(stack[i]);
     }
     else
 #endif
@@ -1099,11 +1056,11 @@ CODE:
                 arg = sv_mortalcopy(arg);
 
             if(SvUOK(arg))
-                sv_setpvf(keysv, "%" UVuf, SvUV(arg));
+                sv_setpvf(keysv, "%"UVuf, SvUV(arg));
             else if(SvIOK(arg))
-                sv_setpvf(keysv, "%" IVdf, SvIV(arg));
+                sv_setpvf(keysv, "%"IVdf, SvIV(arg));
             else
-                sv_setpvf(keysv, "%" NVgf, SvNV(arg));
+                sv_setpvf(keysv, "%"NVgf, SvNV(arg));
 #ifdef HV_FETCH_EMPTY_HE
             he = (HE*) hv_common(seen, NULL, SvPVX(keysv), SvCUR(keysv), 0, HV_FETCH_LVALUE | HV_FETCH_EMPTY_HE, NULL, 0);
             if (HeVAL(he))
@@ -1372,7 +1329,7 @@ CODE:
     if(SvAMAGIC(sv) && (tempsv = AMG_CALLun(sv, numer))) {
         sv = tempsv;
     }
-#if !PERL_VERSION_GE(5,8,5)
+#if PERL_BCDVERSION < 0x5008005
     if(SvPOK(sv) || SvPOKp(sv)) {
         RETVAL = looks_like_number(sv) ? &PL_sv_yes : &PL_sv_no;
     }

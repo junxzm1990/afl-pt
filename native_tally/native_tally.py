@@ -80,12 +80,12 @@ def process_test_cases(args):
     time_cov_curve = {}
 
     #partition the target queue, return: par_num -- how many partition created
-#    par_num = partition(args.partition_script, args.afl_fuzzing_dir, args.interval) 
+   # par_num = partition(args.partition_script, args.afl_fuzzing_dir, args.interval) 
 
 
 
-#    bar = progressbar.ProgressBar(max_value=par_num)
-#    bar_count = 0
+   # bar = progressbar.ProgressBar(max_value=par_num)
+   # bar_count = 0
     #1 collect edge cov for each partition
     #1.1 for each input run afl-showmap on the target queue
     #2 update the curve_time_cov

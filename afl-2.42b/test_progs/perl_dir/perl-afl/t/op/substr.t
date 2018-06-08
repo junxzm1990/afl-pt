@@ -22,7 +22,7 @@ $SIG{__WARN__} = sub {
      }
 };
 
-plan(392);
+plan(393);
 
 run_tests() unless caller;
 
@@ -709,6 +709,14 @@ is($x, "\x{100}\x{200}\xFFb");
     my $a = substr($text, $pos, $pos);
     is(substr($text,$pos,1), $pos);
 
+}
+
+# [perl #23765]
+{
+    my $a = pack("C", 0xbf);
+    no warnings 'deprecated';
+    substr($a, -1) &= chr(0xfeff);
+    is($a, "\xbf");
 }
 
 # [perl #34976] incorrect caching of utf8 substr length

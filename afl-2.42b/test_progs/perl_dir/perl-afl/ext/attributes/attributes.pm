@@ -1,6 +1,6 @@
 package attributes;
 
-our $VERSION = 0.31;
+our $VERSION = 0.29;
 
 @EXPORT_OK = qw(get reftype);
 @EXPORT = ();
@@ -19,6 +19,9 @@ sub carp {
 }
 
 my %deprecated;
+$deprecated{CODE} = qr/\A-?(locked)\z/;
+$deprecated{ARRAY} = $deprecated{HASH} = $deprecated{SCALAR}
+    = qr/\A-?(unique)\z/;
 
 my %msg = (
     lvalue => 'lvalue attribute applied to already-defined subroutine',
@@ -253,6 +256,12 @@ C<sub foo($$) : prototype(@) {}> is indistinguishable from C<sub foo(@){}>.
 If illegalproto warnings are enabled, the prototype declared inside this
 attribute will be sanity checked at compile time.
 
+=item locked
+
+The "locked" attribute is deprecated, and has no effect in 5.10.0 and later.
+It was used as part of the now-removed "Perl 5.005 threads". It will
+disappear in Perl 5.28, after which its use will be fatal.
+
 =item const
 
 This experimental attribute, introduced in Perl 5.22, only applies to
@@ -270,6 +279,14 @@ The following are the built-in attributes for variables:
 
 Indicates that the referenced variable can be shared across different threads
 when used in conjunction with the L<threads> and L<threads::shared> modules.
+
+=item unique
+
+The "unique" attribute is deprecated, and has no effect in 5.10.0 and later.
+It used to indicate that a single copy of an C<our> variable was to be used by
+all interpreters should the program happen to be running in a
+multi-interpreter environment. It will disappear in 5.28, after which its
+use will be fatal.
 
 =back
 

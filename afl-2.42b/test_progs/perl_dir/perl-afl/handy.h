@@ -11,8 +11,8 @@
 /* IMPORTANT NOTE: Everything whose name begins with an underscore is for
  * internal core Perl use only. */
 
-#ifndef PERL_HANDY_H_ /* Guard against nested #inclusion */
-#define PERL_HANDY_H_
+#ifndef HANDY_H /* Guard against nested #inclusion */
+#define HANDY_H
 
 #if !defined(__STDC__)
 #ifdef NULL
@@ -1402,7 +1402,7 @@ END_EXTERN_C
 #   define isGRAPH_L1(c)     (isPRINT_L1(c) && (! isBLANK_L1(c)))
 #   define isLOWER_L1(c)     (isLOWER_A(c)                                   \
                               || (FITS_IN_8_BITS(c)                          \
-                                  && ((   NATIVE_TO_LATIN1((U8) c) >= 0xDF   \
+                                  && ((NATIVE_TO_LATIN1((U8) c) >= 0xDF      \
                                        && NATIVE_TO_LATIN1((U8) c) != 0xF7)  \
                                        || NATIVE_TO_LATIN1((U8) c) == 0xAA   \
                                        || NATIVE_TO_LATIN1((U8) c) == 0xBA   \
@@ -1412,7 +1412,7 @@ END_EXTERN_C
                                   && NATIVE_TO_LATIN1((U8) c) >= 0xA0))
 #   define isPUNCT_L1(c)     (isPUNCT_A(c)                                   \
                               || (FITS_IN_8_BITS(c)                          \
-                                  && (   NATIVE_TO_LATIN1((U8) c) == 0xA1    \
+                                  && (NATIVE_TO_LATIN1((U8) c) == 0xA1       \
                                       || NATIVE_TO_LATIN1((U8) c) == 0xA7    \
                                       || NATIVE_TO_LATIN1((U8) c) == 0xAB    \
                                       || NATIVE_TO_LATIN1((U8) c) == 0xB6    \
@@ -1421,11 +1421,11 @@ END_EXTERN_C
                                       || NATIVE_TO_LATIN1((U8) c) == 0xBF)))
 #   define isSPACE_L1(c)     (isSPACE_A(c)                                   \
                               || (FITS_IN_8_BITS(c)                          \
-                                  && (   NATIVE_TO_LATIN1((U8) c) == 0x85    \
+                                  && (NATIVE_TO_LATIN1((U8) c) == 0x85       \
                                       || NATIVE_TO_LATIN1((U8) c) == 0xA0)))
 #   define isUPPER_L1(c)     (isUPPER_A(c)                                   \
                               || (FITS_IN_8_BITS(c)                          \
-                                  && (   NATIVE_TO_LATIN1((U8) c) >= 0xC0    \
+                                  && (NATIVE_TO_LATIN1((U8) c) >= 0xC0       \
                                       && NATIVE_TO_LATIN1((U8) c) <= 0xDE    \
                                       && NATIVE_TO_LATIN1((U8) c) != 0xD7)))
 #   define isWORDCHAR_L1(c)  (isIDFIRST_L1(c) || isDIGIT_A(c))
@@ -2409,20 +2409,17 @@ void Perl_mem_log_del_sv(const SV *sv, const char *filename, const int linenumbe
 #define Safefree(d)	safefree(MEM_LOG_FREE((Malloc_t)(d)))
 #endif
 
-#define perl_assert_ptr(p) assert( ((void*)(p)) != 0 )
+#define Move(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) (void)memmove((char*)(d),(const char*)(s), (n) * sizeof(t)))
+#define Copy(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) (void)memcpy((char*)(d),(const char*)(s), (n) * sizeof(t)))
+#define Zero(d,n,t)	(MEM_WRAP_CHECK_(n,t) (void)memzero((char*)(d), (n) * sizeof(t)))
 
-
-#define Move(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), perl_assert_ptr(s), (void)memmove((char*)(d),(const char*)(s), (n) * sizeof(t)))
-#define Copy(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), perl_assert_ptr(s), (void)memcpy((char*)(d),(const char*)(s), (n) * sizeof(t)))
-#define Zero(d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), (void)memzero((char*)(d), (n) * sizeof(t)))
-
-#define MoveD(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), perl_assert_ptr(s), memmove((char*)(d),(const char*)(s), (n) * sizeof(t)))
-#define CopyD(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), perl_assert_ptr(s), memcpy((char*)(d),(const char*)(s), (n) * sizeof(t)))
+#define MoveD(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) memmove((char*)(d),(const char*)(s), (n) * sizeof(t)))
+#define CopyD(s,d,n,t)	(MEM_WRAP_CHECK_(n,t) memcpy((char*)(d),(const char*)(s), (n) * sizeof(t)))
 #ifdef HAS_MEMSET
-#define ZeroD(d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), memzero((char*)(d), (n) * sizeof(t)))
+#define ZeroD(d,n,t)	(MEM_WRAP_CHECK_(n,t) memzero((char*)(d), (n) * sizeof(t)))
 #else
 /* Using bzero(), which returns void.  */
-#define ZeroD(d,n,t)	(MEM_WRAP_CHECK_(n,t) perl_assert_ptr(d), memzero((char*)(d), (n) * sizeof(t)),d)
+#define ZeroD(d,n,t)	(MEM_WRAP_CHECK_(n,t) memzero((char*)(d), (n) * sizeof(t)),d)
 #endif
 
 #define PoisonWith(d,n,t,b)	(MEM_WRAP_CHECK_(n,t) (void)memset((char*)(d), (U8)(b), (n) * sizeof(t)))
@@ -2524,7 +2521,7 @@ void Perl_mem_log_del_sv(const SV *sv, const char *filename, const int linenumbe
 
 #endif
 
-#endif  /* PERL_HANDY_H_ */
+#endif  /* HANDY_H */
 
 /*
  * ex: set ts=8 sts=4 sw=4 et:

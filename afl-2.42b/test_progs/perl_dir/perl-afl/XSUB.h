@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef PERL_XSUB_H_
-#define PERL_XSUB_H_ 1
+#ifndef _INC_PERL_XSUB_H
+#define _INC_PERL_XSUB_H 1
 
 /* first, some documentation for xsubpp-generated items */
 
@@ -119,7 +119,7 @@ is a lexical C<$_> in scope.
  * "STATIC", ie. it exports XSUB symbols. You probably don't want that.
  */
 
-#define XSPROTO(name) void name(pTHX_ CV* cv __attribute__unused__)
+#define XSPROTO(name) void name(pTHX_ CV* cv)
 
 #undef XS
 #undef XS_EXTERNAL
@@ -703,7 +703,7 @@ Rethrows a previously caught exception.  See L<perlguts/"Exception Handling">.
 #  endif  /* NO_XSLOCKS */
 #endif  /* PERL_IMPLICIT_SYS && !PERL_CORE */
 
-#endif /* PERL_XSUB_H_ */		/* include guard */
+#endif /* _INC_PERL_XSUB_H */		/* include guard */
 
 /*
  * ex: set ts=8 sts=4 sw=4 et:
