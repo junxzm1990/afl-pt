@@ -50,6 +50,12 @@ cd build
 make -j64
 ```
 
+Patch testcase - objdump
+```
+cd afl-2.42b/pt_mode
+./patch-bin.sh ../test_progs/binutils-2.29/build/binutils/objdump
+```
+
 Fuzzing objdump
 ```
 cd afl-2.42b/
