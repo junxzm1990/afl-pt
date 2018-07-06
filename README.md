@@ -59,7 +59,7 @@ cd afl-2.42b/pt_mode
 Fuzzing objdump
 ```
 cd afl-2.42b/
-./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/out ./test_progs/binutils-2.29/build/binutils/objdump
+./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/out -- ./test_progs/binutils-2.29/build/binutils/objdump -D @@
 ```
 
 # pt-mode resume fuzzing work:
