@@ -70,13 +70,13 @@ cd afl-2.42b/
 PTrix uses a series of optimization techniques to exploit intel PT for maximum fuzzing efficiencies.
 Including: 
 
-On the PT module side
+On the PT module side,
 1) Direct feedback translation
 2) Parallel packet decoding
 
 On the AFL side,
 1) Switch feedback scheme from counted edge to slice to improve path sensitivity
-2) Use bit-level granularity to record each slice instead of bytes to improve cache locality
+2) Use a bit instead of a byte of memory to record each slice to improve cache locality
 
 Additionally, PTrix supports fork-server mode and mutiplexing PT buffer for different fuzzing instances. 
 For more infomation, please check out the paper PTrix: Efficient Hardware-Assisted Fuzzing for COTS Binary (AsiaCCS'19)
