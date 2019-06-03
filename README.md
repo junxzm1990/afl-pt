@@ -65,6 +65,6 @@ Please refer to [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
 
 ## ToDo List
 
-1.
-2.
+1. Automatically patch the target binary if fuzz in PT mode (maybe create a copy and fuzz the copy instead).
+2. Change power scheduling function of AFL to deprioritize seeds that triggered crashes (avoid traping into local region).
 
