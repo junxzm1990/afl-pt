@@ -55,8 +55,8 @@ Additionally, PTrix supports fork-server mode and multiplexes PT buffer for diff
 
 - [Yaohui Chen](https://github.com/evanmak) 
 - [Jun Xu](https://github.com/junxzm1990)
-- [Zhichuang Sun](https://github.com/sunzc)
 - [Dongliang Mu](https://github.com/mudongliang)
+- [Zhichuang Sun](https://github.com/sunzc)
 - [Yueqi Chen](https://github.com/chenyueqi)
 
 ## Contributing
