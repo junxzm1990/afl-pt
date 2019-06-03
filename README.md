@@ -37,7 +37,7 @@ Build customized ld
 cd afl-2.42b/pt_mode/glibc-2.19
 mkdir build
 cd build
-../configure --prefix=/
+../configure
 make -j64
 ```
 
