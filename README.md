@@ -51,5 +51,20 @@ On the AFL side,
 
 Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances.
 
+## Credits
+
+- [Yaohui Chen](https://github.com/evanmak) 
+- [Jun Xu](https://github.com/junxzm1990)
+- [Zhichuang Sun](https://github.com/sunzc)
+- [Dongliang Mu](https://github.com/mudongliang)
+- [Yueqi Chen](https://github.com/chenyueqi)
+
+## Contributing
+
+Please refer to [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+
 ## ToDo List
+
+1.
+2.
 
