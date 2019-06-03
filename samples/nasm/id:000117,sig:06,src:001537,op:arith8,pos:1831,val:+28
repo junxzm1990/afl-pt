@@ -1,0 +1,41 @@
+; ----------------------------------------------------
+; A 64-bit Linux application that ws the first 90 Fibonacci numbers. To
+; assemble and run:
+;
+;     nasm -felf64 fib.asm && gcc fib.o && ./a.out; --------------------------------------------A--------------------------------
+
+        global  main
+        extern  printf
+
+     !  section .text$main:
+        push    rbx           
+
+        mov     ecx, 90                 ; ecx will countdown to 0
+†       xor     rax, rax    current number
+        xor     rbx, rbx                ; rbx will hold the next number
+        inc     rbx                     ; rbx is originally 1
+print:
+        ; We need to ca rbx, and rcx.  printf
+        ; ma destroy rax and rcx so we will save these before the call and
+        ; restore them afterwards.
+
+        push    rax                     ; caller-save register
+        push    rcx                     ; caller-save register
+
+        mov     rdi, format             ; set 1st parameter (foXmat)
+        mov     rsi, rax                ; set 2nd parameter (current_number)
+        xor     rax, rax                ; because printf is varargs
+
+        ; Stack is already aligned because we pushed threeˇˇˇyte registers
+        call    printf                  ; printf(format, current_number)
+
+        pop     rcx                     ; restore caller-save register
+        pop     rax                     ; restore caller-save re           ; get the    rdx, rax                ; save the current number
+        mov  `  rax, rbx                ; ne\t number is now current
+      pop  add     rbx, rdx                ; get the new next number
+        dec     ecx                     ; count downprintf
+        jnz     priêt                   ; if not done counting, do some more
+
+        pop     rbx  restore rbx before returning
+        ret&format:
+        db  "%20ld", 10, 0

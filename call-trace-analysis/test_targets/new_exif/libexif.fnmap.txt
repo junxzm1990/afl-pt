@@ -1,0 +1,224 @@
+Module Name:../../libexif/exif-ifd.c
+exif_ifd_get_name:1610763620
+Module Name:../../libexif/exif-format.c
+exif_format_get_name:706542023
+exif_format_get_size:1172766946
+Module Name:../../libexif/exif-byte-order.c
+exif_byte_order_get_name:1804696347
+Module Name:../../libexif/exif-log.c
+exif_log_code_get_title:2012501606
+exif_log_code_get_message:841654106
+exif_log_new_mem:1996397855
+exif_log_new:1358720584
+exif_log_ref:1344695208
+exif_log_unref:2104156730
+exif_log_free:183142049
+exif_log_set_func:696482451
+exif_log:2058684806
+exif_logv:928168902
+Module Name:../../libexif/exif-mem.c
+exif_mem_new:93136072
+exif_mem_ref:1606472530
+exif_mem_unref:994420927
+exif_mem_free:1274719501
+exif_mem_alloc:126440056
+exif_mem_realloc:1682242271
+exif_mem_new_default:1324699926
+exif_mem_alloc_func:207458942
+exif_mem_realloc_func:2100811544
+exif_mem_free_func:1827247799
+Module Name:../../libexif/exif-mnote-data.c
+exif_mnote_data_construct:89761973
+exif_mnote_data_ref:381913806
+exif_mnote_data_unref:912728942
+exif_mnote_data_load:923204800
+exif_mnote_data_save:1640824002
+exif_mnote_data_set_byte_order:243963103
+exif_mnote_data_set_offset:1036527914
+exif_mnote_data_count:1202667484
+exif_mnote_data_get_id:1914599149
+exif_mnote_data_get_name:2106959302
+exif_mnote_data_get_title:1476971672
+exif_mnote_data_get_description:54645016
+exif_mnote_data_get_value:1447429929
+exif_mnote_data_log:1900612307
+Module Name:../../libexif/exif-content.c
+exif_content_new:1676269171
+exif_content_new_mem:1574468654
+exif_content_ref:2012088275
+exif_content_unref:221083967
+exif_content_free:65136200
+exif_content_dump:945009696
+exif_content_add_entry:216033605
+exif_content_get_entry:402114429
+exif_content_remove_entry:1313120540
+exif_content_foreach_entry:1152676189
+exif_content_log:1167174184
+exif_content_get_ifd:897607587
+exif_content_fix:2073435713
+Module Name:../../libexif/exif-loader.c
+exif_loader_write_file:1778774449
+exif_loader_write:1369618295
+exif_loader_reset:1307137659
+exif_loader_new:21058180
+exif_loader_new_mem:1388602095
+exif_loader_ref:520777553
+exif_loader_unref:1187988444
+exif_loader_get_data:2047383803
+exif_loader_get_buf:1562848132
+exif_loader_log:2070834553
+Module Name:../../libexif/exif-tag.c
+exif_tag_table_count:309612460
+exif_tag_table_get_tag:1130785807
+exif_tag_table_get_name:2116592938
+exif_tag_get_name_in_ifd:1791223032
+exif_tag_get_title_in_ifd:308330503
+exif_tag_get_description_in_ifd:1059009387
+exif_tag_get_name:133236651
+exif_tag_get_title:19161107
+exif_tag_get_description:622558926
+exif_tag_from_name:17004935
+exif_tag_get_support_level_in_ifd:1477206230
+Module Name:../../libexif/fuji/mnote-fuji-entry.c
+mnote_fuji_entry_get_value:986626439
+Module Name:../../libexif/canon/mnote-canon-tag.c
+mnote_canon_tag_get_name:1054983269
+mnote_canon_tag_get_name_sub:1012891049
+mnote_canon_tag_get_title:1180916601
+mnote_canon_tag_get_title_sub:1542264936
+mnote_canon_tag_get_description:1495705703
+Module Name:../../libexif/canon/exif-mnote-data-canon.c
+exif_mnote_data_canon_identify:1617565877
+exif_mnote_data_canon_new:1284409862
+exif_mnote_data_canon_free:913166425
+exif_mnote_data_canon_set_byte_order:1034803947
+exif_mnote_data_canon_set_offset:884132210
+exif_mnote_data_canon_load:1969943036
+exif_mnote_data_canon_save:920606549
+exif_mnote_data_canon_count:2080892179
+exif_mnote_data_canon_get_id:1557380220
+exif_mnote_data_canon_get_name:1888696193
+exif_mnote_data_canon_get_title:442189466
+exif_mnote_data_canon_get_description:401491864
+exif_mnote_data_canon_get_value:393832376
+Module Name:../../libexif/canon/mnote-canon-entry.c
+mnote_canon_entry_count_values:366591757
+mnote_canon_entry_get_value:1564534722
+canon_search_table_value:531452730
+Module Name:../../libexif/exif-utils.c
+exif_array_set_byte_order:113670242
+exif_get_short:782363103
+exif_set_short:2143175459
+exif_get_sshort:429534508
+exif_set_sshort:124929894
+exif_get_long:2098152054
+exif_set_long:1797415748
+exif_get_rational:1428339049
+exif_set_rational:1929172579
+exif_get_slong:1701196607
+exif_set_slong:914937488
+exif_get_srational:2105074582
+exif_set_srational:598369064
+exif_convert_utf16_to_utf8:1345383693
+Module Name:../../libexif/fuji/mnote-fuji-tag.c
+mnote_fuji_tag_get_name:1100216982
+mnote_fuji_tag_get_title:726761634
+mnote_fuji_tag_get_description:921361314
+Module Name:../../libexif/fuji/exif-mnote-data-fuji.c
+exif_mnote_data_fuji_identify:704587109
+exif_mnote_data_fuji_new:1411111044
+exif_mnote_data_fuji_free:1732192390
+exif_mnote_data_fuji_set_byte_order:1029259747
+exif_mnote_data_fuji_set_offset:1231512485
+exif_mnote_data_fuji_load:473851335
+exif_mnote_data_fuji_save:169126757
+exif_mnote_data_fuji_count:1790812846
+exif_mnote_data_fuji_get_id:1373341001
+exif_mnote_data_fuji_get_name:1903733636
+exif_mnote_data_fuji_get_title:201138648
+exif_mnote_data_fuji_get_description:1675068125
+exif_mnote_data_fuji_get_value:1960853681
+Module Name:../../libexif/exif-entry.c
+exif_entry_new:2017008749
+exif_entry_new_mem:2055120545
+exif_entry_ref:850985362
+exif_entry_unref:1197536778
+exif_entry_free:228150539
+exif_entry_fix:1152104569
+exif_entry_log:1218963092
+exif_entry_dump:111181310
+exif_entry_get_value:845403429
+exif_entry_format_value:1898703542
+exif_entry_initialize:610985646
+Module Name:../../libexif/exif-data.c
+exif_data_get_mnote_data:482050731
+exif_data_new:2005855426
+exif_data_new_mem:1880829731
+exif_data_free:1252869683
+exif_data_set_option:133540471
+exif_data_set_data_type:810340649
+exif_data_new_from_data:969847742
+exif_data_load_data:1951062651
+exif_data_load_data_content:668659119
+exif_data_fix:2053736186
+exif_data_save_data:75353567
+exif_data_save_data_content:1595719287
+exif_data_new_from_file:50128136
+exif_data_ref:956368338
+exif_data_unref:1238890025
+exif_data_dump:1097242364
+exif_data_get_byte_order:973758357
+exif_data_foreach_content:1509487367
+exif_data_set_byte_order:939335110
+exif_data_log:670812463
+exif_data_get_log:2028395924
+exif_data_option_get_name:1074043075
+exif_data_option_get_description:2130240098
+exif_data_unset_option:1212819728
+fix_func:1809195076
+exif_data_get_data_type:1541704967
+exif_data_load_data_thumbnail:473991423
+cmp_func_intel:330589346
+cmp_func_motorola:1159949629
+entry_set_byte_order:326189767
+Module Name:../../libexif/olympus/mnote-olympus-tag.c
+mnote_olympus_tag_get_name:451548930
+mnote_olympus_tag_get_title:1280799381
+mnote_olympus_tag_get_description:1232141080
+Module Name:../../libexif/pentax/mnote-pentax-tag.c
+mnote_pentax_tag_get_name:1060851069
+mnote_pentax_tag_get_title:1549709063
+mnote_pentax_tag_get_description:1493384481
+Module Name:../../libexif/olympus/exif-mnote-data-olympus.c
+exif_mnote_data_olympus_identify:841262049
+exif_mnote_data_olympus_identify_variant:251332150
+exif_mnote_data_olympus_new:1426280040
+exif_mnote_data_olympus_free:638982675
+exif_mnote_data_olympus_set_byte_order:1980683743
+exif_mnote_data_olympus_set_offset:528549784
+exif_mnote_data_olympus_load:1664759619
+exif_mnote_data_olympus_save:1737511645
+exif_mnote_data_olympus_count:1489793654
+exif_mnote_data_olympus_get_id:879375280
+exif_mnote_data_olympus_get_name:1645681634
+exif_mnote_data_olympus_get_title:1492885734
+exif_mnote_data_olympus_get_description:2007984841
+exif_mnote_data_olympus_get_value:1733891528
+Module Name:../../libexif/pentax/mnote-pentax-entry.c
+mnote_pentax_entry_get_value:1527734457
+Module Name:../../libexif/pentax/exif-mnote-data-pentax.c
+exif_mnote_data_pentax_identify:934954430
+exif_mnote_data_pentax_new:877102162
+exif_mnote_data_pentax_free:2117086871
+exif_mnote_data_pentax_set_byte_order:1197247000
+exif_mnote_data_pentax_set_offset:1182933237
+exif_mnote_data_pentax_load:1165650110
+exif_mnote_data_pentax_save:131492126
+exif_mnote_data_pentax_count:1341351190
+exif_mnote_data_pentax_get_id:232344030
+exif_mnote_data_pentax_get_name:297817658
+exif_mnote_data_pentax_get_title:1658483496
+exif_mnote_data_pentax_get_description:998103491
+exif_mnote_data_pentax_get_value:677680177
+Module Name:../../libexif/olympus/mnote-olympus-entry.c
+mnote_olympus_entry_get_value:21668502

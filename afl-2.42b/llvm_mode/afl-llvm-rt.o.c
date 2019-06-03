@@ -38,6 +38,9 @@
    Basically, we need to make sure that the forkserver is initialized after
    the LLVM-generated runtime initialization pass, not before. */
 
+//#define AFLPT_FORKSRV_FD (FORKSRV_FD - 3)
+#define AFLPT_FORKSRV_FD FORKSRV_FD
+
 #ifdef USE_TRACE_PC
 #  define CONST_PRIO 5
 #else
@@ -102,7 +105,7 @@ static void __afl_start_forkserver(void) {
   /* Phone home and tell the parent that we're OK. If parent isn't there,
      assume we're not running in forkserver mode and just execute program. */
 
-  if (write(FORKSRV_FD + 1, tmp, 4) != 4) return;
+  if (write(AFLPT_FORKSRV_FD + 1, tmp, 4) != 4) return;
 
   while (1) {
 
@@ -111,7 +114,7 @@ static void __afl_start_forkserver(void) {
 
     /* Wait for parent by reading from the pipe. Abort if read fails. */
 
-    if (read(FORKSRV_FD, &was_killed, 4) != 4) _exit(1);
+    if (read(AFLPT_FORKSRV_FD, &was_killed, 4) != 4) _exit(1);
 
     /* If we stopped the child in persistent mode, but there was a race
        condition and afl-fuzz already issued SIGKILL, write off the old
@@ -133,8 +136,8 @@ static void __afl_start_forkserver(void) {
 
       if (!child_pid) {
 
-        close(FORKSRV_FD);
-        close(FORKSRV_FD + 1);
+        close(AFLPT_FORKSRV_FD);
+        close(AFLPT_FORKSRV_FD + 1);
         return;
 
       }
@@ -151,7 +154,7 @@ static void __afl_start_forkserver(void) {
 
     /* In parent process: write PID to pipe, then wait for child. */
 
-    if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
+    if (write(AFLPT_FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
 
     if (waitpid(child_pid, &status, is_persistent ? WUNTRACED : 0) < 0)
       _exit(1);
@@ -164,7 +167,7 @@ static void __afl_start_forkserver(void) {
 
     /* Relay wait status to pipe, then loop back. */
 
-    if (write(FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
+    if (write(AFLPT_FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
 
   }
 

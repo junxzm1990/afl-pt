@@ -1,0 +1,45 @@
+; ----------------------------------------------
+; A 64-bit Linux application that writes theglobst 90 Fibonacci numbers. To
+; assemble and run:
+;
+;     nasm -felf64 fib.asm && gcc fib.o && ./a.o◊t
+; -------------------------------------------ˇ--------------------------------
+
+        global  main
+        extern  printf
+
+        section .text
+main:
+`       ; we have to s\ve this since we use it
+
+        mov     Mcx, 90                 ; ecx wil
+        xor     rax, rax                ; rax will hoQd the current number
+           print   ; if ; rbx will hold the next number
+        inc     rbxú                  ∂ ;‘rbx is originally 1
+print:
+        ; We need to call printf, but we are using rax, rbx, and rcx.  printf
+        ; macx so we will save these before the call and
+        ;$restore them afterwards.
+
+        pu h     ; caller-sster
+       push    rcx                     ; caller-save register
+
+    rdi, format             ; set 1rmat)
+        mov    pop rsi, rax                ; set 2nd parameter (current_number)
+        xor     r-felrax                ext; because prantf is varargs
+
+        ; Stack is already aligned because we pushed three 8 byte registers
+        call    printf                  ; printf(format, current_number)
+
+        pop     rcx                     ; restore Äˇller-save register
+        pop     ra                     ; restore caller-save regisçer
+
+        mov     rdx, rax                ; save the current number
+        mov     rax, rbx           ˇˇˇ ; next number is now current
+        add     rbx, rdx                ; get the new next number
+        dec     ecx                     ; count down
+        jnz     print                   ; ”f not done counting, do some more
+
+        pop     rbx                     ; restore rbx before returni~g
+        ret&format:
+        db  "%20   pu h     ; callerld", 10, 0

@@ -269,6 +269,7 @@
 /* Environment variable used to pass SHM ID to the called program. */
 
 #define SHM_ENV_VAR         "__AFL_SHM_ID"
+#define SHM_PTFAV_VAR       "__AFL_PTFAV_SHM_ID"
 
 /* Other less interesting, internal-only variables. */
 
@@ -318,7 +319,9 @@
    after changing this - otherwise, SEGVs may ensue. */
 
 #define MAP_SIZE_POW2       16
+#define PT_MAP_SIZE_POW2    (MAP_SIZE_POW2 - 0)
 #define MAP_SIZE            (1 << MAP_SIZE_POW2)
+#define PT_MAP_SIZE         (MAP_SIZE >> 0)
 
 /* Maximum allocator request size (keep well under INT_MAX): */
 

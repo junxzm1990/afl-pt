@@ -1,0 +1,595 @@
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+f:1914588072
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+test_varargs:1112888922
+Module Name:conftest.c
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+testfunction:911308881
+test2function:301644136
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+test3function:1047989049
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+bar:1747341839
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+possibly_duplicate_function:2118897102
+possibly_dupli_function:1415337113
+main:1993576885
+Module Name:conftest.c
+is_char_signed:1353790955
+main:1993576885
+Module Name:conftest.c
+is_shifting_signed:1738468680
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+nm_test_func:1880002502
+main:1993576885
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+Module Name:conftest.c
+Module Name:conftest.c
+main:1993576885
+Module Name:conftest.c
+main:1993576885
+Module Name:../jaricom.c
+Module Name:../jcapimin.c
+jpeg_CreateCompress:1959649266
+jpeg_destroy_compress:363612175
+jpeg_abort_compress:2110688229
+jpeg_suppress_tables:1486083136
+jpeg_finish_compress:925389920
+jpeg_write_marker:1425375037
+jpeg_write_m_header:186243968
+jpeg_write_m_byte:2129868219
+jpeg_write_tables:167416766
+Module Name:../jcapistd.c
+jpeg_start_compress:758069586
+jpeg_write_scanlines:1038002858
+jpeg_write_raw_data:842522688
+Module Name:../jcarith.c
+jinit_arith_encoder:833735775
+start_pass:1467121305
+finish_pass:939507833
+encode_mcu_DC_first:1162717244
+encode_mcu_AC_first:1095014850
+encode_mcu_DC_refine:1335780325
+encode_mcu_AC_refine:1148739188
+encode_mcu:443676928
+arith_encode:427270036
+Module Name:../jccoefct.c
+jinit_c_coef_controller:1142910973
+start_pass_coef:756170611
+compress_data:87297889
+compress_first_pass:1172471453
+compress_output:1622951845
+Module Name:../jccolor.c
+jinit_color_converter:1015438614
+null_method:512343524
+grayscale_convert:1611999458
+rgb_ycc_start:453568065
+rgb_gray_convert:435968893
+rgb_convert:1323883857
+rgb_rgb1_convert:273668542
+rgb_ycc_convert:1299057002
+null_convert:918196313
+cmyk_ycck_convert:1148893039
+Module Name:../jcdctmgr.c
+jinit_forward_dct:689883374
+start_pass_fdctmgr:609457436
+forward_DCT:1612018186
+forward_DCT_float:844484431
+Module Name:../jchuff.c
+jinit_huff_encoder:1709658351
+start_pass_huff:1545428324
+finish_pass_gather:869376714
+finish_pass_huff:1137471335
+encode_mcu_DC_first:1300254978
+encode_mcu_AC_first:2060104460
+encode_mcu_DC_refine:266548167
+encode_mcu_AC_refine:1490491815
+encode_mcu_gather:1530981418
+encode_mcu_huff:985719413
+jpeg_make_c_derived_tbl:1069303890
+jpeg_gen_optimal_table:238423144
+emit_bits_e:2130556528
+dump_buffer_e:181335755
+flush_bits_e:1446255356
+emit_restart_e:292847995
+Module Name:../jcinit.c
+jinit_compress_master:1959873572
+Module Name:../jcmainct.c
+jinit_c_main_controller:470284408
+start_pass_main:1643197697
+process_data_simple_main:1204561445
+Module Name:../jcmarker.c
+jinit_marker_writer:1875984184
+write_file_header:1084417384
+write_frame_header:1220532735
+write_scan_header:1338812323
+write_file_trailer:275624896
+write_tables_only:1127652038
+write_marker_header:925413389
+write_marker_byte:1606710454
+emit_dqt:159366195
+emit_sof:398522321
+emit_dht:1925245311
+Module Name:../jcmaster.c
+jpeg_calc_jpeg_dimensions:1638769603
+jinit_c_master_control:481631348
+prepare_for_pass:454450809
+pass_startup:1818179761
+finish_pass_master:147851379
+select_scan_parameters:330611820
+per_scan_setup:968033414
+Module Name:../jcomapi.c
+jpeg_abort:559357099
+jpeg_destroy:664782654
+jpeg_alloc_quant_table:2025292826
+jpeg_alloc_huff_table:1467748970
+Module Name:../jcparam.c
+jpeg_add_quant_table:1984019158
+jpeg_default_qtables:1904309765
+jpeg_set_linear_quality:712604238
+jpeg_quality_scaling:1114196318
+jpeg_set_quality:348186040
+jpeg_set_defaults:214624680
+jpeg_default_colorspace:1069199036
+jpeg_set_colorspace:41180523
+jpeg_simple_progression:1250498373
+Module Name:../jcprepct.c
+jinit_c_prep_controller:474366981
+start_pass_prep:728209590
+pre_process_context:877639677
+pre_process_data:1597480480
+Module Name:../jcsample.c
+jinit_downsampler:773337135
+start_pass_downsample:134548405
+sep_downsample:975661237
+fullsize_smooth_downsample:401519323
+fullsize_downsample:1127098315
+h2v1_downsample:2024681233
+h2v2_smooth_downsample:1237453003
+h2v2_downsample:583138862
+int_downsample:1389385439
+Module Name:../jctrans.c
+jpeg_write_coefficients:1120321548
+jpeg_copy_critical_parameters:2132631129
+start_pass_coef:342087907
+compress_output:1330900949
+Module Name:../jdapimin.c
+jpeg_CreateDecompress:1421419052
+jpeg_destroy_decompress:2072991211
+jpeg_abort_decompress:1040515797
+jpeg_read_header:2052769472
+jpeg_consume_input:605422993
+jpeg_input_complete:1792336541
+jpeg_has_multiple_scans:1902582773
+jpeg_finish_decompress:488661589
+Module Name:../jdapistd.c
+jpeg_start_decompress:348951430
+jpeg_read_scanlines:1197233188
+jpeg_read_raw_data:1780747186
+jpeg_start_output:2010549961
+jpeg_finish_output:1941033679
+Module Name:../jdarith.c
+jinit_arith_decoder:1196515938
+start_pass:945895240
+finish_pass:45778386
+decode_mcu_DC_first:1529039672
+decode_mcu_AC_first:1778610781
+decode_mcu_DC_refine:39090053
+decode_mcu_AC_refine:582213541
+decode_mcu:1407200081
+arith_decode:1815333093
+Module Name:../jdatadst.c
+jpeg_stdio_dest:118705325
+init_destination:974047231
+empty_output_buffer:1928945650
+term_destination:10086052
+jpeg_mem_dest:149155100
+init_mem_destination:1092892052
+empty_mem_output_buffer:1696705564
+term_mem_destination:1356681396
+Module Name:../jdatasrc.c
+jpeg_stdio_src:1294996823
+init_source:1880536514
+fill_input_buffer:2066370912
+skip_input_data:30180751
+term_source:990928189
+jpeg_mem_src:1527362883
+init_mem_source:655196063
+fill_mem_input_buffer:1568003682
+Module Name:../jdcoefct.c
+jinit_d_coef_controller:769993100
+start_input_pass:799976498
+start_output_pass:447480227
+consume_data:1800588569
+decompress_data:133384868
+dummy_consume_data:1422912113
+decompress_onepass:1314219415
+decompress_smooth_data:1894981790
+Module Name:../jdcolor.c
+jinit_color_deconverter:891270009
+start_pass_dcolor:1520506001
+grayscale_convert:80350360
+rgb_gray_convert:1626299545
+rgb1_gray_convert:986791973
+gray_rgb_convert:48513064
+ycc_rgb_convert:1733681248
+rgb_convert:1422848390
+rgb1_rgb_convert:358722120
+ycck_cmyk_convert:1617213291
+null_convert:685536220
+Module Name:../jddctmgr.c
+jinit_inverse_dct:444151217
+start_pass:1276849931
+Module Name:../jdhuff.c
+jinit_huff_decoder:672039358
+start_pass_huff_decoder:1656987663
+finish_pass_huff:328369760
+decode_mcu_DC_first:2073280387
+decode_mcu_AC_first:1253406682
+decode_mcu_DC_refine:1998925518
+decode_mcu_AC_refine:456361286
+jpeg_make_d_derived_tbl:1523203713
+decode_mcu_sub:899788520
+decode_mcu:1651201853
+jpeg_fill_bit_buffer:751928688
+jpeg_huff_decode:1734905286
+Module Name:../jdinput.c
+jpeg_core_output_dimensions:691062433
+jinit_input_controller:1551686114
+consume_markers:684354659
+reset_input_controller:1884023500
+start_input_pass:736092593
+finish_input_pass:524665520
+Module Name:../jdmainct.c
+jinit_d_main_controller:1655556604
+start_pass_main:1846949818
+process_data_context_main:736988983
+process_data_simple_main:2058450728
+process_data_crank_post:1640537346
+Module Name:../jdmarker.c
+jpeg_resync_to_restart:1710369221
+next_marker:996605286
+jinit_marker_reader:777307870
+reset_marker_reader:702527686
+read_markers:2145067407
+read_restart_marker:573026715
+skip_variable:1354086497
+get_interesting_appn:1697261066
+jpeg_save_markers:496396028
+save_marker:1787529391
+jpeg_set_marker_processor:1692339313
+get_sof:1996078075
+examine_app0:119296324
+Module Name:../jdmaster.c
+jpeg_calc_output_dimensions:556717762
+use_merged_upsample:2123171361
+jpeg_new_colormap:668469722
+jinit_master_decompress:347854985
+prepare_for_output_pass:63398536
+finish_output_pass:1080556770
+Module Name:../jdmerge.c
+jinit_merged_upsampler:1566651497
+start_pass_merged_upsample:10764152
+merged_2v_upsample:1072125822
+h2v2_merged_upsample:1749459065
+merged_1v_upsample:2129040484
+h2v1_merged_upsample:255589403
+Module Name:../jdpostct.c
+jinit_d_post_controller:941252307
+start_pass_dpost:993962726
+post_process_1pass:1972588594
+post_process_prepass:1844087506
+post_process_2pass:450941104
+Module Name:../jdsample.c
+jinit_upsampler:992547275
+start_pass_upsample:1822672091
+sep_upsample:642435411
+noop_upsample:7776704
+fullsize_upsample:218896252
+h2v1_upsample:1737091354
+h2v2_upsample:77644867
+int_upsample:1219516794
+Module Name:../jdtrans.c
+jpeg_read_coefficients:1014598173
+Module Name:../jerror.c
+jpeg_std_error:150921307
+error_exit:850800221
+emit_message:1865249323
+output_message:1733145967
+format_message:1596753073
+reset_error_mgr:1061737928
+Module Name:../jfdctflt.c
+jpeg_fdct_float:317963973
+Module Name:../jfdctfst.c
+jpeg_fdct_ifast:1997399463
+Module Name:../jfdctint.c
+jpeg_fdct_islow:2022350820
+jpeg_fdct_7x7:1440773022
+jpeg_fdct_6x6:1023207065
+jpeg_fdct_5x5:1353902862
+jpeg_fdct_4x4:869241382
+jpeg_fdct_3x3:2069848073
+jpeg_fdct_2x2:76533497
+jpeg_fdct_1x1:1514143486
+jpeg_fdct_9x9:1159919013
+jpeg_fdct_10x10:834472542
+jpeg_fdct_11x11:864577845
+jpeg_fdct_12x12:1083467197
+jpeg_fdct_13x13:792686108
+jpeg_fdct_14x14:860320653
+jpeg_fdct_15x15:375007075
+jpeg_fdct_16x16:298149735
+jpeg_fdct_16x8:66451656
+jpeg_fdct_14x7:85603537
+jpeg_fdct_12x6:312861831
+jpeg_fdct_10x5:1495308246
+jpeg_fdct_8x4:1350906752
+jpeg_fdct_6x3:1485153612
+jpeg_fdct_4x2:104528202
+jpeg_fdct_2x1:1732040499
+jpeg_fdct_8x16:1156111156
+jpeg_fdct_7x14:141806214
+jpeg_fdct_6x12:1727002342
+jpeg_fdct_5x10:300446589
+jpeg_fdct_4x8:633520608
+jpeg_fdct_3x6:1423375749
+jpeg_fdct_2x4:1746690041
+jpeg_fdct_1x2:1549914751
+Module Name:../jidctflt.c
+jpeg_idct_float:33237422
+Module Name:../jidctfst.c
+jpeg_idct_ifast:737961170
+Module Name:../jidctint.c
+jpeg_idct_islow:1816713565
+jpeg_idct_7x7:1383245461
+jpeg_idct_6x6:690428814
+jpeg_idct_5x5:1053776603
+jpeg_idct_4x4:28602169
+jpeg_idct_3x3:139027853
+jpeg_idct_2x2:2047032394
+jpeg_idct_1x1:2109828463
+jpeg_idct_9x9:2055525610
+jpeg_idct_10x10:767570163
+jpeg_idct_11x11:1243823665
+jpeg_idct_12x12:1305943444
+jpeg_idct_13x13:781278494
+jpeg_idct_14x14:958861224
+jpeg_idct_15x15:65824050
+jpeg_idct_16x16:400769184
+jpeg_idct_16x8:1310067538
+jpeg_idct_14x7:751168052
+jpeg_idct_12x6:1037296105
+jpeg_idct_10x5:628762924
+jpeg_idct_8x4:1646540579
+jpeg_idct_6x3:1793467746
+jpeg_idct_4x2:1885741037
+jpeg_idct_2x1:1856013064
+jpeg_idct_8x16:801979514
+jpeg_idct_7x14:484627808
+jpeg_idct_6x12:125020263
+jpeg_idct_5x10:654300933
+jpeg_idct_4x8:2008340482
+jpeg_idct_3x6:957149391
+jpeg_idct_2x4:806749000
+jpeg_idct_1x2:1584336007
+Module Name:../jquant1.c
+jinit_1pass_quantizer:1546104976
+start_pass_1_quant:245921276
+finish_pass_1_quant:1271777822
+new_color_map_1_quant:2049384315
+create_colorindex:1145391203
+color_quantize3:1846318546
+color_quantize:1943920692
+quantize3_ord_dither:1871082508
+quantize_ord_dither:140406493
+quantize_fs_dither:1203664879
+Module Name:../jquant2.c
+jinit_2pass_quantizer:358813847
+start_pass_2_quant:59744887
+new_color_map_2_quant:507910405
+init_error_limit:436492138
+prescan_quantize:400322536
+finish_pass1:1642453505
+pass2_fs_dither:1078484484
+pass2_no_dither:697828940
+finish_pass2:1824307730
+update_box:833467927
+fill_inverse_cmap:1729044583
+Module Name:../jutils.c
+jdiv_round_up:1568302980
+jround_up:26860833
+jcopy_sample_rows:231132734
+jcopy_block_row:1747709896
+Module Name:../jmemmgr.c
+jinit_memory_mgr:2028824975
+alloc_small:1060704383
+alloc_large:791354060
+alloc_sarray:1255631246
+alloc_barray:1568795174
+request_virt_sarray:238469382
+request_virt_barray:1090569042
+realize_virt_arrays:339472683
+access_virt_sarray:1228585683
+access_virt_barray:1321490123
+free_pool:1760414522
+self_destruct:130366931
+Module Name:../jmemnobs.c
+jpeg_get_small:266774380
+jpeg_free_small:1516381756
+jpeg_get_large:1540197828
+jpeg_free_large:1866772676
+jpeg_mem_available:1001997367
+jpeg_open_backing_store:128393295
+jpeg_mem_init:1694403110
+jpeg_mem_term:885583995
+Module Name:../cjpeg.c
+main:381308468
+parse_switches:1943700353
+usage:2073530628
+Module Name:../rdppm.c
+jinit_read_ppm:514934016
+start_input_ppm:142833867
+finish_input_ppm:1836001526
+read_pbm_integer:1179905195
+get_text_gray_row:2056715580
+get_text_rgb_row:1354209737
+get_word_gray_row:978409468
+get_raw_row:1303115748
+get_scaled_gray_row:2135462931
+get_word_rgb_row:1574326669
+get_scaled_rgb_row:1946521045
+Module Name:../rdgif.c
+jinit_read_gif:1236366804
+Module Name:../rdtarga.c
+jinit_read_targa:1218135239
+start_input_tga:1993031370
+finish_input_tga:1290739121
+read_rle_pixel:252413119
+read_non_rle_pixel:1891291148
+get_8bit_row:1465696129
+get_16bit_row:975401298
+get_24bit_row:970438056
+get_8bit_gray_row:1080250076
+preload_image:1816961932
+get_memory_row:1274006387
+Module Name:../rdrle.c
+Module Name:../rdbmp.c
+jinit_read_bmp:875591081
+start_input_bmp:656470127
+finish_input_bmp:531335145
+preload_image:1341199620
+get_8bit_row:2124547222
+get_24bit_row:1485450200
+get_32bit_row:1660932116
+Module Name:../rdswitch.c
+read_quant_tables:450720600
+read_scan_script:1970214422
+read_scan_integer:1522633200
+set_quality_ratings:1286314709
+set_quant_slots:1330341303
+set_sample_factors:870720826
+Module Name:../cdjpeg.c
+keymatch:1321103769
+read_stdin:963049549
+write_stdout:1599293021
+Module Name:../djpeg.c
+main:444204285
+print_text_marker:508524735
+parse_switches:251255953
+usage:854890167
+Module Name:../wrppm.c
+jinit_write_ppm:861911660
+start_output_ppm:432842433
+finish_output_ppm:864481703
+copy_pixel_rows:1900573297
+put_demapped_gray:1858213210
+put_demapped_rgb:1800272553
+put_pixel_rows:1114138547
+Module Name:../wrgif.c
+jinit_write_gif:258683555
+start_output_gif:887217784
+put_pixel_rows:347775007
+finish_output_gif:1382596362
+emit_header:652771443
+Module Name:../wrtarga.c
+jinit_write_targa:1970863564
+start_output_tga:947976186
+finish_output_tga:562108518
+put_demapped_gray:103378304
+put_gray_rows:914398428
+put_pixel_rows:526891593
+Module Name:../wrrle.c
+Module Name:../wrbmp.c
+jinit_write_bmp:795990120
+start_output_bmp:1800361927
+finish_output_bmp:1403935425
+put_gray_rows:491219818
+put_pixel_rows:1906469449
+write_colormap:206088461
+Module Name:../rdcolmap.c
+read_color_map:1735344504
+read_pbm_integer:2097267984
+Module Name:../jpegtran.c
+main:1189310019
+parse_switches:1266479108
+usage:433350229
+Module Name:../transupp.c
+jtransform_parse_crop_spec:1296748002
+jtransform_request_workspace:1484468524
+jtransform_perfect_transform:1955390732
+jtransform_adjust_parameters:342517101
+jtransform_execute_transform:1034673013
+jcopy_markers_setup:950202793
+jcopy_markers_execute:2016034485
+Module Name:../rdjpgcom.c
+main:335878616
+usage:654901457
+scan_JPEG_header:280665387
+skip_variable:1805590697
+process_COM:1939621692
+read_2_bytes:1073244888
+Module Name:../wrjpgcom.c
+main:1981709937
+usage:2140581359
+write_marker:1591677312
+copy_rest_of_file:1878443938
+read_2_bytes:1857928487

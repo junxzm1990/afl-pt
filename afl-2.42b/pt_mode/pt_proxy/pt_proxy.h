@@ -20,8 +20,8 @@ enum msg_type{
 
 void proxy_recv_msg();
 void proxy_send_msg(char *msg);
-inline void
-pt_parse_packet(char *buffer, size_t size, int fd0, int fd1);
+//inline void
+//pt_parse_packet(char *buffer, size_t size, int fd0, int fd1);
 
 
 

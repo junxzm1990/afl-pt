@@ -56,6 +56,8 @@
 #include <sys/ioctl.h>
 #include <sys/file.h>
 
+/* #define AFL_FIX_ONE_INPUT */
+
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined (__OpenBSD__)
 #  include <sys/sysctl.h>
 #endif /* __APPLE__ || __FreeBSD__ || __OpenBSD__ */
@@ -75,6 +77,7 @@
 #else
 #  define EXP_ST static
 #endif /* ^AFL_LIB */
+
 
 /* Lots of globals, but mostly for the status UI and other things where it
    really makes no sense to haul them around as function parameters. */
@@ -392,6 +395,9 @@ static void shuffle_ptrs(void** ptrs, u32 cnt) {
 /* Build a list of processes bound to specific cores. Returns -1 if nothing
    can be found. Assumes an upper bound of 4k CPUs. */
 
+/* NOTE: because of the per-core timer, core-binding is crutial here. so if
+   core binding fails. we do not proceed, as it might cause system crashes 
+*/
 static void bind_to_free_cpu(void) {
 
   DIR* d;
@@ -405,6 +411,8 @@ static void bind_to_free_cpu(void) {
 
   if (getenv("AFL_NO_AFFINITY")) {
 
+    if (pt_mode)
+      PFATAL("Core binding is required for PT mode (AFL_NO_AFFINITY set).");
     WARNF("Not binding to a CPU core (AFL_NO_AFFINITY set).");
     return;
 
@@ -426,49 +434,69 @@ static void bind_to_free_cpu(void) {
 
   usleep(R(1000) * 250);
 
-  /* Scan all /proc/<pid>/status entries, checking for Cpus_allowed_list.
+  /* Scan all /proc/<pid>/tasks/<pid>/status entries, checking for Cpus_allowed_list.
      Flag all processes bound to a specific CPU using cpu_used[]. This will
      fail for some exotic binding setups, but is likely good enough in almost
      all real-world use cases. */
 
   while ((de = readdir(d))) {
 
-    u8* fn;
-    FILE* f;
-    u8 tmp[MAX_LINE];
-    u8 has_vmsize = 0;
+    DIR *d2;
+    struct dirent *de2;
+    u8 *fn2;
 
     if (!isdigit(de->d_name[0])) continue;
+    fn2 = alloc_printf("/proc/%s/task/", de->d_name);
+    d2 = opendir((const char * )fn2);
+    if (!d2) {
 
-    fn = alloc_printf("/proc/%s/status", de->d_name);
-
-    if (!(f = fopen(fn, "r"))) {
-      ck_free(fn);
+      WARNF("Unable to access %s - can't scan for free CPU cores.", fn2);
       continue;
+
     }
 
-    while (fgets(tmp, MAX_LINE, f)) {
+    while ((de2 = readdir(d2))) {
 
-      u32 hval;
+      u8* fn;
+      FILE* f;
+      u8 tmp[MAX_LINE];
+      u8 has_vmsize = 0;
 
-      /* Processes without VmSize are probably kernel tasks. */
+      if (!isdigit(de2->d_name[0])) continue;
 
-      if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+      fn = alloc_printf("/proc/%s/task/%s/status", de->d_name, de2->d_name);
 
-      if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
-          !strchr(tmp, '-') && !strchr(tmp, ',') &&
-          sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
-          has_vmsize) {
+      if (!(f = fopen(fn, "r"))) {
+        ck_free(fn);
+        continue;
+      }
 
-        cpu_used[hval] = 1;
-        break;
+      while (fgets(tmp, MAX_LINE, f)) {
+
+        u32 hval;
+
+        /* Processes without VmSize are probably kernel tasks. */
+
+        if (!strncmp(tmp, "VmSize:\t", 8)) has_vmsize = 1;
+
+        if (!strncmp(tmp, "Cpus_allowed_list:\t", 19) &&
+            !strchr(tmp, '-') && !strchr(tmp, ',') &&
+            sscanf(tmp + 19, "%u", &hval) == 1 && hval < sizeof(cpu_used) &&
+            has_vmsize) {
+
+          cpu_used[hval] = 1;
+          break;
+
+        }
 
       }
 
+      ck_free(fn);
+      fclose(f);
     }
 
-    ck_free(fn);
-    fclose(f);
+    ck_free(fn2);
+    closedir(d2);
 
   }
 
@@ -893,7 +921,9 @@ static inline u8 has_new_bits(u8* virgin_map) {
 
   u8   ret = 0;
 
-  while (i--) {
+
+
+  while(i--) {
 
     /* Optimize for (*current & *virgin) == 0 - i.e., no bits in current bitmap
        that have not been already cleared from the virgin map - since this will
@@ -935,6 +965,9 @@ static inline u8 has_new_bits(u8* virgin_map) {
     virgin++;
 
   }
+
+
+
 
   if (ret && virgin_map == virgin_bits) bitmap_changed = 1;
 
@@ -1080,6 +1113,8 @@ static void simplify_trace(u64* mem) {
 
 static void simplify_trace(u32* mem) {
 
+  /*we don't need to simplify trace_bits when in pt_mode*/
+
   u32 i = MAP_SIZE >> 2;
 
   while (i--) {
@@ -1143,6 +1178,7 @@ EXP_ST void init_count_class16(void) {
 
 static inline void classify_counts(u64* mem) {
 
+/*we don't need to classify counts when in pt_mode*/
   u32 i = MAP_SIZE >> 3;
 
   while (i--) {
@@ -1208,6 +1244,7 @@ static void remove_shm(void) {
    new paths. */
 
 static void minimize_bits(u8* dst, u8* src) {
+/*we don't need to minimize bits when in pt_mode*/
 
   u32 i = 0;
 
@@ -1234,44 +1271,87 @@ static void minimize_bits(u8* dst, u8* src) {
 static void update_bitmap_score(struct queue_entry* q) {
 
   u32 i;
-  u64 fav_factor = q->exec_us * q->len;
+  u64 fav_factor;
 
   /* For every byte set in trace_bits[], see if there is a previous winner,
      and how it compares to us. */
 
-  for (i = 0; i < MAP_SIZE; i++)
+  if (pt_mode){
+      /*PT mode*/
+      fav_factor = (q->exec_us *q->exec_us *q->exec_us) * q->len;
 
-    if (trace_bits[i]) {
+      for (i = 0; i < MAP_SIZE; i++){
+          if (trace_bits[i]) {//optimization
 
-       if (top_rated[i]) {
+            if ((trace_bits[i]) && top_rated[i]) {
 
-         /* Faster-executing or smaller test cases are favored. */
+              /* Faster-executing or smaller test cases are favored. */
+              if (fav_factor > (top_rated[i]->exec_us * top_rated[i]->exec_us *
+                                top_rated[i]->exec_us) * top_rated[i]->len) continue;
 
-         if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+              /* Looks like we're going to win. Decrease ref count for the
+                 previous winner, discard its trace_bits[] if necessary. */
 
-         /* Looks like we're going to win. Decrease ref count for the
-            previous winner, discard its trace_bits[] if necessary. */
+              if (!--top_rated[i]->tc_ref) {
+                ck_free(top_rated[i]->trace_mini);
+                top_rated[i]->trace_mini = 0;
+              }
+            }
 
-         if (!--top_rated[i]->tc_ref) {
-           ck_free(top_rated[i]->trace_mini);
-           top_rated[i]->trace_mini = 0;
-         }
+            /* Insert ourselves as the new winner. */
 
-       }
+            top_rated[i] = q;
+            q->tc_ref++;
 
-       /* Insert ourselves as the new winner. */
+            if (!q->trace_mini) {
+              q->trace_mini = ck_alloc(MAP_SIZE >> 3);
+              minimize_bits(q->trace_mini, trace_bits);
+            }
 
-       top_rated[i] = q;
-       q->tc_ref++;
+            score_changed = 1;
 
-       if (!q->trace_mini) {
-         q->trace_mini = ck_alloc(MAP_SIZE >> 3);
-         minimize_bits(q->trace_mini, trace_bits);
-       }
+          }
+      }
+  }else{
 
-       score_changed = 1;
+      /*Normal mode*/
+      fav_factor = q->exec_us * q->len;
 
-     }
+      for (i = 0; i < MAP_SIZE; i++){
+
+          if (trace_bits[i]) {
+
+              if (top_rated[i]) {
+
+                  /* Faster-executing or smaller test cases are favored. */
+
+                  if (fav_factor > top_rated[i]->exec_us * top_rated[i]->len) continue;
+
+                  /* Looks like we're going to win. Decrease ref count for the
+                     previous winner, discard its trace_bits[] if necessary. */
+
+                  if (!--top_rated[i]->tc_ref) {
+                      ck_free(top_rated[i]->trace_mini);
+                      top_rated[i]->trace_mini = 0;
+                  }
+
+              }
+
+              /* Insert ourselves as the new winner. */
+
+              top_rated[i] = q;
+              q->tc_ref++;
+
+              if (!q->trace_mini) {
+                  q->trace_mini = ck_alloc(MAP_SIZE >> 3);
+                  minimize_bits(q->trace_mini, trace_bits);
+              }
+
+              score_changed = 1;
+
+          }
+      } 
+  }
 
 }
 
@@ -2423,11 +2503,17 @@ static u8 run_target(char** argv, u32 timeout) {
 
   tb4 = *(u32*)trace_bits;
 
+  if (!pt_mode){
+      /* In pt_mode the path is already encoded in the touched tracebit pattern
+         so, no need to waste time on classifying tracebits
+      */
 #ifdef __x86_64__
-  classify_counts((u64*)trace_bits);
+      classify_counts((u64*)trace_bits);
 #else
-  classify_counts((u32*)trace_bits);
+      classify_counts((u32*)trace_bits);
 #endif /* ^__x86_64__ */
+      
+  }
 
   prev_timed_out = child_timed_out;
 
@@ -2593,6 +2679,8 @@ static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
 
         for (i = 0; i < MAP_SIZE; i++) {
 
+          /* TODO: does this matter for PT mode, which uses bit grained shm map? */
+          /* Here we use some overapproximation for now*/
           if (!var_bytes[i] && first_trace[i] != trace_bits[i]) {
 
             var_bytes[i] = 1;
@@ -3178,11 +3266,13 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
 
       if (!dumb_mode) {
 
+        if (!pt_mode){
 #ifdef __x86_64__
-        simplify_trace((u64*)trace_bits);
+            simplify_trace((u64*)trace_bits);
 #else
-        simplify_trace((u32*)trace_bits);
+            simplify_trace((u32*)trace_bits);
 #endif /* ^__x86_64__ */
+        }
 
         if (!has_new_bits(virgin_tmout)) return keeping;
 
@@ -3234,12 +3324,13 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
 
       if (!dumb_mode) {
 
+        if (!pt_mode){
 #ifdef __x86_64__
-        simplify_trace((u64*)trace_bits);
+            simplify_trace((u64*)trace_bits);
 #else
-        simplify_trace((u32*)trace_bits);
+            simplify_trace((u32*)trace_bits);
 #endif /* ^__x86_64__ */
-
+        }
         if (!has_new_bits(virgin_crash)) return keeping;
 
       }
@@ -4041,8 +4132,13 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
-       DI(queued_paths));
+  if (pt_mode)
+      SAYF(bSTG bV bSTOP "  total slices : " cRST "%-5s " bSTG bV "\n",
+           DI(queued_paths));
+  else
+      SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
+           DI(queued_paths));
+
 
   /* Highlight crashes in red if found, denote going over the KEEP_UNIQUE_CRASH
      limit with a '+' appended to the count. */
@@ -4675,6 +4771,7 @@ static u32 calculate_score(struct queue_entry* q) {
   else if (q->exec_us * 3 < avg_exec_us) perf_score = 200;
   else if (q->exec_us * 2 < avg_exec_us) perf_score = 150;
 
+
   /* Adjust score based on bitmap size. The working theory is that better
      coverage translates to better targets. Multiplier from 0.25x to 3x. */
 
@@ -5065,6 +5162,11 @@ static u8 fuzz_one(char** argv) {
 
   doing_det = 1;
 
+#ifdef AFL_FIX_ONE_INPUT
+  //ptmode debug
+  common_fuzz_stuff(argv, out_buf, len);
+  return 1;
+#endif
   /*********************************************
    * SIMPLE BITFLIP (+dictionary construction) *
    *********************************************/
@@ -5182,9 +5284,6 @@ static u8 fuzz_one(char** argv) {
   for (stage_cur = 0; stage_cur < stage_max; stage_cur++) {
 
     stage_cur_byte = stage_cur >> 3;
-    //ptmode debug
-    /* common_fuzz_stuff(argv, out_buf, len); */
-    /* continue; */
 
     FLIP_BIT(out_buf, stage_cur);
     FLIP_BIT(out_buf, stage_cur + 1);
@@ -7032,6 +7131,7 @@ static void usage(u8* argv0) {
        "  -t msec       - timeout for each run (auto-scaled, 50-%u ms)\n"
        "  -m megs       - memory limit for child process (%u MB)\n"
        "  -Q            - use binary-only instrumentation (QEMU mode)\n\n"     
+       "  -P            - use binary-only fast hardware tracing (PT mode)\n\n"     
  
        "Fuzzing behavior settings:\n\n"
 
@@ -7581,7 +7681,7 @@ static char** get_pt_proxy_argv(u8* own_loc, char** argv, int argc) {
 
   new_argv[1] = target_path;
 
-  /* Now we need to actually find the QEMU binary to put in argv[0]. */
+  /* Now we need to actually find the PT_PROXY binary to put in argv[0]. */
 
   tmp = getenv("AFL_PATH");
 
@@ -7942,6 +8042,7 @@ int main(int argc, char** argv) {
 
     }
 
+
   if (optind == argc || !in_dir || !out_dir) usage(argv[0]);
 
   setup_signal_handlers();
@@ -8102,8 +8203,10 @@ int main(int argc, char** argv) {
     if (stop_soon) break;
 
     //ptmode debug
+#ifndef AFL_FIX_ONE_INPUT
     queue_cur = queue_cur->next;
     current_entry++;
+#endif
 
   }
 

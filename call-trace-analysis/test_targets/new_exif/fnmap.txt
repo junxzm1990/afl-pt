@@ -1,0 +1,19 @@
+Module Name:../../libjpeg/jpeg-marker.c
+jpeg_marker_get_name:1466919775
+jpeg_marker_get_description:245585211
+Module Name:../../libjpeg/jpeg-data.c
+jpeg_data_new:1614995864
+jpeg_data_append_section:562371560
+jpeg_data_save_file:624904295
+jpeg_data_save_data:659186402
+jpeg_data_new_from_data:342549444
+jpeg_data_load_data:412464137
+jpeg_data_new_from_file:1748316846
+jpeg_data_load_file:643600136
+jpeg_data_ref:1028843831
+jpeg_data_unref:869837104
+jpeg_data_free:1992903411
+jpeg_data_dump:1191606409
+jpeg_data_get_exif_data:1584472340
+jpeg_data_set_exif_data:648934075
+jpeg_data_log:1850553799
