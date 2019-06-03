@@ -11,6 +11,8 @@ git clone https://github.com/junxzm1990/afl-pt
 cd afl-pt
 ```
 
+We developed [a installation script](../tools/install-beta.sh) to automatically deploy Ptrix.
+
 ## Build PT Module
 
 ```
@@ -81,4 +83,3 @@ cd ../../
 cd afl-2.42b/
 ./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/cxxfilt_out -- ./test_progs/binutils-2.29/build/binutils/cxxfilt
 ```
-

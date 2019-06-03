@@ -50,3 +50,6 @@ On the AFL side,
 2. Use a bit instead of a byte of memory to record each slice to improve cache locality
 
 Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances.
+
+## ToDo List
+
