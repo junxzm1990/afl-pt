@@ -1,26 +1,26 @@
 #!/bin/bash
 
 pushd pt
-make
+make -j$(nproc)
 # require sudo privilege to insert PT module
 ./reinstall_ptmod.sh
 popd
 
 # Build the customized AFL
 pushd afl-2.42b
-make
+make -j$(nproc)
 popd
 
 ## Build elfpatcher
 pushd afl-2.42b/pt_mode/elfpatcher
 ./bootstrap.sh
 ./configure
-make
+make -j$(nproc)
 popd
 
 ## Build pt_proxy
 pushd afl-2.42b/pt_mode/pt_proxy
-make
+make -j$(nproc)
 popd
 
 ## Build customized ld

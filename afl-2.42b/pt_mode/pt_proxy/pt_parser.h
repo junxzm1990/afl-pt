@@ -555,7 +555,7 @@ pt_parse_packet(char *buffer, size_t size, int dfd, int rfd){
 	    else if (kind == PT_PACKET_OVF)
                writeout_packet(dfd, "OVF", 0);
  	    else
-		assert(0 && "fuck");
+		assert(0 && "unknown packet kind");
 #endif
             break;
 
