@@ -1,4 +1,4 @@
-# afl-pt
+# PTrix
 
 # set up
 Environment:
