@@ -1,83 +1,63 @@
-# PTrix
+# Ptrix: Efficient Hardware-Assisted Fuzzing for COTS Binary
 
-# set up
-Environment:
-Ubuntu 14.04
+## Introduction
 
+PTrix is carefully designed to take full advantage of hardware feature - Intel Processor Trace as its underpinning tracing component. With PTrix, we demonstrate newly available hardware feature can significantly accelerate binary-only fuzzing through two elaborate designs, including a parallel scheme of trace parsing and a newly designed PT-friendly feedback.
 
-Build PT Module:
-```
-cd pt
-make
-./reinstall_ptmod.sh
-```
+## Publication
 
-Build afl:
-```
-cd afl-2.42b
-make
-```
+Our paper can be found in the [Ptrix - AsiaCCS 2019](ptrix.pdf).
 
-Build elfpatcher:
 ```
-cd afl-2.42b/pt_mode/elfpatcher
-./bootstrap.sh
-./configure
-make
+@inproceedings{yaohui2019,
+ author = {Chen, Yaohui and Mu, Dongliang and Xu, Jun and Sun, Zhichuang and Shen, Wenbo and Xing, Xinyu and Lu, Long and Mao, Bing},
+ title = {Ptrix: Efficient Hardware-Assisted Fuzzing for COTS Binary},
+ booktitle = {Proceedings of the 2019 on Asia Conference on Computer and Communications Security},
+ series = {ASIACCS '19},
+ year = {2019},
+ publisher = {ACM},
+} 
 ```
 
-Build pt_proxy 
-```
-cd afl-2.42b/pt_mode/pt_proxy
-make
-```
+## Installation
 
-Build customized ld
-```
-cd afl-2.42b/pt_mode/glibc-2.19
-mkdir build
-cd build
-../configure
-make -j64
-```
+### Environment
 
-Build testcase - binutils
-```
-cd afl-2.42b/test_progs/binutils-2.29
-mkdir build
-cd build
-../configure
-make -j64
-```
+Ubuntu 14.04.5
 
-Patch testcase - objdump
-```
-cd afl-2.42b/pt_mode
-./patch-bin.sh ../test_progs/binutils-2.29/build/binutils/objdump
-```
+### Set Up
 
-Fuzzing objdump
-```
-cd afl-2.42b/
-./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/out -- ./test_progs/binutils-2.29/build/binutils/objdump -D @@
-```
+Please refer to [docs/INSTALL.md](docs/INSTALL.md)
 
-# pt-mode resume fuzzing work:
- 1) when fuzz with -P, a rand_map will be written to target_dir, name as ".target.rmap"
- 2) when resuming fuzzing with -i-, specify env AFL_PTMODE_RAND_MAP=@rand_map_location
- 
-# Technical details
-PTrix uses a series of optimization techniques to exploit intel PT for maximum fuzzing efficiencies.
-Including: 
+## CVEs discovered by Ptrix
+
+|   CVE ID       | Vulnerability Type     | Vulnerable Software |
+| -------------- | ---------------------- | ------------------- |
+| CVE-2018-8816  | Stack Exhaustion       | perl-5.26.1         |
+| CVE-2018-8881  | Heap buffer overflow   | nasm-2.13.02rc2     |
+| CVE-2018-8882  | Stack buffer overflow  | nasm-2.13.02rc2     |
+| CVE-2018-8883  | Global buffer overflow | nasm-2.13.02rc2     |
+| CVE-2018-10016 | Division-by-zero       | nasm-2.14rc0        |
+| CVE-2018-9138  | Stack Exhaustion       | binutils-2.29       |
+| CVE-2018-9996  | Stack Exhaustion       | binutils-2.29       |
+| CVE-2018-10316 | Denial-of-Service      | nasm-2.14rc0        |
+| CVE-2018-9251  | Denial-of-Service      | libxml2-2.9.8       |
+
+## Technical details
+
+PTrix uses a series of optimization techniques to exploit intel PT for maximum fuzzing efficiencies, including: 
 
 On the PT module side,
-1) Direct feedback translation
-2) Parallel packet decoding
+1. Direct feedback translation
+2. Parallel packet decoding
 
 On the AFL side,
-1) Switch feedback scheme from counted edge to slice to improve path sensitivity
-2) Use a bit instead of a byte of memory to record each slice to improve cache locality
+1. Switch feedback scheme from counted edge to slice to improve path sensitivity
+2. Use a bit instead of a byte of memory to record each slice to improve cache locality
 
-Additionally, PTrix supports fork-server mode and mutiplexing PT buffer for different fuzzing instances. 
-For more infomation, please check out the paper PTrix: Efficient Hardware-Assisted Fuzzing for COTS Binary (AsiaCCS'19)
-Link: https://arxiv.org/abs/1905.10499 
+Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances.
+
+## PT-mode resume fuzzing work
+
+1. when fuzz with -P, a rand_map will be written to target_dir, name as ".target.rmap"
+2. when resuming fuzzing with -i-, specify env AFL_PTMODE_RAND_MAP=@rand_map_location
