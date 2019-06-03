@@ -69,6 +69,7 @@ cd afl-2.42b/
 # Technical details
 PTrix uses a series of optimization techniques to exploit intel PT for maximum fuzzing efficiencies.
 Including: 
+
 On the PT module side
 1) Direct feedback translation
 2) Parallel packet decoding
