@@ -28,7 +28,7 @@ pushd afl-2.42b/pt_mode/glibc-2.19
 mkdir build
 cd build
 ../configure
-make -j8
+make -j$(nproc)
 cd ../
 popd
 
@@ -37,7 +37,7 @@ pushd afl-2.42b/test_progs/binutils-2.29
 mkdir build
 cd build
 ../configure --enable-shared=no --enable-static=yes
-make -j8
+make -j$(nproc)
 cd ../
 popd
 
