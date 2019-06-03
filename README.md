@@ -67,7 +67,7 @@ cd afl-2.42b/
  2) when resuming fuzzing with -i-, specify env AFL_PTMODE_RAND_MAP=@rand_map_location
  
 # Technical details
-PTrix uses a series optimization techniques to exploit intel PT for fuzzing efficiencies to the max.
+PTrix uses a series of optimization techniques to exploit intel PT for maximum fuzzing efficiencies.
 Including: 
 On the PT module side
 1) Direct feedback translation
