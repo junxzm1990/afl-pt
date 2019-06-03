@@ -4,6 +4,10 @@
 
 PTrix is carefully designed to take full advantage of hardware feature - Intel Processor Trace as its underpinning tracing component. With PTrix, we demonstrate newly available hardware feature can significantly accelerate binary-only fuzzing through two elaborate designs, including a parallel scheme of trace parsing and a newly designed PT-friendly feedback.
 
+## Installation
+
+Please refer to [docs/INSTALL.md](docs/INSTALL.md)
+
 ## Publication
 
 Our paper can be found in the [Ptrix - AsiaCCS 2019](ptrix.pdf).
@@ -18,16 +22,6 @@ Our paper can be found in the [Ptrix - AsiaCCS 2019](ptrix.pdf).
  publisher = {ACM},
 } 
 ```
-
-## Installation
-
-### Environment
-
-Ubuntu 14.04.5
-
-### Set Up
-
-Please refer to [docs/INSTALL.md](docs/INSTALL.md)
 
 ## CVEs discovered by Ptrix
 
@@ -56,8 +50,3 @@ On the AFL side,
 2. Use a bit instead of a byte of memory to record each slice to improve cache locality
 
 Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances.
-
-## PT-mode resume fuzzing work
-
-1. when fuzz with -P, a rand_map will be written to target_dir, name as ".target.rmap"
-2. when resuming fuzzing with -i-, specify env AFL_PTMODE_RAND_MAP=@rand_map_location
