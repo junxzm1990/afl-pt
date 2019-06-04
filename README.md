@@ -1,5 +1,7 @@
 # Ptrix: Efficient Hardware-Assisted Fuzzing for COTS Binary
 
+It should be noted that **we only tested Ptrix on bare metal machine running Ubuntu 14.04**.
+
 ## Introduction
 
 PTrix is carefully designed to take full advantage of hardware feature - Intel Processor Trace as its underpinning tracing component. With PTrix, we demonstrate newly available hardware feature can significantly accelerate binary-only fuzzing through two elaborate designs, including a parallel scheme of trace parsing and a newly designed PT-friendly feedback.
