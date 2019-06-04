@@ -11,7 +11,7 @@ git clone https://github.com/junxzm1990/afl-pt
 cd afl-pt
 ```
 
-We developed [a installation script](../tools/install-beta.sh) to automatically deploy Ptrix.
+We developed [a installation script](../tools/install.sh) to automatically deploy Ptrix.
 
 ## Build PT Module
 
