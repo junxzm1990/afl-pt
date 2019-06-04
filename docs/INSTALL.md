@@ -62,6 +62,7 @@ cd ../../../
 
 ## Build testcase cxxfilt
 ```
+sudo apt install texinfo bison flex
 cd afl-2.42b/test_progs/binutils-2.29
 mkdir build
 cd build
