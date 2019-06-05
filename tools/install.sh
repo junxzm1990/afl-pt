@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# double check the version of running kernel
+if [[ $(uname -r) != 4.4.0* ]]; then
+  echo "Running Kernel is not suitable for Ptrix, please double check your environment"
+fi
+
 pushd pt
 make -j$(nproc)
 # require sudo privilege to insert PT module
