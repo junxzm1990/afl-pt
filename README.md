@@ -51,7 +51,7 @@ On the AFL side,
 1. Switch feedback scheme from counted edge to slice to improve path sensitivity
 2. Use a bit instead of a byte of memory to record each slice to improve cache locality
 
-Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances.
+Additionally, PTrix supports fork-server mode and multiplexes PT buffer for different fuzzing instances. There are some small catches please refer to [docs/FAQ.md](docs/FAQ.md)
 
 ## Credits
 
