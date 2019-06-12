@@ -1,6 +1,6 @@
 # Ptrix: Efficient Hardware-Assisted Fuzzing for COTS Binary
 
-It should be noted that **we only tested Ptrix on bare metal machine running Ubuntu 14.04**.
+It should be noted that **we only tested Ptrix on bare metal machine running Ubuntu 14.04.5 with Linux kernel 4.4.0**.
 
 ## Introduction
 

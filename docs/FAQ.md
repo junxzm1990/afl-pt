@@ -12,3 +12,7 @@ A. Since we configure iPT to only trace the .text section of the fuzzed binary, 
 
 A. Short answer is no. 
 The current virtualization tools don't support virtualizing iPT yet, lets wait for the updates from Xen and Hyper-V, they should be out soon. As for Docker, we didn't test, but if your container host is Ubuntu 14.04 and the docker image is 14.04 too it might work.
+
+4. How to check whether Intel PT is support in your envrionment?
+
+A. `grep intel_pt /proc/cpuinfo` or run `reinstall_ptmod.sh`
