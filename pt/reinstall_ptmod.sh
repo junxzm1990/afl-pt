@@ -12,7 +12,7 @@ case $yn in [Yy]* )
             if [ $? -eq 0 ]; then
                 echo -e "${GREEN}PT Module installed successfully${NC}"
             else
-                echo -e "${RED}Failed to install PT module$. Please check dmesg output.{NC}"
+                echo -e "${RED}Failed to install PT module. Please check dmesg output.${NC}"
             fi;;
     [Nn]* ) exit;;
 esac
