@@ -9,7 +9,7 @@ mod_param=$(sudo cat /proc/kallsyms  | grep  '\bkallsyms_lookup_name\b'  | cut -
 read -p "module param is $mod_param, continue to install module?[y/n]" yn
 case $yn in [Yy]* )
             sudo insmod ptmodule.ko kallsyms_lookup_name_ptr=0x$mod_param
-            if [ $? -eq 1 ]; then
+            if [ $? -eq 0 ]; then
                 echo -e "${GREEN}PT Module installed successfully${NC}"
             else
                 echo -e "${RED}Failed to install PT module$. Please check dmesg output.{NC}"
