@@ -2,7 +2,9 @@
 
 ## Environment
 
-Ubuntu 14.04.5
+Operating System: Ubuntu 14.04.5
+Linux Kernel    : 4.4.0
+Glibc           : 2.19
 
 ## Download Source Code
 
