@@ -54,7 +54,7 @@ cd -
 cd afl-2.42b/pt_mode/glibc-2.19
 mkdir build
 cd build
-../configure
+../configure --prefix=/
 make -j64
 cd ../
 cd ../../../
