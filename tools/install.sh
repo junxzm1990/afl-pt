@@ -52,6 +52,6 @@ pushd afl-2.42b/pt_mode
 ./patch-bin.sh ../test_progs/binutils-2.29/build/binutils/cxxfilt
 popd
 
-## Fuzzing testcase cxxfilt 
-cd afl-2.42b/
-./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/cxxfilt_out -- ./test_progs/binutils-2.29/build/binutils/cxxfilt
+echo "To fuzz testcase cxxfilt, run: "
+echo "cd afl-2.42b/"
+echo "./pt-fuzz-fast -P -i ./testcases/others/elf -o ./test_progs/binutils-2.29/build/binutils/cxxfilt_out -- ./test_progs/binutils-2.29/build/binutils/cxxfilt"
